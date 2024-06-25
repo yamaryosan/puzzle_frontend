@@ -13,22 +13,22 @@ type Change = {
     ops: any[];
 };
 
-const App = () => {
+export default function App() {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [readOnly, setReadOnly] = useState(false);
-    const [Delta, setDelta] = useState<any>();
+    const [DeltaClass, setDeltaClass] = useState<any>();
 
     const quillRef = useRef<Quill | null>(null);
 
-    useEffect(() => {
-        import('quill').then((module) => {
-            const Delta = module.default.import('delta');
-            setDelta(() => Delta);
-        });
-    }, []);
+    // Deltaクラスを取得
+    import('quill').then((module) => {
+        const DeltaClass = module.default.import('delta');
+        setDeltaClass(() => DeltaClass);
+    });
 
-    if (!Delta) {
+    // Deltaクラスが取得できるまでローディング画面を表示
+    if (!DeltaClass) {
         return <div>Loading...</div>
     }
 
@@ -37,11 +37,12 @@ const App = () => {
             <Editor
             ref={quillRef}
             readOnly={readOnly}
-            defaultValue={new Delta([{ insert: 'Hello World!' }])}
+            defaultValue={new DeltaClass([{ insert: 'Hello World!' }])}
             onSelectionChange={setRange}
             onTextChange={setLastChange}
             />
             <div className="controls">
+                {/* 読み取り専用チェックボックス */}
                 <label>
                 Read Only:{' '}
                     <input
@@ -50,6 +51,7 @@ const App = () => {
                     onChange={(e) => setReadOnly(e.target.checked)}
                     />
                 </label>
+                {/* テキストの文字数を取得するボタン */}
                 <button
                 className="controls-right"
                 type="button"
@@ -57,13 +59,15 @@ const App = () => {
                     alert(quillRef.current?.getLength());
                 }}
                 >
-                    Get Content Length
+                    文字数
                 </button>
             </div>
+            {/* 現在の選択範囲を表示 */}
             <div className="state">
                     <div className="state-title">Current Range:</div>
                     {range ? JSON.stringify(range) : 'Empty'}
             </div>
+            {/* 最後の変更を表示 */}
             <div className="state">
                     <div className="state-title">Last Change:</div>
                     {lastChange ? JSON.stringify(lastChange.ops) : 'Empty'}
@@ -77,5 +81,3 @@ const App = () => {
         </div>
     );
 }
-
-export default App;

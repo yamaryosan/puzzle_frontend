@@ -1,6 +1,6 @@
 'use client';
 
-import React, { forwardRef, useEffect, useState, useLayoutEffect, useRef, MutableRefObject } from 'react';
+import React, { forwardRef, useEffect, useState, useLayoutEffect, useRef } from 'react';
 import Quill from 'quill';
 import Delta from 'quill-delta';
 import 'quill/dist/quill.snow.css';
@@ -30,11 +30,11 @@ const Editor = forwardRef<Quill, EditorProps>(
     const onSelectionChangeRef = useRef<typeof onSelectionChange>(onSelectionChange);
     const [quill, setQuill] = useState<Quill | null>(null);
 
-    // レイアウトの変更を検知
+    // エディタの状態が変更されたときのコールバックを更新
     useLayoutEffect(() => {
       onTextChangeRef.current = onTextChange;
       onSelectionChangeRef.current = onSelectionChange;
-    });
+    }, [onTextChange, onSelectionChange]);
 
     // Quillのインスタンスを取得 (読み取り専用の設定)
     useEffect(() => {
@@ -43,8 +43,8 @@ const Editor = forwardRef<Quill, EditorProps>(
       }
     }, [ref, readOnly]);
 
-    // エディタの初期化
     useEffect(() => {
+      // エディタのDOM要素を取得
       const container = containerRef.current;
       if (!container) {
         return;
@@ -52,21 +52,17 @@ const Editor = forwardRef<Quill, EditorProps>(
       const editorContainer = container?.appendChild(
         container.ownerDocument.createElement('div'),
       );
+      // Quillの動的インポート、Quillインスタンス初期化
       import('quill').then((module) => {
-        // Quillのインスタンスを取得(500エラーを解消するため、動的インポートを使用)
         const Quill = module.default;
         const quillInstance = new Quill(editorContainer, {
           theme: 'snow',
         });
         setQuill(quillInstance);
 
-        // Quillのインスタンスを設定
+        // Quillのインスタンスをrefに設定
         if (ref) {
-          if (typeof ref === 'function') {
-            ref(quillInstance);
-          } else {
-            ref.current = quillInstance;
-          }
+          (ref as React.MutableRefObject<Quill>).current = quillInstance;
         }
 
         // 初期値を設定
@@ -86,12 +82,8 @@ const Editor = forwardRef<Quill, EditorProps>(
       );
       // クリーンアップ
       return () => {
-        if (ref) {
-          if (typeof ref === 'function') {
-            ref(null);
-          } else {
-            ref.current = null;
-          }
+        if (typeof ref === 'function') {
+          ref(null);
         }
         container.innerHTML = '';
       };

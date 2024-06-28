@@ -9,6 +9,7 @@ export default function Header() {
                 <Link href="/dashboard">ダッシュボード</Link>
                 <Link href="/categories">カテゴリー(プルダウン)</Link>
                 <Link href="/theories">定石一覧</Link>
+                <Link href="/favorites">お気に入り</Link>
             <p>検索ボックス(モーダル)</p>
             </Box>
         </header>

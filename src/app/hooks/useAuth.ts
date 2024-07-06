@@ -4,7 +4,7 @@ import firebaseApp from '../firebase';
 
 /**
  * ユーザーの認証情報を取得するカスタムフック
- * @returns ユーザーの認証情報と読み込み状態
+ * @returns user: ユーザー情報, loading: ローディング状態
  */
 export default function useAuth() {
   const [user, setUser] = useState<User | null>(null);

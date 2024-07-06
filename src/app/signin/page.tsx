@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Auth, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 
 /**
  * メールアドレスとパスワードでログインする

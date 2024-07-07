@@ -19,12 +19,12 @@ interface AuthLinkProps {
  * @param fallbackHref ログインしていない場合のリンク先のURL
  */
 export default function AuthLink({ href, children, fallbackHref }: AuthLinkProps) {
-  const { user, loading } = useAuth();
+  const { user, authLoading } = useAuth();
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-    if (loading) return;
+    if (authLoading) return;
     
     if (user) {
       router.push(href);

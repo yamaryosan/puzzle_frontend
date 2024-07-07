@@ -6,10 +6,10 @@ import useAuth from './../hooks/useAuth';
 
 
 export default function Profile() {
-    const {user, loading} = useAuth();
+    const {user, authLoading} = useAuth();
 
     // 読み込み中
-    if (loading) {
+    if (authLoading) {
         return <p>読み込み中...</p>;
     }
 

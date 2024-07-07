@@ -21,6 +21,15 @@ async function signIn(auth: Auth, email: string, password: string) {
     }
 }
 
+/**
+ * ログイン成功したらダッシュボードにリダイレクト
+ * @returns 
+ */
+async function redirectToDashboard() {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    window.location.href = '/dashboard';
+}
+
 export default function Home() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -33,10 +42,11 @@ export default function Home() {
     }
     // ログインしている場合はホーム画面にリダイレクト
     if (!loading && user) {
+        redirectToDashboard();
         return (
-            <div className="container mx-auto mt-10 p-4">
-                <p>ログイン済みです</p>
-                <Link href="/puzzles" className="text-blue-500 hover:underline">パズル一覧へ</Link>
+            <div>
+                <p>ログインに成功しました。ダッシュボードにリダイレクトします...</p>
+                <p>リダイレクトされない場合は<Link href="/dashboard" className="text-blue-500 hover:underline">こちら</Link></p>
             </div>
         );
     }

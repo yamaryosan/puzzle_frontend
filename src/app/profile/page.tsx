@@ -18,7 +18,7 @@ export default function Profile() {
             <h1>プロフィール</h1>
             <p>ユーザー名: {user?.displayName}</p>
             <p>メールアドレス: {user?.email}</p>
-            <Link href="/profile/[username]/edit" as="/profile/guest/edit">プロフィール編集</Link>
+            <Link href="/profile/edit">プロフィール編集</Link>
             <Link href="/dashboard">ダッシュボードへ</Link>
         </div>
     );

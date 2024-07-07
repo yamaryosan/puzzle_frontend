@@ -1,9 +1,10 @@
 'use client';
 
-import { Auth, sendSignInLinkToEmail } from "firebase/auth";
+import { Auth, sendSignInLinkToEmail, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase";
 import React, { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 type actionCodeSettings = {
     url: string;
@@ -25,6 +26,20 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
     }
 }
 
+/**
+ * Googleアカウントでサインアップ
+ * @param auth Auth
+ */
+async function signUpWithGoogle(auth: Auth) {
+    try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        console.log("Googleアカウントでサインアップしました");
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export default function App() {
     const auth = getAuth(firebaseApp);
     const actionCodeSettings = {
@@ -34,10 +49,18 @@ export default function App() {
     const [email, setEmail] = useState("");
     const [isMailSent, setIsMailSent] = useState(false);
 
+    const router = useRouter();
+
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         sendSignInLink(auth, email, actionCodeSettings);
         setIsMailSent(true);
+    }
+
+    const handleGoogleSignUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        signUpWithGoogle(auth);
+        router.push("/dashboard");
     }
 
     return (
@@ -51,6 +74,8 @@ export default function App() {
                 )}
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <button type="submit" onClick={handleSubmit}>登録</button>
+                <hr />
+                <button onClick={handleGoogleSignUp}>Googleアカウントで登録</button>
             </form>
         </div>
     );

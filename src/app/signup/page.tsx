@@ -35,8 +35,10 @@ async function signUpWithGoogle(auth: Auth) {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
         console.log("Googleアカウントでサインアップしました");
+        return true;
     } catch (error) {
         console.error(error);
+        return false;
     }
 }
 
@@ -47,6 +49,7 @@ export default function App() {
         handleCodeInApp: true,
     }
     const [email, setEmail] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [isMailSent, setIsMailSent] = useState(false);
 
     const router = useRouter();
@@ -57,10 +60,16 @@ export default function App() {
         setIsMailSent(true);
     }
 
-    const handleGoogleSignUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleGoogleSignUp = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        signUpWithGoogle(auth);
-        router.push("/dashboard");
+        setIsLoading(true);
+        const success = await signUpWithGoogle(auth);
+        setIsLoading(false);
+        if (success) {
+            router.push("/dashboard");
+        } else {
+            alert("Google認証に失敗しました。もう一度お試しください。");
+        }
     }
 
     return (
@@ -75,7 +84,9 @@ export default function App() {
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <button type="submit" onClick={handleSubmit}>登録</button>
                 <hr />
-                <button onClick={handleGoogleSignUp}>Googleアカウントで登録</button>
+                <button onClick={handleGoogleSignUp} disabled={isLoading}>
+                    {isLoading ? "処理中..." : "Googleアカウントで登録"}
+                </button>
             </form>
         </div>
     );

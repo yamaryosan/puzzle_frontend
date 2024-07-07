@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Auth, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import useAuth from '../hooks/useAuth';
 
 /**
@@ -30,18 +32,38 @@ async function redirectToDashboard() {
     window.location.href = '/dashboard';
 }
 
+/**
+ * Googleアカウントでログイン
+ * @param auth Auth
+ * @returns 認証可否
+ */
+async function signInWithGoogle(auth: Auth) {
+    try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        console.log("Googleアカウントでサインインしました");
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
 export default function Home() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { user, loading } = useAuth();
+    const { user, authLoading } = useAuth();
+    const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
+
+    const router = useRouter();
 
     // ロード中はローディング画面を表示
-    if (loading) {
+    if (authLoading) {
         return <p>ローディング中...</p>;
     }
     // ログインしている場合はホーム画面にリダイレクト
-    if (!loading && user) {
+    if (!authLoading && user) {
         redirectToDashboard();
         return (
             <div>
@@ -63,6 +85,20 @@ export default function Home() {
             }
         }
     };
+
+    // Googleアカウントでサインイン
+    const handleGoogleSignIn = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        const auth = getAuth();
+        setGoogleSignInLoading(true);
+        const success = await signInWithGoogle(auth);
+        setGoogleSignInLoading(false);
+        if (success) {
+            router.push("/dashboard");
+        } else {
+            alert("Google認証に失敗しました。もう一度お試しください。");
+        }
+    }
 
     return (
         <div className="container mx-auto mt-10 p-4">
@@ -93,6 +129,9 @@ export default function Home() {
                 {error && <p className="text-red-500">{error}</p>}
                 <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
                     ログイン
+                </button>
+                <button onClick={handleGoogleSignIn} disabled={GoogleSignInLoading}>
+                    {GoogleSignInLoading ? "処理中..." : "Googleアカウントで登録"}
                 </button>
             </form>
             <p className="mt-4">

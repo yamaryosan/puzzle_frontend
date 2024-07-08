@@ -1,12 +1,27 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { getAuth, updateProfile, updatePassword, verifyBeforeUpdateEmail, User, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { getAuth, updateProfile, updatePassword, verifyBeforeUpdateEmail, User, reauthenticateWithCredential, EmailAuthProvider, reauthenticateWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider } from 'firebase/auth';
+import { Auth, AuthCredential } from 'firebase/auth';
 import { updateEmail } from 'firebase/auth';
 import firebaseApp from '../../firebase';
 
 const isEmulator = process.env.NODE_ENV === 'development';
 
+/**
+ * メールアドレス認証の場合の再認証
+ * @param user ユーザー
+ * @param credential 資格情報
+ */
+async function reauthenticateWithEmail(user: User, credential: AuthCredential) {
+    try {
+        await reauthenticateWithCredential(user, credential);
+    } catch (error) {
+        console.error(error);
+        throw new Error('再認証に失敗しました');
+    }
+};
 
 /**
  * Googleアカウントで再認証
@@ -25,6 +40,30 @@ async function reauthenticateWithGoogle(auth: Auth) {
     }
 }
 
+/**
+ * 認証方法を判定
+ * @param user ユーザー
+ * @returns 認証方法
+ */
+function checkAuthProvider(user: User) {
+    if (!user) {
+        throw new Error('ユーザーが見つかりません');
+    }
+    if (user.providerData.length === 0) {
+        throw new Error('認証方法が見つかりません');
+    }
+    const provider = user.providerData[0].providerId;
+    switch (provider) {
+        case 'password':
+            return 'email';
+        case 'google.com':
+            return 'google';
+        default:
+            throw new Error('未対応の認証方法です');
+    }
+}
+
+export default function Page() {
     const auth = getAuth(firebaseApp);
 
     const [user, setUser] = useState<User | null>(null);
@@ -75,9 +114,15 @@ async function reauthenticateWithGoogle(auth: Auth) {
 
         try {
             // 再認証
-            const credential = EmailAuthProvider.credential(user.email, formData.currentPassword);
-            await reauthenticateWithCredential(user, credential);
-
+            const provider = checkAuthProvider(user);
+            if (provider === 'email') {
+                const credential = EmailAuthProvider.credential(user.email, formData.currentPassword);
+                await reauthenticateWithEmail(user, credential);
+            } else if (provider === 'google') {
+                await reauthenticateWithGoogle(auth);
+            } else {
+                throw new Error('再認証に失敗しました');
+            }
             // ユーザー名の更新
             if (formData.username !== user.displayName) {
                 await updateProfile(user, { displayName: formData.username });

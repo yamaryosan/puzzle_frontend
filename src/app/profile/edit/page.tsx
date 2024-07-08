@@ -7,7 +7,24 @@ import firebaseApp from '../../firebase';
 
 const isEmulator = process.env.NODE_ENV === 'development';
 
-export default function ProfileUpdate() {
+
+/**
+ * Googleアカウントで再認証
+ * @returns 
+ */
+async function reauthenticateWithGoogle(auth: Auth) {
+    try {
+        if (!auth.currentUser) {
+            throw new Error('ユーザーが見つかりません');
+        }
+        const provider = new GoogleAuthProvider();
+        await reauthenticateWithPopup(auth.currentUser, provider);
+    } catch (error) {
+        console.error(error);
+        throw new Error('再認証に失敗しました');
+    }
+}
+
     const auth = getAuth(firebaseApp);
 
     const [user, setUser] = useState<User | null>(null);

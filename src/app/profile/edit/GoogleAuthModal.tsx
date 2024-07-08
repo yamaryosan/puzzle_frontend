@@ -26,14 +26,14 @@ type GoogleAuthModalProps = {
     user: User | null;
     onClose: () => void;
     onProfileUpdated: () => void;
+    onError: (error: string) => void;
 }
 
-const GoogleAuthModal = ({ user, onClose, onProfileUpdated }: GoogleAuthModalProps) => {    
+const GoogleAuthModal = ({ user, onClose, onProfileUpdated, onError }: GoogleAuthModalProps) => {    
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         username: "",
     });
-    const [message, setMessage] = useState("");
 
     useEffect(() => {
         if (!user) return;
@@ -56,10 +56,9 @@ const GoogleAuthModal = ({ user, onClose, onProfileUpdated }: GoogleAuthModalPro
     // フォームの送信
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setMessage("");
 
         if (!user || !user.email) {
-            setMessage("ユーザー情報が見つかりません");
+            onError("ユーザー情報が見つかりません");
             return;
         }
 
@@ -70,7 +69,6 @@ const GoogleAuthModal = ({ user, onClose, onProfileUpdated }: GoogleAuthModalPro
             // ユーザー名の更新
             if (formData.username !== user.displayName) {
                 await updateProfile(user, { displayName: formData.username });
-                setMessage(prevMessage => prevMessage + "ユーザー名を更新しました。 ");
             }
             // フォームのリセット
             setFormData(prevState => ({
@@ -82,7 +80,7 @@ const GoogleAuthModal = ({ user, onClose, onProfileUpdated }: GoogleAuthModalPro
 
         } catch (error) {
             console.error(error);
-            setMessage(`更新に失敗しました: ${error instanceof Error ? error.message : '未知のエラー'}`);
+            onError(`更新に失敗しました: ${error instanceof Error ? error.message : '未知のエラー'}`)
         }
     };
     if (loading) return <p>読み込み中...</p>;
@@ -107,7 +105,6 @@ const GoogleAuthModal = ({ user, onClose, onProfileUpdated }: GoogleAuthModalPro
                 ))}
                 <button type="submit">更新</button>
             </form>
-            {message && <p>{message}</p>}
             <button onClick={onClose}>キャンセル</button>
         </div>
     );

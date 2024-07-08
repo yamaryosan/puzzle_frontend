@@ -6,6 +6,12 @@ import { useState, useCallback } from 'react';
 import { verifyBeforeUpdateEmail } from 'firebase/auth';
 import { useEffect } from 'react';
 
+/**
+ * 20240709追記
+ * verifyBeforeUpdateEmailの後にはメッセージを表示する処理が必要。
+ * 現在、この処理が抜けているため、追記する。
+ */
+
 const isEmulator = process.env.NODE_ENV === 'development';
 
 /**
@@ -26,9 +32,10 @@ type EmailReauthModalProps = {
     user: User | null;
     onClose: () => void;
     onProfileUpdated: () => void;
+    onError: (error: string) => void;
 }
 
-const EmailAuthModal = ({ user, onClose, onProfileUpdated }: EmailReauthModalProps) => {
+const EmailAuthModal = ({ user, onClose, onProfileUpdated, onError }: EmailReauthModalProps) => {
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         username: "",
@@ -37,7 +44,6 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated }: EmailReauthModalPro
         newPassword: "",
         confirmNewPassword: ""
     });
-    const [message, setMessage] = useState("");
 
     useEffect(() => {
         if (!user) return;
@@ -61,10 +67,9 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated }: EmailReauthModalPro
     // フォームの送信
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setMessage("");
 
         if (!user || !user.email) {
-            setMessage("ユーザー情報が見つかりません");
+            onError("ユーザー情報が見つかりません");
             return;
         }
 
@@ -75,32 +80,28 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated }: EmailReauthModalPro
             // ユーザー名の更新
             if (formData.username !== user.displayName) {
                 await updateProfile(user, { displayName: formData.username });
-                setMessage(prevMessage => prevMessage + "ユーザー名を更新しました。 ");
             }
 
             // パスワードの更新
             if (formData.newPassword) {
                 if (formData.newPassword !== formData.confirmNewPassword) {
-                    throw new Error("新しいパスワードが一致しません");
+                    onError("新しいパスワードが一致しません");
                 }
                 await updatePassword(user, formData.newPassword);
-                setMessage(prevMessage => prevMessage + "パスワードを更新しました。 ");
             }
 
             // メールアドレスの更新
             if (formData.email === user.email) {
-                setMessage(prevMessage => prevMessage + "メールアドレスは変更されていません。 ");
+                onError("新しいメールアドレスは現在のメールアドレスと同じです");
             } else {
                 if (isEmulator) {
                     await updateEmail(user, formData.email);
-                    setMessage(prevMessage => prevMessage + "メールアドレスを更新しました。 ");
                 } else {
                     const actionCodeSettings = {
                         url: "http://localhost:3000/signin",
                         handleCodeInApp: true,
                     };
                     await verifyBeforeUpdateEmail(user, formData.email, actionCodeSettings);
-                    setMessage(prevMessage => prevMessage + "メールアドレスの確認メールを送信しました。 ");
                 }
             }
 
@@ -117,7 +118,7 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated }: EmailReauthModalPro
 
         } catch (error) {
             console.error(error);
-            setMessage(`更新に失敗しました: ${error instanceof Error ? error.message : '未知のエラー'}`);
+            onError(`更新に失敗しました: ${error instanceof Error ? error.message : '未知のエラー'}`);
         }
     };
 
@@ -144,7 +145,6 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated }: EmailReauthModalPro
                 ))}
                 <button type="submit">更新</button>
             </form>
-            {message && <p>{message}</p>}
             <button onClick={onClose}>キャンセル</button>
         </div>
     );

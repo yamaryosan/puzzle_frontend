@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - firebase
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=randompassword
+      - MYSQL_DATABASE=mydb
+    volumes:
+      - mysql-data:/var/lib/mysql
+  firebase:
+    container_name: firebase
+    build:
+      context: .
+      dockerfile: ./Dockerfile.firebase
+    volumes:
+      - ./package.json:/usr/src/app/package.json
+      - ./node_modules/:/usr/src/app/node_modules
+      - ./.firebaserc:/usr/src/app/.firebaserc
+      - ./firebase.json:/usr/src/app/firebase.json
+    ports:
+      - 9099:9099 # Firebase Authentication
+      - 8080:8080 # Cloud Firestore
+      - 5002:5002 # Firebase Hosting
+      - 9199:9199 # Cloud Storage
+      - 4000:4000 # Emulator Suite UI
+      - 9150:9150 # Firestore Emulator UI websocket
+    working_dir: /usr/src/app
+    tty: true
+    environment:
+      - FIREBASE_TOKEN=${FIREBASE_TOKEN}
+volumes:
+  mysql-data:

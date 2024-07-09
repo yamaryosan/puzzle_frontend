@@ -20,6 +20,7 @@ interface EditorProps {
  * @returns {React.ReactElement} エディタのコンポーネント
  */
 
+/**
 const Editor = forwardRef<Quill, EditorProps>(
   ({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
 
@@ -95,3 +96,5 @@ const Editor = forwardRef<Quill, EditorProps>(
     return <div ref={containerRef}></div>;
   },
 );
+
+ */

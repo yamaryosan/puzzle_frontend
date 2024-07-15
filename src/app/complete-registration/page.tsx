@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase";
 import { isSignInWithEmailLink, signInWithEmailLink, updatePassword, updateProfile } from "firebase/auth";
+import createUserInPrisma from "../../lib/api/userapi";
 
 export default function App() {
     const auth = getAuth(firebaseApp);
@@ -33,6 +34,14 @@ export default function App() {
                 });
                 // パスワードを更新
                 await updatePassword(result.user, password);
+
+                // ユーザをPrismaに登録
+                const firebaseUser = {
+                    firebaseUid: result.user.uid,
+                    email: result.user.email,
+                    displayName: result.user.displayName,
+                };
+                await createUserInPrisma(firebaseUser);
 
                 window.localStorage.removeItem("emailForSignIn");
                 setMessage("登録が完了しました");

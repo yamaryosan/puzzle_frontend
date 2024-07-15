@@ -5,16 +5,11 @@ import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
+import createUserInPrisma from "../../lib/api/userapi";
 
 type actionCodeSettings = {
     url: string;
     handleCodeInApp: boolean;
-}
-
-type FirebaseUser = {
-    firebaseUid: string;
-    email: string | null;
-    displayName: string | null;
 }
 
 /**
@@ -33,32 +28,6 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
 }
 
 /**
- * Prismaにユーザを登録(API)
- */
-async function createUserInPrisma(firebaseUser: FirebaseUser) {
-    try {
-        const response = await fetch("/api/users", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(firebaseUser),
-        });
-        if (!response.ok) {
-            // エラーの内容を表示
-            const error = await response.json();
-            console.error("page: Error creating user in Prisma:", error);
-        }
-        const user = await response.json();
-        console.log("page: User created in Prisma:", user);
-        return user;
-    } catch (error) {
-        console.error("page: Error creating user in Prisma:", error);
-        throw error;
-    }
-}
-
-/**
  * Googleアカウントでサインアップ
  * @param auth Auth
  */
@@ -73,7 +42,6 @@ async function signUpWithGoogle(auth: Auth) {
         return false;
     }
 }
-
 
 export default function App() {
     const auth = getAuth(firebaseApp);

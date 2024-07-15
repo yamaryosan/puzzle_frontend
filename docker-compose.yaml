@@ -5,16 +5,22 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      - mysql
       - firebase
-  db:
+
+  mysql:
     image: mysql:8.0
-    restart: always
+    container_name: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=randompassword
-      - MYSQL_DATABASE=mydb
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: prismadb
+      MYSQL_USER: prismauser
+      MYSQL_PASSWORD: userpassword
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
   firebase:
     container_name: firebase
     build:
@@ -37,4 +43,4 @@ services:
     environment:
       - FIREBASE_TOKEN=${FIREBASE_TOKEN}
 volumes:
-  mysql-data:
+  mysql_data:

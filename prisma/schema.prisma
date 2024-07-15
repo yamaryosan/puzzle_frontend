@@ -20,3 +20,12 @@ datasource db {
 //  url      = env("DATABASE_URL")
 //}
 
+// DBモデル
+model User {
+  id            String   @id @default(uuid())
+  firebaseUid   String   @unique
+  email         String   @unique
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

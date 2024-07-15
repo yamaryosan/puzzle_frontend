@@ -11,6 +11,12 @@ type actionCodeSettings = {
     handleCodeInApp: boolean;
 }
 
+type FirebaseUser = {
+    firebaseUid: string;
+    email: string | null;
+    displayName: string | null;
+}
+
 /**
  * 新規ユーザ登録のためにメールを送信
  * @param email メールアドレス
@@ -23,6 +29,32 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
         window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
         console.error(error);
+    }
+}
+
+/**
+ * Prismaにユーザを登録(API)
+ */
+async function createUserInPrisma(firebaseUser: FirebaseUser) {
+    try {
+        const response = await fetch("/api/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(firebaseUser),
+        });
+        if (!response.ok) {
+            // エラーの内容を表示
+            const error = await response.json();
+            console.error("page: Error creating user in Prisma:", error);
+        }
+        const user = await response.json();
+        console.log("page: User created in Prisma:", user);
+        return user;
+    } catch (error) {
+        console.error("page: Error creating user in Prisma:", error);
+        throw error;
     }
 }
 
@@ -41,6 +73,7 @@ async function signUpWithGoogle(auth: Auth) {
         return false;
     }
 }
+
 
 export default function App() {
     const auth = getAuth(firebaseApp);
@@ -66,6 +99,11 @@ export default function App() {
         const success = await signUpWithGoogle(auth);
         setIsLoading(false);
         if (success) {
+            createUserInPrisma({
+                firebaseUid: auth.currentUser!.uid,
+                email: auth.currentUser!.email,
+                displayName: auth.currentUser!.displayName,
+            });
             router.push("/dashboard");
         } else {
             alert("Google認証に失敗しました。もう一度お試しください。");

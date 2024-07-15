@@ -8,7 +8,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// sqliteの接続情報
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
+
+// MySQLの接続情報 
+//datasource db {
+//  provider = "mysql"
+//  url      = env("DATABASE_URL")
+//}
+

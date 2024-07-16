@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Auth, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import useAuth from '../hooks/useAuth';
+import createUserInPrisma from '../../lib/api/userapi';
 
 /**
  * メールアドレスとパスワードでログインする
@@ -33,15 +34,26 @@ async function redirectToDashboard() {
 }
 
 /**
- * Googleアカウントでログイン
+ * Googleアカウントでサインイン(ユーザが存在しない場合は新規登録)
  * @param auth Auth
  * @returns 認証可否
  */
 async function signInWithGoogle(auth: Auth) {
     try {
         const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        console.log("Googleアカウントでサインインしました");
+        const result: UserCredential = await signInWithPopup(auth, provider);
+        const isNewUser = getAdditionalUserInfo(result)?.isNewUser ?? false;
+        // ユーザが既に存在している場合は何もしない
+        if (!isNewUser) {
+            console.log("Googleアカウントでサインインしました");
+            return true;
+        }
+        // ユーザが存在しない場合は新規登録
+        createUserInPrisma({
+            firebaseUid: auth.currentUser!.uid,
+            email: auth.currentUser!.email,
+            displayName: auth.currentUser!.displayName,
+        });
         return true;
     } catch (error) {
         console.error(error);
@@ -94,9 +106,9 @@ export default function Home() {
         const success = await signInWithGoogle(auth);
         setGoogleSignInLoading(false);
         if (success) {
-            router.push("/dashboard");
+            redirectToDashboard();
         } else {
-            alert("Google認証に失敗しました。もう一度お試しください。");
+            setError('Google認証に失敗しました。もう一度お試しください。');
         }
     }
 

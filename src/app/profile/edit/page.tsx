@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getAuth, User } from 'firebase/auth';
-import firebaseApp from '../../firebase';
+import firebaseApp from '@/app/firebase';
 
 import EmailAuthModal from './EmailAuthModal';
 import GoogleAuthModal from './GoogleAuthModal';

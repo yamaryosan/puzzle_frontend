@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase/auth';
 import { Auth, GoogleAuthProvider, reauthenticateWithPopup } from 'firebase/auth';
-import firebaseApp from '../../firebase';
+import firebaseApp from '@/app/firebase';
 import { User } from 'firebase/auth';
 import { useState, useCallback, useEffect } from 'react';
 import { updateProfile } from 'firebase/auth';

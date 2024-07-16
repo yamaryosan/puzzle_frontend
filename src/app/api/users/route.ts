@@ -1,4 +1,4 @@
-import prisma from "../../../lib/prismaclient";
+import prisma from "@/lib/prismaclient";
 import { NextResponse } from "next/server";
 
 type FirebaseUser = {

@@ -2,8 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import useAuth from './../hooks/useAuth';
-
+import useAuth from '@/app/hooks/useAuth';
 
 export default function Profile() {
     const {user, authLoading} = useAuth();

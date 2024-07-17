@@ -2,10 +2,10 @@
 
 import { Auth, sendSignInLinkToEmail, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getAuth } from "firebase/auth";
-import firebaseApp from "../firebase";
+import firebaseApp from "@/app/firebase";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
-import createUserInPrisma from "../../lib/api/userapi";
+import { createUserInPrisma } from "@/lib/api/userapi";
 
 type actionCodeSettings = {
     url: string;

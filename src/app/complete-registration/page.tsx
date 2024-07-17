@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase";
 import { isSignInWithEmailLink, signInWithEmailLink, updatePassword, updateProfile } from "firebase/auth";
-import createUserInPrisma from "../../lib/api/userapi";
+import { createUserInPrisma } from "@/lib/api/userapi";
 
 export default function App() {
     const auth = getAuth(firebaseApp);

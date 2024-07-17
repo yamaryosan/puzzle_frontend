@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import useAuth from '../hooks/useAuth';
-import createUserInPrisma from '../../lib/api/userapi';
+import { createUserInPrisma } from '@/lib/api/userapi';
 
 /**
  * メールアドレスとパスワードでログインする

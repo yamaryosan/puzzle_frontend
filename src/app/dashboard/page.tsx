@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import AuthLink from './../components/AuthLink';
+import AuthLink from '@/app/components/AuthLink';
 
 export default function App() {
     return (

@@ -6,6 +6,8 @@ import { useState, useCallback } from 'react';
 import { verifyBeforeUpdateEmail } from 'firebase/auth';
 import { useEffect } from 'react';
 
+import { updateUserInPrisma } from '@/lib/api/userapi';
+
 /**
  * 20240709追記
  * verifyBeforeUpdateEmailの後にはメッセージを表示する処理が必要。
@@ -77,6 +79,7 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated, onError }: EmailReaut
             // 再認証
             const credential = EmailAuthProvider.credential(user.email, formData.currentPassword);
             await reauthenticateWithEmail(user, credential);
+
             // ユーザー名の更新
             if (formData.username !== user.displayName) {
                 await updateProfile(user, { displayName: formData.username });
@@ -104,6 +107,13 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated, onError }: EmailReaut
                     await verifyBeforeUpdateEmail(user, formData.email, actionCodeSettings);
                 }
             }
+            
+            // DBのユーザテーブル上の情報も更新
+            await updateUserInPrisma({
+                firebaseUid: user.uid,
+                email: formData.email,
+                displayName: formData.username
+            });
 
             // フォームのリセット
             setFormData(prevState => ({

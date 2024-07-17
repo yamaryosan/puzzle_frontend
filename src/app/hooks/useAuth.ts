@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import firebaseApp from '../firebase';
+import firebaseApp from '@/app/firebase';
 
 /**
  * ユーザーの認証情報を取得するカスタムフック

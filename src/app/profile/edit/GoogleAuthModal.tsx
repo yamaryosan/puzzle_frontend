@@ -1,9 +1,10 @@
 import { getAuth } from 'firebase/auth';
 import { Auth, GoogleAuthProvider, reauthenticateWithPopup } from 'firebase/auth';
-import firebaseApp from '../../firebase';
+import firebaseApp from '@/app/firebase';
 import { User } from 'firebase/auth';
 import { useState, useCallback, useEffect } from 'react';
 import { updateProfile } from 'firebase/auth';
+import { updateUserInPrisma } from '@/lib/api/userapi';
 
 /**
  * Googleアカウントで再認証
@@ -70,6 +71,13 @@ const GoogleAuthModal = ({ user, onClose, onProfileUpdated, onError }: GoogleAut
             if (formData.username !== user.displayName) {
                 await updateProfile(user, { displayName: formData.username });
             }
+            // DBのユーザテーブル上の情報も更新
+            await updateUserInPrisma({
+                firebaseUid: user.uid,
+                email: user.email,
+                displayName: formData.username
+            });            
+
             // フォームのリセット
             setFormData(prevState => ({
                 ...prevState,

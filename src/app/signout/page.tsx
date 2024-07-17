@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { getAuth, signOut } from 'firebase/auth';
-import firebaseApp from '../firebase';
+import firebaseApp from '@/app/firebase';
 import { useEffect } from 'react';
 
 export default function App() {

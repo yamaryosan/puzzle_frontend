@@ -1,5 +1,5 @@
 import prisma from "@/lib/prismaclient";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 type FirebaseUser = {
     firebaseUid: string;
@@ -10,11 +10,11 @@ type FirebaseUser = {
 /**
  * ユーザを作成
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         const firebaseUser: FirebaseUser = await req.json();
 
-        if (!firebaseUser.email) {
+        if (!firebaseUser.firebaseUid || !firebaseUser.email) {
             return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
         }
 

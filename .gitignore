@@ -27,6 +27,10 @@ yarn-error.log*
 ui-debug.log
 firebase-debug.log
 dev.db
+dev.db-journal
+
+# migrations
+migrations/
 
 # local env files
 .env*.local

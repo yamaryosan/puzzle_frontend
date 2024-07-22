@@ -12,6 +12,39 @@ interface EditorProps {
   onSelectionChange: (range: any, oldRange: any, source: string) => void;
 }
 
+/** 画像アップロード処理
+ * @param {Quill} quill - Quillインスタンス
+ * @returns {Promise<string>} 画像のURL
+ */
+const imageHandler = (quill: Quill): void => {
+  const input = document.createElement('input');
+  input.setAttribute('type', 'file');
+  input.setAttribute('accept', 'image/*');
+  input.click();
+
+  // 画像が選択されたときの処理
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    // 画像をアップロード
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await fetch('/api/images', {
+      method: 'POST',
+      body: formData,
+    });
+    // 画像のURLを取得
+    const imageUrl = await response.text();
+    const range = quill.getSelection();
+    console.log('image url:', imageUrl);
+    // 画像を挿入
+    quill.insertEmbed(range?.index || 0, 'image', imageUrl);
+  };
+};
+
 /** エディタのコンポーネント
  * @param {boolean} readOnly - 読み取り専用かどうか
  * @param {Delta} defaultValue - 初期値
@@ -64,6 +97,10 @@ const Editor = forwardRef<Quill, EditorProps>(
             ],
           },
           theme: 'snow',
+        });
+        // 画像のアップロード処理を設定
+        (quillInstance.getModule('toolbar') as { addHandler: (format: string, handler: () => void) => void }).addHandler('image', () => {
+          imageHandler(quillInstance);
         });
         setQuill(quillInstance);
 

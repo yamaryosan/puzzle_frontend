@@ -56,6 +56,13 @@ const Editor = forwardRef<Quill, EditorProps>(
       import('quill').then((module) => {
         const Quill = module.default;
         const quillInstance = new Quill(editorContainer, {
+          modules: {
+            toolbar: [
+              [{ header: [1, 2, false] }],
+              ['bold', 'italic', 'underline'],
+              ['image', 'code-block'],
+            ],
+          },
           theme: 'snow',
         });
         setQuill(quillInstance);

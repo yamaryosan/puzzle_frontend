@@ -3,6 +3,7 @@
 import React, { useRef, useState } from 'react';
 import Quill from 'quill';
 import Editor from '@/lib/components/Editor';
+import { Puzzle } from '@prisma/client';
 
 type Range = {
     index: number;
@@ -17,7 +18,7 @@ type Change = {
  * 内容を送信
  * @param quillRef Quillの参照
  */
-async function send(quillRef: React.MutableRefObject<Quill | null>) {
+async function send(quillRef: React.MutableRefObject<Quill | null>): Promise<Puzzle | undefined> {
     // Quillの参照が取得できない場合は何もしない
     if (!quillRef.current) {
         return;

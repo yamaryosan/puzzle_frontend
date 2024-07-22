@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import useAuth from '@/app/hooks/useAuth';
+import useAuth from '@/lib/hooks/useAuth';
 
 interface AuthLinkProps {
   href: string;

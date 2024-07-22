@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Quill from 'quill';
-import Editor from './Editor';
+import Editor from '@/lib/components/Editor';
 
 type Range = {
     index: number;

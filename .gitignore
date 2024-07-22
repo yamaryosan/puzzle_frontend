@@ -27,6 +27,10 @@ yarn-error.log*
 ui-debug.log
 firebase-debug.log
 dev.db
+dev.db-journal
+
+# migrations
+migrations/
 
 # local env files
 .env*.local
@@ -41,3 +45,6 @@ next-env.d.ts
 # env
 .env.local
 .env
+
+# public
+/public/images

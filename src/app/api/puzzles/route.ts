@@ -3,7 +3,9 @@ import { NextResponse, NextRequest } from "next/server";
 import { Puzzle } from "@prisma/client";
 
 type puzzleRequest = {
-    contentHtml: string;
+    title: string;
+    descriptionHtml: string;
+    solutionHtml: string;
 }
 
 /**
@@ -12,19 +14,15 @@ type puzzleRequest = {
 export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
         const puzzleContent: puzzleRequest = await req.json();
-        const contentHtml = puzzleContent.contentHtml;
-
-        if (!contentHtml) {
-            return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-        }
+        const { title, descriptionHtml, solutionHtml } = puzzleContent;
 
         // パズルを作成
         const puzzle: Puzzle = await prisma.puzzle.create({
             data: {
-                title: "Untitled",
-                description: contentHtml,
+                title: title,
+                description: descriptionHtml,
                 user_answer: "",
-                solution: "",
+                solution: solutionHtml,
                 user_id: "",
             },
         });

@@ -22,10 +22,9 @@ type Change = {
  */
 async function send(title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
 {
-    // タイトルが空の場合はエラー
+    // タイトルが空の場合はUntitledとする
     if (!title) {
-        console.error("タイトルが入力されていません");
-        return;
+        title = "Untitled";
     }
     // Quillの参照が取得できない場合はエラー
     if (!quillDescriptionRef.current || !quillSolutionRef.current) {

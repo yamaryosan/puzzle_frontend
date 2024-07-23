@@ -33,13 +33,15 @@ async function send(title: string, quillDescriptionRef: React.RefObject<Quill | 
     }
     const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
     const solutionHtml = quillSolutionRef.current.root.innerHTML;
+    const difficulty = 1;
+    const is_favorite = false;
 
     const response = await fetch("/api/puzzles", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, descriptionHtml, solutionHtml }),
+        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite }),
     });
     if (!response.ok) {
         const error = await response.json();

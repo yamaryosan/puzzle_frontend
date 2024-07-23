@@ -40,6 +40,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 description: descriptionHtml,
                 user_answer: "",
                 solution: solutionHtml,
+                difficulty: 1,
                 user_id: "",
             },
         });

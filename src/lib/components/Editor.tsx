@@ -111,7 +111,10 @@ const dropImageHandler = async (event: DragEvent, quill: Quill) => {
  * @param {Ref} ref - エディタのrefオブジェクト
  * @returns {React.ReactElement} エディタのコンポーネント
  */
-// デバッグ用Editorコンポーネント
+
+/**
+ * パズルエディタのコンポーネント
+ */
 const Editor = forwardRef<Quill, EditorProps>(
   ({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
 

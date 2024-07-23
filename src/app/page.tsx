@@ -3,29 +3,28 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Puzzle } from "@prisma/client";
+import { getPuzzles } from "@/lib/api/puzzleapi";
+import { useEffect } from "react";
 
 type Puzzles = Puzzle[];
-
-/**
- * パズル一覧を取得
- * @returns Promise<Puzzles>
- */
-async function getPuzzles() {
-  const response = await fetch("/api/puzzles");
-  if (!response.ok) {
-    const error = await response.json();
-    console.error("パズルの取得に失敗: ", error);
-  }
-  const puzzles = await response.json();
-  console.log("パズルの取得に成功: ", puzzles);
-  return puzzles as Puzzles;
-}
 
 export default function Page() {
   const [puzzles, setPuzzles] = useState<Puzzles | null>(null);
   // パズル一覧を取得
+  useEffect(() => {
+    async function fetchPuzzles() {
+      try {
+        const puzzles = await getPuzzles();
+        setPuzzles(puzzles);
+      } catch (error) {
+        console.error("パズルの取得に失敗: ", error);
+      }
+    }
+    fetchPuzzles();
+  }, []);
+
   if (!puzzles) {
-    getPuzzles().then((puzzles) => setPuzzles(puzzles));
+    return <div>loading...</div>;
   }
 
   return (

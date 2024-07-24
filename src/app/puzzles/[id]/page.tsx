@@ -13,9 +13,9 @@ type PageParams = {
 
 export default function Page({ params }: { params: PageParams }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [DeltaClass, setDeltaClass] = useState<any>();
     const quillRef = useRef<Quill | null>(null);
 
+    // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
             try {
@@ -26,25 +26,7 @@ export default function Page({ params }: { params: PageParams }) {
             }
         }
         fetchPuzzle();
-
-        // Deltaクラスを取得
-        import('quill').then((module) => {
-            const DeltaClass = module.default.import('delta');
-            setDeltaClass(() => DeltaClass);
-        });
     }, [params.id]);
-
-    useEffect(() => {
-        if (!quillRef.current) {
-            return;
-        }
-        quillRef.current.enable(false);
-        quillRef.current.root.innerHTML = puzzle?.description || "";
-    });
-
-    if (!DeltaClass) {
-        return <div>Loading...</div>
-    }
 
     if (!puzzle) {
         return <div>loading...</div>;
@@ -61,7 +43,7 @@ export default function Page({ params }: { params: PageParams }) {
             ref={quillRef}
             />
             <p>難易度 : {puzzle.difficulty}</p>
-            <p>お気に入り : puzzle.is_favorite</p>
+            <p>お気に入り : {puzzle.is_favorite ? 'YES' : 'NO'}</p>
             <Link href="/puzzles/[id]/edit" as={`/puzzles/${params.id}/edit`}>(管理者のみ)編集</Link>
             <p>解く</p>
             <Link href="/puzzles">戻る</Link>

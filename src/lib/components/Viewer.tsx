@@ -9,7 +9,8 @@ interface ViewerProps {
   defaultValue: string;
 }
 
-const Viewer = forwardRef<Quill, ViewerProps>(({ readOnly, defaultValue }, ref) => {
+const Viewer = forwardRef<Quill, ViewerProps>(
+  ({ readOnly, defaultValue }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
@@ -18,30 +19,26 @@ const Viewer = forwardRef<Quill, ViewerProps>(({ readOnly, defaultValue }, ref) 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    if (!quillRef.current) {
-      quillRef.current = new Quill(containerRef.current, {
+    // Quillの動的インポート(500エラーを回避)
+    import('quill').then((Quill) => {
+      quillRef.current = new Quill.default(containerRef.current!, {
         readOnly: readOnly,
         modules: {
           toolbar: false
         },
         theme: 'snow'
-      });
-    }
-
-    // 初期値を設定
-    quillRef.current.root.innerHTML = defaultValue;
-
-    // Update readOnly state
-    quillRef.current.enable(!readOnly);
-
+      })
+      // 初期値を設定
+      quillRef.current.root.innerHTML = defaultValue;
+    });
+    
+    // リソースの解放
     return () => {
-      if (quillRef.current) {
-        quillRef.current.off('text-change');
-      }
+      quillRef.current = null;
     };
-  }, [readOnly, defaultValue]);
+  }, []);
 
-  return <div ref={containerRef} style={{ height: '100%' }} />;
+  return <div ref={containerRef} style={{ height: '100%' }}></div>;
 });
 
 Viewer.displayName = 'Viewer';

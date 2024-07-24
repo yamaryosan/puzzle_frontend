@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Quill from 'quill';
 import Editor from '@/lib/components/Editor';
 import { Puzzle } from '@prisma/client';
@@ -64,10 +64,12 @@ export default function App() {
     const quillDescriptionRef = useRef<Quill | null>(null);
     const quillSolutionRef = useRef<Quill | null>(null);
 
-    // Deltaクラスを取得
-    import('quill').then((module) => {
-        const DeltaClass = module.default.import('delta');
-        setDeltaClass(() => DeltaClass);
+    useEffect(() => {
+        // Deltaクラスを取得
+        import('quill').then((module) => {
+            const DeltaClass = module.default.import('delta');
+            setDeltaClass(() => DeltaClass);
+        });
     });
 
     if (!DeltaClass) {

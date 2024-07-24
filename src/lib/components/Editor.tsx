@@ -12,6 +12,19 @@ interface EditorProps {
   onSelectionChange: (range: any, oldRange: any, source: string) => void;
 }
 
+interface QuillToolbarHandler {
+  addHandler: (format: string, handler: () => void) => void;
+}
+
+function createTypeSafeToolbar(quill: Quill): QuillToolbarHandler {
+  const toolbar = quill.getModule('toolbar');
+  return {
+    addHandler: (format: string, handler: () => void) => {
+      (toolbar as any).addHandler(format, handler);
+    },
+  };
+  }
+
 /**
  * 画像アップロード処理
  * @param {File} file 画像ファイル
@@ -161,7 +174,11 @@ const Editor = forwardRef<Quill, EditorProps>(
         });
         
         // 画像のアップロード処理を設定
-        (quillInstance.getModule('toolbar') as { addHandler: (format: string, handler: () => void) => void }).addHandler('image', () => {
+        const toolbar = createTypeSafeToolbar(quillInstance);
+        (toolbar as 
+          { addHandler: (format: string, handler: () => void) => void
+
+          }).addHandler('image', () => {
           imageHandler(quillInstance);
         });
 
@@ -172,7 +189,7 @@ const Editor = forwardRef<Quill, EditorProps>(
 
         // 画像ペースト時の処理
         editorContainer.addEventListener('paste', async (event: ClipboardEvent) => {
-          pasteImageHandler(event, quillInstance);
+          await pasteImageHandler(event, quillInstance);
         }, true);
 
         setQuill(quillInstance);

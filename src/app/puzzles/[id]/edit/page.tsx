@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import Editor from '@/lib/components/Editor';
 import { useEffect, useState, useRef } from 'react';
-import Quill from 'quill';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import { Puzzle } from '@prisma/client';
+import Quill from 'quill';
 
 type PageParams = {
     id: string;
@@ -16,10 +16,43 @@ type Change = {
 };
 
 /**
- * APIからパズルを取得
- * @param id 
- * @returns puzzle
+ * 内容を送信
+ * @param title タイトル
+ * @param quillDescriptionRef 本文のQuillの参照
+ * @param quillSolutionRef 正答のQuillの参照
  */
+async function send(title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+{
+    // タイトルが空の場合はUntitledとする
+    if (!title) {
+        title = "Untitled";
+    }
+    // Quillの参照が取得できない場合はエラー
+    if (!quillDescriptionRef.current || !quillSolutionRef.current) {
+        console.error("Quillの参照が取得できません");
+        return;
+    }
+    const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
+    const solutionHtml = quillSolutionRef.current.root.innerHTML;
+    const difficulty = 1;
+    const is_favorite = false;
+
+    const response = await fetch("/api/puzzles", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("パズルの作成に失敗: ", error);
+    }
+    const puzzle = await response.json();
+    console.log("パズルの作成に成功: ", puzzle);
+    return puzzle;
+}
+
 async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
     try {
         const puzzle = await getPuzzleById(id);
@@ -37,17 +70,15 @@ async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
 export default function Home({ params }: { params: PageParams }) {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
-    const [readOnly, setReadOnly] = useState(false);
-    const [DeltaClass, setDeltaClass] = useState<any>();
-
-    // パズル
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+    const [title, setTitle] = useState<string>("");
+    const [descriptionDelta, setDescriptionDelta] = useState<any>(null);
+    const [solutionDelta, setSolutionDelta] = useState<any>(null);
+    const [quillLoaded, setQuillLoaded] = useState(false);
 
-    // パズル本文と正答のQuill
-    const quillDescriptionRef = useRef<Quill | null>(null);
-    const quillSolutionRef = useRef<Quill | null>(null);
+    const quillDescriptionRef = useRef<any>(null);
+    const quillSolutionRef = useRef<any>(null);
 
-    // パズルの取得
     useEffect(() => {
         fetchInitialPuzzle(params.id).then((puzzle) => {
             if (puzzle) {
@@ -57,27 +88,47 @@ export default function Home({ params }: { params: PageParams }) {
     }, [params.id]);
 
     useEffect(() => {
-        // Deltaクラスを取得
-        import('quill').then((module) => {
-            const DeltaClass = module.default.import('delta');
-            setDeltaClass(() => DeltaClass);
-        });
-    }, []);
+        if (puzzle?.description && !quillLoaded) {
+            import('quill').then((Quill) => {
+                const quill = new Quill.default(document.createElement('div'));
+                const descriptionDelta = quill.clipboard.convert({ html: puzzle.description });
+                const solutionDelta = quill.clipboard.convert({ html: puzzle.solution });
+                setDescriptionDelta(descriptionDelta);
+                setSolutionDelta(solutionDelta);
+                setQuillLoaded(true);
+            });
+        }
+        setTitle(puzzle?.title || "");
+    }, [puzzle, quillLoaded]);
 
-    if (!DeltaClass) {
+    if (!descriptionDelta) {
         return <div>Loading...</div>
     }
-    
+
     return (
         <div>
-            <h1>パズル</h1>
+            <p>タイトル</p>
+            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
+            <p>本文</p>
             <Editor
                 ref={quillDescriptionRef}
-                readOnly={readOnly}
-                defaultValue={new DeltaClass([{ insert: puzzle?.description }])}
+                readOnly={false}
+                defaultValue={descriptionDelta}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}
             />
+            <p>解答</p>
+            <Editor
+                ref={quillSolutionRef}
+                readOnly={false}
+                defaultValue={solutionDelta}
+                onSelectionChange={setRange}
+                onTextChange={setLastChange}
+            />
+            {/* 内容を送信 */}
+            <button type="button" onClick={() => send( title, quillDescriptionRef, quillSolutionRef)}>
+                Send
+            </button>
         </div>
     );
 }

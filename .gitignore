@@ -30,7 +30,7 @@ dev.db
 dev.db-journal
 
 # migrations
-migrations/
+/prisma/migrations/
 
 # local env files
 .env*.local

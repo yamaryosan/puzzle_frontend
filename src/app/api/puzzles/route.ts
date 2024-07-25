@@ -9,6 +9,23 @@ type puzzleRequest = {
 }
 
 /**
+ * パズル一覧を取得
+ * @returns Promise<Puzzle[]>
+ */
+export async function GET(req: NextRequest): Promise<NextResponse> {
+    try {
+        const puzzles: Puzzle[] = await prisma.puzzle.findMany();
+        return NextResponse.json(puzzles);
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+        }
+    }
+}
+
+/**
  * パズルを作成
  */
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -23,6 +40,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 description: descriptionHtml,
                 user_answer: "",
                 solution: solutionHtml,
+                difficulty: 1,
                 user_id: "",
             },
         });

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Quill from 'quill';
 import Editor from '@/lib/components/Editor';
 import { Puzzle } from '@prisma/client';
@@ -33,13 +33,15 @@ async function send(title: string, quillDescriptionRef: React.RefObject<Quill | 
     }
     const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
     const solutionHtml = quillSolutionRef.current.root.innerHTML;
+    const difficulty = 1;
+    const is_favorite = false;
 
     const response = await fetch("/api/puzzles", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, descriptionHtml, solutionHtml }),
+        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -62,10 +64,12 @@ export default function App() {
     const quillDescriptionRef = useRef<Quill | null>(null);
     const quillSolutionRef = useRef<Quill | null>(null);
 
-    // Deltaクラスを取得
-    import('quill').then((module) => {
-        const DeltaClass = module.default.import('delta');
-        setDeltaClass(() => DeltaClass);
+    useEffect(() => {
+        // Deltaクラスを取得
+        import('quill').then((module) => {
+            const DeltaClass = module.default.import('delta');
+            setDeltaClass(() => DeltaClass);
+        });
     });
 
     if (!DeltaClass) {

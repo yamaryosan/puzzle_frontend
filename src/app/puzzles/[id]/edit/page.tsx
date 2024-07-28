@@ -122,7 +122,7 @@ export default function Page({ params }: { params: PageParams }) {
     // 削除確認ダイアログの開閉
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
-    };1
+    };
 
     return (
         <div>

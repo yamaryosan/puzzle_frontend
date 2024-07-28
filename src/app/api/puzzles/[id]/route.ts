@@ -75,3 +75,30 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         }
     }
 }
+
+/**
+ * パズルを削除
+ */
+export async function DELETE(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
+    try {
+        const id = parseInt(params.id);
+
+        // IDが数字でない、または0以下の場合はエラー
+        if (isNaN(id) || id <= 0) {
+            return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        }
+
+        // パズルを削除
+        await prisma.puzzle.delete({
+            where: { id: id },
+        });
+
+        return NextResponse.json({ message: "パズル削除成功" });
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+        }
+    }
+}

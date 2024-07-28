@@ -201,6 +201,7 @@ const Editor = forwardRef<Quill, EditorProps>(
 
         // 初期値を設定
         if (defaultValueRef.current) {
+          console.log("初期値を設定します: ", defaultValueRef.current);
           quillInstance.setContents(defaultValueRef.current);
         }
 

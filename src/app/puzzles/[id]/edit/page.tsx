@@ -17,12 +17,23 @@ type Change = {
 
 /**
  * 内容を送信
+ * @param id パズルID
  * @param title タイトル
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  */
-async function send(title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function send(id: number, title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
 {
+    // IDが空の場合はエラー
+    if (!id) {
+        console.error("IDが空です");
+        return;
+    }
+    // IDが0以下の場合はエラー
+    if (id <= 0) {
+        console.error("IDが不正です");
+        return;
+    }
     // タイトルが空の場合はUntitledとする
     if (!title) {
         title = "Untitled";
@@ -37,8 +48,8 @@ async function send(title: string, quillDescriptionRef: React.RefObject<Quill | 
     const difficulty = 1;
     const is_favorite = false;
 
-    const response = await fetch("/api/puzzles", {
-        method: "POST",
+    const response = await fetch(`/api/puzzles/${id}`, {
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
@@ -46,10 +57,10 @@ async function send(title: string, quillDescriptionRef: React.RefObject<Quill | 
     });
     if (!response.ok) {
         const error = await response.json();
-        console.error("パズルの作成に失敗: ", error);
+        console.error("パズルの編集に失敗: ", error);
     }
     const puzzle = await response.json();
-    console.log("パズルの作成に成功: ", puzzle);
+    console.log("パズルの編集に成功: ", puzzle);
     return puzzle;
 }
 
@@ -67,7 +78,7 @@ async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
     }
 }
 
-export default function Home({ params }: { params: PageParams }) {
+export default function Page({ params }: { params: PageParams }) {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
@@ -126,7 +137,7 @@ export default function Home({ params }: { params: PageParams }) {
                 onTextChange={setLastChange}
             />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => send( title, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => send( puzzle?.id || 0, title, quillDescriptionRef, quillSolutionRef)}>
                 Send
             </button>
         </div>

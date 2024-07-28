@@ -36,4 +36,18 @@ async function getPuzzleById(id: string) {
     return puzzle as Puzzle;
 }
 
-export {getPuzzles, getPuzzleById};
+/**
+ * パズルを削除
+ */
+async function deletePuzzle(id: string) {
+    const response = await fetch(`/api/puzzles/${id}`, {
+        method: "DELETE",
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("パズルの削除に失敗: ", error);
+    }
+    console.log("パズルの削除に成功");
+}
+
+export {getPuzzles, getPuzzleById, deletePuzzle};

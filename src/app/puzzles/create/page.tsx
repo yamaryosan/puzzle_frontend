@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import Quill from 'quill';
 import Editor from '@/lib/components/Editor';
 import { Puzzle } from '@prisma/client';
+import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 
 type Range = {
     index: number;
@@ -98,6 +99,8 @@ export default function App() {
             onSelectionChange={setRange}
             onTextChange={setLastChange}
             />
+            {/* カテゴリ */}
+            <CategoryCheckbox />
             {/* 内容を送信 */}
             <button type="button" onClick={() => send( title, quillDescriptionRef, quillSolutionRef)}>
                 Send

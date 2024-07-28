@@ -6,6 +6,8 @@ import { useEffect, useState, useRef } from 'react';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import { Puzzle } from '@prisma/client';
 import Quill from 'quill';
+import Portal from '@/lib/components/Portal';
+import DeleteModal from '@/lib/components/DeleteModal';
 
 type PageParams = {
     id: string;
@@ -22,7 +24,7 @@ type Change = {
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  */
-async function send(id: number, title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function send(id: string, title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
 {
     // IDが空の場合はエラー
     if (!id) {
@@ -30,7 +32,7 @@ async function send(id: number, title: string, quillDescriptionRef: React.RefObj
         return;
     }
     // IDが0以下の場合はエラー
-    if (id <= 0) {
+    if (parseInt(id) <= 0) {
         console.error("IDが不正です");
         return;
     }
@@ -86,6 +88,7 @@ export default function Page({ params }: { params: PageParams }) {
     const [descriptionDelta, setDescriptionDelta] = useState<any>(null);
     const [solutionDelta, setSolutionDelta] = useState<any>(null);
     const [quillLoaded, setQuillLoaded] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const quillDescriptionRef = useRef<any>(null);
     const quillSolutionRef = useRef<any>(null);
@@ -116,8 +119,22 @@ export default function Page({ params }: { params: PageParams }) {
         return <div>Loading...</div>
     }
 
+    // 削除確認ダイアログの開閉
+    const toggleDeleteModal = () => {
+        setIsDeleteModalOpen(!isDeleteModalOpen);
+    };
+
     return (
         <div>
+            <button onClick={toggleDeleteModal}>
+                {isDeleteModalOpen ? "削除確認ダイアログを閉じる" : "削除確認ダイアログを開く"}
+            </button>
+            <div className="fixed top-20 left-20" id="delete_modal"></div>
+            {isDeleteModalOpen && (
+                <Portal element={document.getElementById("delete_modal")!}>
+                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+                </Portal>
+            )}
             <p>タイトル</p>
             <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
             <p>本文</p>
@@ -137,7 +154,7 @@ export default function Page({ params }: { params: PageParams }) {
                 onTextChange={setLastChange}
             />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => send( puzzle?.id || 0, title, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => send( params.id || "0", title, quillDescriptionRef, quillSolutionRef)}>
                 Send
             </button>
         </div>

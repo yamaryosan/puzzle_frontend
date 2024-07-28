@@ -41,4 +41,28 @@ model Puzzle {
   is_favorite   Boolean @default(false) // お気に入り
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  PuzzleCategory PuzzleCategory[]
+}
+
+// カテゴリーテーブル
+model Category {
+  id            Int      @id @default(autoincrement())
+  name          String // カテゴリー名
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  PuzzleCategory PuzzleCategory[]
+}
+
+// パズルとカテゴリーの中間テーブル
+model PuzzleCategory {
+  puzzle_id    Int
+  puzzle       Puzzle @relation(fields: [puzzle_id], references: [id])
+  category_id   Int
+  category     Category @relation(fields: [category_id], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@id([puzzle_id, category_id])
 }

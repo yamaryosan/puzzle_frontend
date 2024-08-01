@@ -18,10 +18,11 @@ type Change = {
 /**
  * 内容を送信
  * @param title タイトル
+ * @param categoryIds カテゴリーID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  */
-async function send(title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function sendContent(title: string, categoryIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
     if (!title) {
@@ -37,6 +38,7 @@ async function send(title: string, quillDescriptionRef: React.RefObject<Quill | 
     const difficulty = 1;
     const is_favorite = false;
 
+    // 内容を送信
     const response = await fetch("/api/puzzles", {
         method: "POST",
         headers: {
@@ -50,6 +52,22 @@ async function send(title: string, quillDescriptionRef: React.RefObject<Quill | 
     }
     const puzzle = await response.json();
     console.log("パズルの作成に成功: ", puzzle);
+
+    // カテゴリーを追加(パズルとカテゴリーは多対多の関係)
+    const puzzleId = puzzle.id;
+    const categoryResponse = await fetch(`/api/puzzles/${puzzleId}/categories`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ categoryIds }),
+    });
+    if (!categoryResponse.ok) {
+        const error = await categoryResponse.json();
+        console.error("カテゴリーの追加に失敗: ", error);
+    }
+    console.log("カテゴリーの追加に成功");
+
     return puzzle;
 }
 
@@ -64,6 +82,8 @@ export default function App() {
     // パズル本文と正答のQuill
     const quillDescriptionRef = useRef<Quill | null>(null);
     const quillSolutionRef = useRef<Quill | null>(null);
+    // カテゴリー選択状態
+    const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -76,6 +96,11 @@ export default function App() {
     if (!DeltaClass) {
         return <div>Loading...</div>
     }
+
+    // カテゴリー選択状態を更新
+    const handleCheckboxChange = (checkedCategories: number[]) => {
+        setCheckedCategories(checkedCategories);
+    };
 
     return (
         <div>
@@ -100,9 +125,11 @@ export default function App() {
             onTextChange={setLastChange}
             />
             {/* カテゴリ */}
-            <CategoryCheckbox />
+            <CategoryCheckbox 
+            onChange={handleCheckboxChange}
+            />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => send( title, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef)}>
                 Send
             </button>
         </div>

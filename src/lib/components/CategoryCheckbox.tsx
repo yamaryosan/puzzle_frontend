@@ -28,7 +28,11 @@ async function create(name: string) {
     return newCategory as Category;
 }
 
-export default function CategoryCheckbox() {
+interface CategoryCheckboxProps {
+    onChange: (categoryIds: number[]) => void;
+}
+
+export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
     const [categories, setCategories] = useState<Categories | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
@@ -48,6 +52,11 @@ export default function CategoryCheckbox() {
     useEffect(() => {
         fetchCategories();
     }, []);
+
+    // チェックされたカテゴリーのIDを親コンポーネントに渡す
+    useEffect(() => {
+        onChange(checkedCategories);
+    }, [checkedCategories, onChange]);
 
     // 新規カテゴリー作成
     const handleNewCategory = async () => {

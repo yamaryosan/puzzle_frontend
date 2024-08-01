@@ -9,9 +9,28 @@ type puzzleRequest = {
     solutionHtml: string;
 }
 
+type PuzzleWithCategories = {
+    id: number;
+    title: string;
+    description: string;
+    solution: string;
+    user_answer: string;
+    difficulty: number;
+    is_favorite: boolean;
+    created_at: Date;
+    updated_at: Date;
+    PuzzleCategory: {
+        category: {
+            id: number;
+            name: string;
+        }
+    }[]
+}
+
 /**
  * 特定IDのパズルを取得
- * @returns Promise<Puzzle>
+ * @param req リクエスト
+ * @param params パラメータ
  */
 export async function GET(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
     try {
@@ -22,16 +41,23 @@ export async function GET(req: NextRequest, { params }: {params: {id: string} })
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        // パズルを取得
-        const puzzle: Puzzle | null = await prisma.puzzle.findUnique({
+        // パズルとそのカテゴリーを取得
+        const puzzleWithCategories = await prisma.puzzle.findUnique({
             where: { id: id },
-        });
+            include: {
+                PuzzleCategory: {
+                    include: {
+                        category: true,
+                    }
+                }
+            }
+        }) as PuzzleWithCategories | null;
 
-        if (!puzzle) {
+        // パズルが存在しない場合はエラー
+        if (!puzzleWithCategories) {
             return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
         }
-
-        return NextResponse.json(puzzle);
+        return NextResponse.json(puzzleWithCategories);
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });

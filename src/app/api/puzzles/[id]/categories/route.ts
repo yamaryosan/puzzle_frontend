@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prismaclient';
 
 /**
- * パズルとカテゴリーの関連付けAPI
+ * パズルにカテゴリーを追加
  * @param req リクエスト
  * @param params パラメータ
  * @returns レスポンス
@@ -10,7 +10,7 @@ import prisma from '@/lib/prismaclient';
 export async function POST(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
-        
+
         // IDが数字でない、または0以下の場合はエラー
         if (isNaN(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });

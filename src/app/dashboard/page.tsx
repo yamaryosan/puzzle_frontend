@@ -5,6 +5,7 @@ export default function App() {
     return (
         <div>
             <h1>ダッシュボード</h1>
+            <Link href="/puzzles">パズル一覧</Link>
             <AuthLink href="/puzzles/create" fallbackHref="/signin">パズル作成</AuthLink>
             <AuthLink href="/theories/create" fallbackHref="/signin">定石作成</AuthLink>
             <AuthLink href="/profile" fallbackHref="/signin">プロフィール</AuthLink>

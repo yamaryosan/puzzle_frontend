@@ -1,9 +1,8 @@
 import { Category } from "@prisma/client";
-type Categories = Category[];
 
 /**
  * カテゴリー一覧を取得
- * @returns Promise<Categories>
+ * @returns Promise<Category[]>
  */
 async function getCategories() {
     const response = await fetch("/api/categories");
@@ -13,7 +12,7 @@ async function getCategories() {
     }
     const categories = await response.json();
     console.log("カテゴリーの取得に成功: ", categories);
-    return categories as Categories;
+    return categories as Category[];
 }
 
 /**

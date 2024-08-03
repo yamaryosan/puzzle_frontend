@@ -31,7 +31,16 @@ export default function Page({ params }: { params: PageParams}) {
 
     return (
         <div>
-            <p>カテゴリー: {params.id}</p>
+            <p>{category?.name}</p>
+            {/* パズル一覧 */}
+            <ul>
+                {puzzles.length === 0 && <li>パズルがありません</li>}
+                {puzzles.map((puzzle) => (
+                    <li key={puzzle.id}>
+                        <Link href={`/puzzles/${puzzle.id}`}>{puzzle.title}</Link>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }

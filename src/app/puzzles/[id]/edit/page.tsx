@@ -86,6 +86,11 @@ async function send(id: string, title: string, categoryIds: number[], quillDescr
     return puzzle;
 }
 
+/**
+ * 編集前のパズルを取得
+ * @param id パズルID
+ * @returns Promise<PuzzleWithCategories | undefined> パズル
+ */
 async function fetchInitialPuzzle(id: string): Promise<PuzzleWithCategories | undefined> {
     try {
         const puzzle = await getPuzzleById(id);
@@ -116,11 +121,16 @@ export default function Page({ params }: { params: PageParams }) {
     // カテゴリー選択状態
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
 
+    // 編集前にパズルとカテゴリーを取得
     useEffect(() => {
         fetchInitialPuzzle(params.id).then((puzzle) => {
-            if (puzzle) {
-                setPuzzle(puzzle);
+            if (!puzzle) {
+                return;
             }
+            setPuzzle(puzzle);
+            const initialCategoryIds = puzzle.PuzzleCategory.map((pc) => pc.category.id);
+            console.log("カテゴリーを取得しました: ", initialCategoryIds);
+            setCategoryIds(initialCategoryIds);
         });
     }, [params.id]);
 
@@ -184,6 +194,7 @@ export default function Page({ params }: { params: PageParams }) {
             {/* カテゴリー */}
             <CategoryCheckbox
                 onChange={handleCheckboxChange}
+                value={categoryIds}
             />
             {/* 内容を送信 */}
             <button type="button" onClick={() => send( params.id || "0", title, categoryIds, quillDescriptionRef, quillSolutionRef)}>

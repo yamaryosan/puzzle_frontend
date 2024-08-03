@@ -30,12 +30,13 @@ async function create(name: string) {
 
 interface CategoryCheckboxProps {
     onChange: (categoryIds: number[]) => void;
+    value: number[];
 }
 
-export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
+export default function CategoryCheckbox({ onChange, value }: CategoryCheckboxProps) {
     const [categories, setCategories] = useState<Categories | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
-    const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>([]);
+    const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>(value);
     
     // カテゴリー一覧を取得
     async function fetchCategories() {

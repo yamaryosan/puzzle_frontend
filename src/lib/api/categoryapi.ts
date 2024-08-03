@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import { Category, Puzzle } from "@prisma/client";
 
 /**
  * カテゴリー一覧を取得
@@ -37,4 +37,43 @@ async function createCategory(name: string) {
     return response.json() as Promise<Category>;
 }
 
-export { getCategories, createCategory };
+/**
+ * カテゴリーIDを指定してカテゴリーを取得
+ * @param id カテゴリーID
+ * @returns Promise<Category>
+ */
+async function getCategoryById(id: string): Promise<Category> {
+    const response = await fetch(`/api/categories/${id}`);
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("カテゴリーの取得に失敗: ", error);
+    }
+    const category = await response.json();
+    console.log("カテゴリーの取得に成功: ", category);
+    return category as Category;
+}
+
+/**
+ * カテゴリーに紐づくパズル一覧を取得
+ * @param id カテゴリーID
+ * @returns
+ */
+async function fetchPuzzlesByCategoryId(id: string) {
+    try {
+        if (!id) {
+            console.error("カテゴリーIDが指定されていません");
+            return;
+        }
+        const response = await fetch(`/api/categories/${id}/puzzles`);
+        if (!response.ok) {
+            const error = await response.json();
+            console.error("パズルの取得に失敗: ", error);
+        }
+        const puzzles = await response.json();
+        return puzzles as Puzzle[];
+    } catch (error) {
+        console.error("パズルの取得に失敗: ", error);
+    }
+}
+
+export { getCategories, createCategory, getCategoryById, fetchPuzzlesByCategoryId };

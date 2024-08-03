@@ -8,6 +8,7 @@ import { Puzzle } from '@prisma/client';
 import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
+import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 
 type PageParams = {
     id: string;
@@ -17,14 +18,33 @@ type Change = {
     ops: any[];
 };
 
+type PuzzleWithCategories = {
+    id: number;
+    title: string;
+    description: string;
+    solution: string;
+    user_answer: string;
+    difficulty: number;
+    is_favorite: boolean;
+    created_at: Date;
+    updated_at: Date;
+    PuzzleCategory: {
+        category: {
+            id: number;
+            name: string;
+        }
+    }[]
+}
+
 /**
  * 内容を送信
  * @param id パズルID
  * @param title タイトル
+ * @param categoryIds カテゴリーID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  */
-async function send(id: string, title: string, quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function send(id: string, title: string, categoryIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
 {
     // IDが空の場合はエラー
     if (!id) {
@@ -55,7 +75,7 @@ async function send(id: string, title: string, quillDescriptionRef: React.RefObj
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite }),
+        body: JSON.stringify({ title, categoryIds, descriptionHtml, solutionHtml, difficulty, is_favorite }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -66,7 +86,7 @@ async function send(id: string, title: string, quillDescriptionRef: React.RefObj
     return puzzle;
 }
 
-async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
+async function fetchInitialPuzzle(id: string): Promise<PuzzleWithCategories | undefined> {
     try {
         const puzzle = await getPuzzleById(id);
         if (!puzzle) {
@@ -83,7 +103,7 @@ async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
 export default function Page({ params }: { params: PageParams }) {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
-    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+    const [puzzle, setPuzzle] = useState<PuzzleWithCategories | null>(null);
     const [title, setTitle] = useState<string>("");
     const [descriptionDelta, setDescriptionDelta] = useState<any>(null);
     const [solutionDelta, setSolutionDelta] = useState<any>(null);
@@ -92,6 +112,9 @@ export default function Page({ params }: { params: PageParams }) {
 
     const quillDescriptionRef = useRef<any>(null);
     const quillSolutionRef = useRef<any>(null);
+
+    // カテゴリー選択状態
+    const [categoryIds, setCategoryIds] = useState<number[]>([]);
 
     useEffect(() => {
         fetchInitialPuzzle(params.id).then((puzzle) => {
@@ -124,6 +147,11 @@ export default function Page({ params }: { params: PageParams }) {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
+    // カテゴリーを選択
+    const handleCheckboxChange = (categoryIds: number[]) => {
+        setCategoryIds(categoryIds);
+    }
+
     return (
         <div>
             <button onClick={toggleDeleteModal}>
@@ -153,8 +181,12 @@ export default function Page({ params }: { params: PageParams }) {
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}
             />
+            {/* カテゴリー */}
+            <CategoryCheckbox
+                onChange={handleCheckboxChange}
+            />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => send( params.id || "0", title, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => send( params.id || "0", title, categoryIds, quillDescriptionRef, quillSolutionRef)}>
                 Send
             </button>
         </div>

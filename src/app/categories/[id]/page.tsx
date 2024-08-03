@@ -41,6 +41,7 @@ export default function Page({ params }: { params: PageParams}) {
                     </li>
                 ))}
             </ul>
+            <Link href="/categories">カテゴリー一覧に戻る</Link>
         </div>
     );
 }

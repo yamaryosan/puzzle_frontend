@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
-import { Puzzle } from '@prisma/client';
 import { useEffect, useState, useRef } from 'react';
 import Viewer from '@/lib/components/Viewer';
 import Quill from 'quill';
@@ -14,8 +13,26 @@ type PageParams = {
     id: string;
 };
 
+type PuzzleWithCategories = {
+    id: number;
+    title: string;
+    description: string;
+    solution: string;
+    user_answer: string;
+    difficulty: number;
+    is_favorite: boolean;
+    created_at: Date;
+    updated_at: Date;
+    PuzzleCategory: {
+        category: {
+            id: number;
+            name: string;
+        }
+    }[]
+}
+
 export default function Page({ params }: { params: PageParams }) {
-    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+    const [puzzle, setPuzzle] = useState<PuzzleWithCategories | null>(null);
     const quillRef = useRef<Quill | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -62,6 +79,7 @@ export default function Page({ params }: { params: PageParams }) {
             />
             <p>難易度 : {puzzle.difficulty}</p>
             <p>お気に入り : {puzzle.is_favorite ? 'YES' : 'NO'}</p>
+            <p>カテゴリー : {puzzle.PuzzleCategory.map((p) => p.category.name).join(", ")}</p>
             <Link href="/puzzles/[id]/edit" as={`/puzzles/${params.id}/edit`}>(管理者のみ)編集</Link>
             <p>解く</p>
             <Link href="/puzzles">戻る</Link>

@@ -5,13 +5,33 @@ import { parse } from "path";
 
 type puzzleRequest = {
     title: string;
+    categoryIds: number[];
     descriptionHtml: string;
     solutionHtml: string;
 }
 
+type PuzzleWithCategories = {
+    id: number;
+    title: string;
+    description: string;
+    solution: string;
+    user_answer: string;
+    difficulty: number;
+    is_favorite: boolean;
+    created_at: Date;
+    updated_at: Date;
+    PuzzleCategory: {
+        category: {
+            id: number;
+            name: string;
+        }
+    }[]
+}
+
 /**
  * 特定IDのパズルを取得
- * @returns Promise<Puzzle>
+ * @param req リクエスト
+ * @param params パラメータ
  */
 export async function GET(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
     try {
@@ -22,16 +42,23 @@ export async function GET(req: NextRequest, { params }: {params: {id: string} })
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        // パズルを取得
-        const puzzle: Puzzle | null = await prisma.puzzle.findUnique({
+        // パズルとそのカテゴリーを取得
+        const puzzleWithCategories = await prisma.puzzle.findUnique({
             where: { id: id },
-        });
+            include: {
+                PuzzleCategory: {
+                    include: {
+                        category: true,
+                    }
+                }
+            }
+        }) as PuzzleWithCategories | null;
 
-        if (!puzzle) {
+        // パズルが存在しない場合はエラー
+        if (!puzzleWithCategories) {
             return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
         }
-
-        return NextResponse.json(puzzle);
+        return NextResponse.json(puzzleWithCategories);
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
@@ -54,7 +81,7 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         }
         
         const puzzleContent: puzzleRequest = await req.json();
-        const { title, descriptionHtml, solutionHtml } = puzzleContent;
+        const { title, categoryIds, descriptionHtml, solutionHtml } = puzzleContent;
 
         // パズルを更新
         const puzzle: Puzzle = await prisma.puzzle.update({
@@ -65,6 +92,19 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
                 solution: solutionHtml,
             },
         });
+
+        // カテゴリーを更新 (カテゴリー・パズル中間テーブルのデータを一旦削除してから再登録)
+        await prisma.puzzleCategory.deleteMany({
+            where: { puzzle_id: id },
+        });
+        for (const categoryId of categoryIds) {
+            await prisma.puzzleCategory.create({
+                data: {
+                    puzzle_id: id,
+                    category_id: categoryId,
+                },
+            });
+        }
 
         return NextResponse.json(puzzle);
     } catch (error) {

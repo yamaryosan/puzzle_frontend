@@ -11,19 +11,19 @@ export default function Home() {
     const [puzzles, setPuzzles] = useState<Puzzles | null>(null);
     // パズル一覧を取得
     useEffect(() => {
-      async function fetchPuzzles() {
-        try {
-          const puzzles = await getPuzzles();
-          setPuzzles(puzzles);
-        } catch (error) {
-          console.error("パズルの取得に失敗: ", error);
+        async function fetchPuzzles() {
+            try {
+                const puzzles = await getPuzzles();
+                setPuzzles(puzzles);
+            } catch (error) {
+                console.error("パズルの取得に失敗: ", error);
+            }
         }
-      }
-      fetchPuzzles();
+        fetchPuzzles();
     }, []);
-  
+
     if (!puzzles) {
-      return <div>loading...</div>;
+    return <div>loading...</div>;
     }
     
     return (
@@ -43,5 +43,5 @@ export default function Home() {
                 ))}
             </ul>
         </div>
-      );
+    );
 }

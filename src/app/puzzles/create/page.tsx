@@ -127,6 +127,7 @@ export default function App() {
             {/* カテゴリ */}
             <CategoryCheckbox 
             onChange={handleCheckboxChange}
+            value={checkedCategories}
             />
             {/* 内容を送信 */}
             <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef)}>

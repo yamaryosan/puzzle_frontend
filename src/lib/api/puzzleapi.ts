@@ -1,6 +1,24 @@
 import { Puzzle } from "@prisma/client";
 type Puzzles = Puzzle[];
 
+type PuzzleWithCategories = {
+    id: number;
+    title: string;
+    description: string;
+    solution: string;
+    user_answer: string;
+    difficulty: number;
+    is_favorite: boolean;
+    created_at: Date;
+    updated_at: Date;
+    PuzzleCategory: {
+        category: {
+            id: number;
+            name: string;
+        }
+    }[]
+}
+
 /**
  * パズル一覧を取得
  * @returns Promise<Puzzles>
@@ -19,7 +37,7 @@ async function getPuzzles() {
 /**
  * IDからパズルを取得
  * @param id パズルID
- * @returns Promise<Puzzle> パズル
+ * @returns Promise<PuzzleWithCategories>
  */
 async function getPuzzleById(id: string) {
     const response = await fetch(`/api/puzzles/${id}`);
@@ -31,9 +49,9 @@ async function getPuzzleById(id: string) {
         console.error("パズルが見つかりません");
         return null;
     }
-    const puzzle = await response.json();
+    const puzzle = await response.json() as PuzzleWithCategories;
     console.log("パズルの取得に成功: ", puzzle);
-    return puzzle as Puzzle;
+    return puzzle;
 }
 
 /**

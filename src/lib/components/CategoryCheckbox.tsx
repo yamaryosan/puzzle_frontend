@@ -35,7 +35,7 @@ interface CategoryCheckboxProps {
 export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
     const [categories, setCategories] = useState<Categories | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
-    const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
+    const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>([]);
     
     // カテゴリー一覧を取得
     async function fetchCategories() {
@@ -55,8 +55,8 @@ export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
 
     // チェックされたカテゴリーのIDを親コンポーネントに渡す
     useEffect(() => {
-        onChange(checkedCategories);
-    }, [checkedCategories, onChange]);
+        onChange(checkedCategoryIds);
+    }, [checkedCategoryIds, onChange]);
 
     // 新規カテゴリー作成
     const handleNewCategory = async () => {
@@ -71,7 +71,7 @@ export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
             // カテゴリー一覧を再取得
             await fetchCategories();
             // 新しいカテゴリーにチェックを入れる
-            setCheckedCategories(prev => [...prev, createdCategory.id]);
+            setCheckedCategoryIds(prev => [...prev, createdCategory.id]);
         } catch (error) {
             console.error("カテゴリーの作成に失敗: ", error);
         }
@@ -79,7 +79,7 @@ export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
 
     // チェックボックスの状態を変更(チェックされている場合は削除、チェックされていない場合は追加)
     const handleCheckboxChange = (categoryId: number) => {
-        setCheckedCategories(prev => 
+        setCheckedCategoryIds(prev => 
             prev.includes(categoryId)
                 ? prev.filter(id => id !== categoryId)
                 : [...prev, categoryId]
@@ -95,7 +95,7 @@ export default function CategoryCheckbox({ onChange }: CategoryCheckboxProps) {
                     <input
                         type="checkbox"
                         id={category.id.toString()}
-                        checked={checkedCategories.includes(category.id)}
+                        checked={checkedCategoryIds.includes(category.id)}
                         onChange={() => handleCheckboxChange(category.id)}
                     />
                     <label htmlFor={category.id.toString()}>{category.name}</label>

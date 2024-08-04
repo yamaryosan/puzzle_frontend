@@ -29,9 +29,9 @@ async function getPuzzles() {
         const error = await response.json();
         console.error("パズルの取得に失敗: ", error);
     }
-    const puzzles = await response.json();
+    const puzzles = await response.json() as PuzzleWithCategories[];
     console.log("パズルの取得に成功: ", puzzles);
-    return puzzles as Puzzles;
+    return puzzles;
 }
 
 /**

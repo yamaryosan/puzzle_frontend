@@ -1,17 +1,21 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, MutableRefObject } from "react";
 import Quill from "quill";
 
 import HintEditor from "@/lib/components/HintEditor";
+
+type HintsEditorProps = {
+    maxHints: number;
+    hintQuills: MutableRefObject<Quill | null>[];
+}
 
 /**
  * 複数ヒントの編集用エディタ
  * @returns 
  */
-export default function HintsEditor() {
-    const maxHints = 3;
+export default function HintsEditor({ maxHints, hintQuills }: HintsEditorProps) {
     const [showHints, setShowHints] = useState(() => Array(maxHints).fill(false));
-    const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
 
+    // ヒントの表示切り替え
     const toggleHint = useCallback((index: number) => {
         setShowHints(prev => {
             const newShowHints = [...prev];

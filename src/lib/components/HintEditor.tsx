@@ -1,9 +1,7 @@
 import { MutableRefObject, useState } from 'react';
-import { Hint } from '@prisma/client';
 import Editor from '@/lib/components/Editor';
 import Quill from 'quill';
 import DeltaClass from 'quill-delta';
-import { Mutable } from 'next/dist/client/components/router-reducer/router-reducer-types';
 
 type Range = {
     index: number;

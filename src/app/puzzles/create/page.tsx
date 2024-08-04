@@ -83,7 +83,9 @@ export default function Page() {
     // パズル本文と正答のQuill
     const quillDescriptionRef = useRef<Quill | null>(null);
     const quillSolutionRef = useRef<Quill | null>(null);
-
+    // ヒント群のQuill
+    const maxHints = 3;
+    const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
     // カテゴリー選択状態
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
 
@@ -118,7 +120,6 @@ export default function Page() {
             onTextChange={setLastChange}
             />
             <p>正答</p>
-            {/* 正答(solution) */}
             <Editor
             ref={quillSolutionRef}
             readOnly={readOnly}
@@ -127,7 +128,10 @@ export default function Page() {
             onTextChange={setLastChange}
             />
             {/* ヒント */}
-            <HintsEditor />
+            <HintsEditor
+            maxHints={maxHints}
+            hintQuills={hintQuills}
+            />
             {/* カテゴリ */}
             <CategoryCheckbox 
             onChange={handleCheckboxChange}

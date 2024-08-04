@@ -5,6 +5,7 @@ import Quill from 'quill';
 import Editor from '@/lib/components/Editor';
 import { Puzzle } from '@prisma/client';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
+import HintsEditor from '@/lib/components/HintsEditor';
 
 type Range = {
     index: number;
@@ -71,7 +72,7 @@ async function sendContent(title: string, categoryIds: number[], quillDescriptio
     return puzzle;
 }
 
-export default function App() {
+export default function Page() {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [readOnly, setReadOnly] = useState(false);
@@ -82,6 +83,7 @@ export default function App() {
     // パズル本文と正答のQuill
     const quillDescriptionRef = useRef<Quill | null>(null);
     const quillSolutionRef = useRef<Quill | null>(null);
+
     // カテゴリー選択状態
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
 
@@ -124,6 +126,8 @@ export default function App() {
             onSelectionChange={setRange}
             onTextChange={setLastChange}
             />
+            {/* ヒント */}
+            <HintsEditor />
             {/* カテゴリ */}
             <CategoryCheckbox 
             onChange={handleCheckboxChange}

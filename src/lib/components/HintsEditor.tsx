@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import Quill from "quill";
 
 import HintEditor from "@/lib/components/HintEditor";
@@ -10,7 +10,7 @@ import HintEditor from "@/lib/components/HintEditor";
 export default function HintsEditor() {
     const maxHints = 3;
     const [showHints, setShowHints] = useState(() => Array(maxHints).fill(false));
-    const [hintQuills, setHintQuills] = useState<Quill[]>(() => Array(maxHints).fill(null));
+    const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
 
     const toggleHint = useCallback((index: number) => {
         setShowHints(prev => {

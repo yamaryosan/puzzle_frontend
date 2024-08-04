@@ -27,7 +27,9 @@ export default function HintEditor({ quill, number, show, onToggle, canToggle }:
 
     return (
         <div>
-            <button onClick={onToggle} disabled={!canToggle}>追加</button>
+            <button onClick={onToggle} disabled={!canToggle}>
+                {show ? '非表示' : '表示'}
+            </button>
             {show && (
                 <div>
                     <p>ヒント</p>

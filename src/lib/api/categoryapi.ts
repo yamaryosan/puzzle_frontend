@@ -98,4 +98,19 @@ async function updateCategory(id: string, name: string): Promise<Category> {
     return response.json() as Promise<Category>;
 }
 
-export { getCategories, createCategory, getCategoryById, updateCategory, fetchPuzzlesByCategoryId };
+/**
+ * カテゴリーを削除
+ */
+async function deleteCategory(id: string) {
+    const response = await fetch(`/api/categories/${id}`, {
+        method: "DELETE",
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("カテゴリーの削除に失敗: ", error);
+        return;
+    }
+    console.log("カテゴリーの削除に成功");
+}
+
+export { getCategories, createCategory, getCategoryById, updateCategory, deleteCategory, fetchPuzzlesByCategoryId };

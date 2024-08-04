@@ -65,3 +65,36 @@ export async function PUT(req: NextRequest, {params}: {params: {id: string}}): P
         }
     }
 }
+
+/**
+ * カテゴリー情報を削除
+ * @params req リクエスト
+ * @params params パラメータ
+ */
+export async function DELETE(req: NextRequest, {params}: {params: {id: string}}): Promise<NextResponse> {
+    try {
+        const id = parseInt(params.id);
+        if (isNaN(id) || id <= 0) {
+            return NextResponse.json({error: 'Invalid ID'}, {status: 400});
+        }
+        // 外部キー制約を考慮して、関連するパズルカテゴリー情報を先に削除
+        await prisma.puzzleCategory.deleteMany({
+            where: {
+                category_id: id
+            }
+        });
+        // カテゴリー情報を削除
+        await prisma.category.delete({
+            where: {
+                id: id
+            }
+        });
+        return NextResponse.json({message: 'Category deleted'});
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({error: error.message, stack: error.stack}, {status: 500});
+        } else {
+            return NextResponse.json({error: 'Unknown error'}, {status: 500});
+        }
+    }
+}

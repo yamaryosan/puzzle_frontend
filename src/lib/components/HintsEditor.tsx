@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Quill from "quill";
 
 import HintEditor from "@/lib/components/HintEditor";
@@ -9,13 +9,34 @@ import HintEditor from "@/lib/components/HintEditor";
  */
 export default function HintsEditor() {
     const maxHints = 3;
-    const [showHints, setShowHints] = useState([false, false, false]);
-    const [hintQuills, setHintQuills] = useState<Quill[]>([]);
+    const [showHints, setShowHints] = useState(() => Array(maxHints).fill(false));
+    const [hintQuills, setHintQuills] = useState<Quill[]>(() => Array(maxHints).fill(null));
+
+    const toggleHint = useCallback((index: number) => {
+        setShowHints(prev => {
+            const newShowHints = [...prev];
+            newShowHints[index] = !newShowHints[index];
+            return newShowHints;
+        });
+    }, []);
+
+    const canToggleHint = (index: number) => {
+        if (index === 0) return true;
+        return showHints[index - 1];
+    };
+
     return (
         <div>
-            <HintEditor quill={hintQuills[0]} number={0} />
-            <HintEditor quill={hintQuills[1]} number={1} />
-            <HintEditor quill={hintQuills[2]} number={2} />
+            {Array.from({ length: maxHints }, (_, i) => (
+                <HintEditor
+                    key={i}
+                    quill={hintQuills[i]}
+                    number={i}
+                    show={showHints[i]}
+                    onToggle={() => toggleHint(i)}
+                    canToggle={canToggleHint(i)}
+                />
+            ))}
         </div>
     )
 }

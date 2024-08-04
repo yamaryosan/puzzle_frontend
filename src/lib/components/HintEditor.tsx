@@ -16,25 +16,19 @@ type Change = {
 type HintEditorProps = {
     quill: Quill | null;
     number: number;
+    show: boolean;
+    onToggle: () => void;
+    canToggle: boolean;
 };
 
-export default function HintEditor({ quill, number }: HintEditorProps) {
+export default function HintEditor({ quill, number, show, onToggle, canToggle }: HintEditorProps) {
     const [range, setRange] = useState<Range | undefined>(undefined);
     const [lastChange, setLastChange] = useState<Change | undefined>(undefined);
-    const [show, setShow] = useState(false);
-
-    // ヒントを表示
-    const addHint = () => {
-        setShow(true);
-    };
-    // ヒントを非表示
-    const hideHint = () => {
-        setShow(false);
-    };
+    const [_, setShow] = useState(false);
 
     return (
         <div>
-            <button onClick={addHint}>追加</button>
+            <button onClick={onToggle} disabled={!canToggle}>追加</button>
             {show && (
                 <div>
                     <p>ヒント</p>
@@ -44,7 +38,6 @@ export default function HintEditor({ quill, number }: HintEditorProps) {
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}
                     />
-                    <button onClick={hideHint}>閉じる</button>
                 </div>
             )}
         </div>

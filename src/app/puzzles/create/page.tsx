@@ -22,8 +22,15 @@ type Change = {
  * @param categoryIds カテゴリーID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
+ * @param hintQuills ヒントのQuillの参照
  */
-async function sendContent(title: string, categoryIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function sendContent(
+    title: string,
+    categoryIds: number[],
+    quillDescriptionRef: React.RefObject<Quill | null>,
+    quillSolutionRef: React.RefObject<Quill | null>,
+    hintQuills: React.RefObject<Quill | null>[]
+): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
     if (!title) {
@@ -54,7 +61,7 @@ async function sendContent(title: string, categoryIds: number[], quillDescriptio
     const puzzle = await response.json();
     console.log("パズルの作成に成功: ", puzzle);
 
-    // カテゴリーを追加(パズルとカテゴリーは多対多の関係)
+    // カテゴリーを追加
     const puzzleId = puzzle.id;
     const categoryResponse = await fetch(`/api/puzzles/${puzzleId}/categories`, {
         method: "POST",
@@ -68,6 +75,27 @@ async function sendContent(title: string, categoryIds: number[], quillDescriptio
         console.error("カテゴリーの追加に失敗: ", error);
     }
     console.log("カテゴリーの追加に成功");
+
+    // ヒントを追加
+    for (let i = 0; i < hintQuills.length; i++) {
+        const hintQuill = hintQuills[i].current;
+        if (!hintQuill) {
+            continue;
+        }
+        const hintHtml = hintQuill.root.innerHTML;
+        const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ hintHtml }),
+        });
+        if (!hintResponse.ok) {
+            const error = await hintResponse.json();
+            console.error("ヒントの追加に失敗: ", error);
+        }
+        console.log("ヒントの追加に成功");
+    }
 
     return puzzle;
 }
@@ -138,7 +166,7 @@ export default function Page() {
             value={checkedCategories}
             />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef, hintQuills)}>
                 Send
             </button>
         </div>

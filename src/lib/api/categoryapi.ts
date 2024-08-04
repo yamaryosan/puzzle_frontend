@@ -76,4 +76,26 @@ async function fetchPuzzlesByCategoryId(id: string) {
     }
 }
 
-export { getCategories, createCategory, getCategoryById, fetchPuzzlesByCategoryId };
+/**
+ * カテゴリー情報を更新
+ * @param id カテゴリーID
+ * @param name カテゴリー名
+ */
+async function updateCategory(id: string, name: string): Promise<Category> {
+    const response = await fetch(`/api/categories/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("カテゴリーの更新に失敗: ", error);
+        return error;
+    }
+    console.log(`カテゴリー「${name}」の更新に成功`);
+    return response.json() as Promise<Category>;
+}
+
+export { getCategories, createCategory, getCategoryById, updateCategory, fetchPuzzlesByCategoryId };

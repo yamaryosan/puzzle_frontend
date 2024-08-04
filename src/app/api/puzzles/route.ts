@@ -10,11 +10,19 @@ type puzzleRequest = {
 
 /**
  * パズル一覧を取得
- * @returns Promise<Puzzle[]>
+ * @returns Promise<PuzzleWithCategories[]>
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
-        const puzzles: Puzzle[] = await prisma.puzzle.findMany();
+        const puzzles = await prisma.puzzle.findMany({
+            include: {
+                PuzzleCategory: {
+                    include: {
+                        category: true
+                    }
+                }
+            }
+        });
         return NextResponse.json(puzzles);
     } catch (error) {
         if (error instanceof Error) {

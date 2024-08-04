@@ -35,7 +35,7 @@ export default function HintEditor({ quill, number, show, onToggle, canToggle }:
                     <p>ヒント</p>
                     <Editor
                     readOnly={false}
-                    defaultValue={new DeltaClass([{ insert: 'Hello World!' }])}
+                    defaultValue={new DeltaClass([{}])}
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}
                     ref={quill}

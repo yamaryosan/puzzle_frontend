@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { getCategoryById, fetchPuzzlesByCategoryId, updateCategory } from '@/lib/api/categoryapi';
+import { getCategoryById, fetchPuzzlesByCategoryId, updateCategory, deleteCategory } from '@/lib/api/categoryapi';
 import { Puzzle, Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type PageParams = {
     id: string;
@@ -14,6 +15,8 @@ export default function Page({ params }: { params: PageParams}) {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
+
+    const router = useRouter();
 
     // カテゴリー情報を取得
     useEffect(() => {
@@ -49,6 +52,14 @@ export default function Page({ params }: { params: PageParams}) {
         }
     };
 
+    // カテゴリーを削除
+    const handleDeleteCategory = async () => {
+        if (!category) return;
+        await deleteCategory(category.id.toString());
+        // カテゴリー一覧に戻る
+        router.push("/categories");
+    };
+
     return (
         <div>
             {isEditing ? (
@@ -61,6 +72,7 @@ export default function Page({ params }: { params: PageParams}) {
                 <div>
                     <h1>{category?.name}</h1>
                     <button onClick={toggleEditMode}>編集</button>
+                    <button onClick={handleDeleteCategory}>削除</button>
                 </div>
             )}
             {/* パズル一覧 */}

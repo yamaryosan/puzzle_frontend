@@ -5,6 +5,7 @@ import Quill from 'quill';
 import Editor from '@/lib/components/Editor';
 import { Puzzle } from '@prisma/client';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
+import HintsEditor from '@/lib/components/HintsEditor';
 
 type Range = {
     index: number;
@@ -21,8 +22,15 @@ type Change = {
  * @param categoryIds カテゴリーID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
+ * @param hintQuills ヒントのQuillの参照
  */
-async function sendContent(title: string, categoryIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function sendContent(
+    title: string,
+    categoryIds: number[],
+    quillDescriptionRef: React.RefObject<Quill | null>,
+    quillSolutionRef: React.RefObject<Quill | null>,
+    hintQuills: React.RefObject<Quill | null>[]
+): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
     if (!title) {
@@ -53,7 +61,7 @@ async function sendContent(title: string, categoryIds: number[], quillDescriptio
     const puzzle = await response.json();
     console.log("パズルの作成に成功: ", puzzle);
 
-    // カテゴリーを追加(パズルとカテゴリーは多対多の関係)
+    // カテゴリーを追加
     const puzzleId = puzzle.id;
     const categoryResponse = await fetch(`/api/puzzles/${puzzleId}/categories`, {
         method: "POST",
@@ -68,10 +76,31 @@ async function sendContent(title: string, categoryIds: number[], quillDescriptio
     }
     console.log("カテゴリーの追加に成功");
 
+    // ヒントを追加
+    for (let i = 0; i < hintQuills.length; i++) {
+        const hintQuill = hintQuills[i].current;
+        if (!hintQuill) {
+            continue;
+        }
+        const hintHtml = hintQuill.root.innerHTML;
+        const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ hintHtml }),
+        });
+        if (!hintResponse.ok) {
+            const error = await hintResponse.json();
+            console.error("ヒントの追加に失敗: ", error);
+        }
+        console.log("ヒントの追加に成功");
+    }
+
     return puzzle;
 }
 
-export default function App() {
+export default function Page() {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [readOnly, setReadOnly] = useState(false);
@@ -82,6 +111,9 @@ export default function App() {
     // パズル本文と正答のQuill
     const quillDescriptionRef = useRef<Quill | null>(null);
     const quillSolutionRef = useRef<Quill | null>(null);
+    // ヒント群のQuill
+    const maxHints = 3;
+    const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
     // カテゴリー選択状態
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
 
@@ -116,7 +148,6 @@ export default function App() {
             onTextChange={setLastChange}
             />
             <p>正答</p>
-            {/* 正答(solution) */}
             <Editor
             ref={quillSolutionRef}
             readOnly={readOnly}
@@ -124,13 +155,18 @@ export default function App() {
             onSelectionChange={setRange}
             onTextChange={setLastChange}
             />
+            {/* ヒント */}
+            <HintsEditor
+            maxHints={maxHints}
+            hintQuills={hintQuills}
+            />
             {/* カテゴリ */}
             <CategoryCheckbox 
             onChange={handleCheckboxChange}
             value={checkedCategories}
             />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef, hintQuills)}>
                 Send
             </button>
         </div>

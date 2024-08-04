@@ -43,6 +43,8 @@ model Puzzle {
   updatedAt     DateTime @updatedAt
 
   PuzzleCategory PuzzleCategory[]
+
+  Hint Hint[]
 }
 
 // カテゴリーテーブル
@@ -65,4 +67,14 @@ model PuzzleCategory {
   updatedAt    DateTime @updatedAt
 
   @@id([puzzle_id, category_id])
+}
+
+// ヒントテーブル
+model Hint {
+  id            Int      @id @default(autoincrement())
+  puzzle_id     Int
+  puzzle        Puzzle @relation(fields: [puzzle_id], references: [id])
+  content       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

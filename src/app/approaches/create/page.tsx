@@ -23,7 +23,7 @@ type Change = {
 async function send(title: string, quill: React.RefObject<Quill | null>) {
     try {
         if (!title) {
-            title = "Untitled";
+            title = 'Untitled';
         }
         if (!quill.current) {
             console.error('Quillの参照が取得できません');
@@ -45,6 +45,7 @@ async function send(title: string, quill: React.RefObject<Quill | null>) {
             const error = await response.json();
             console.error('定石の作成に失敗: ', error);
         }
+        console.log('定石を作成しました');
     } catch (error) {
         console.error('定石の作成に失敗: ', error);
     }
@@ -64,7 +65,6 @@ export default function Page() {
             const DeltaClass = module.default.import('delta');
             setDeltaClass(() => DeltaClass);
         });
-        setTitle('');
     });
 
     if (!DeltaClass) {
@@ -73,7 +73,7 @@ export default function Page() {
 
     return (
         <div>
-            <input type="text" placeholder="Title" required/>
+            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
             <Editor
             ref={quill}
             readOnly={false}

@@ -158,6 +158,7 @@ export default function Page() {
             {/* ヒント */}
             <HintsEditor
             maxHints={maxHints}
+            defaultValues={Array.from({ length: maxHints }, () => new DeltaClass([{ }]))}
             hintQuills={hintQuills}
             />
             {/* カテゴリ */}

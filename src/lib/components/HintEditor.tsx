@@ -14,13 +14,14 @@ type Change = {
 
 type HintEditorProps = {
     quill: MutableRefObject<Quill | null>;
+    defaultValue: DeltaClass;
     number: number;
     show: boolean;
     onToggle: () => void;
     canToggle: boolean;
 };
 
-export default function HintEditor({ quill, number, show, onToggle, canToggle }: HintEditorProps) {
+export default function HintEditor({ quill, defaultValue, number, show, onToggle, canToggle }: HintEditorProps) {
     const [range, setRange] = useState<Range | undefined>(undefined);
     const [lastChange, setLastChange] = useState<Change | undefined>(undefined);
     const [_, setShow] = useState(false);
@@ -35,7 +36,7 @@ export default function HintEditor({ quill, number, show, onToggle, canToggle }:
                     <p>ヒント</p>
                     <Editor
                     readOnly={false}
-                    defaultValue={new DeltaClass([{}])}
+                    defaultValue={defaultValue}
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}
                     ref={quill}

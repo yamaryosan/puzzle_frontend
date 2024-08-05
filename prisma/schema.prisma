@@ -44,7 +44,7 @@ model Puzzle {
 
   PuzzleCategory PuzzleCategory[]
   Hint Hint[]
-  Approaches Approaches[]
+  Approach Approach[]
 }
 
 // カテゴリーテーブル
@@ -80,7 +80,7 @@ model Hint {
 }
 
 // 定石テーブル
-model Approaches {
+model Approach {
   id            Int      @id @default(autoincrement())
   title         String
   content       String

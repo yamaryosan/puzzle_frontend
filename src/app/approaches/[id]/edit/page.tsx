@@ -20,6 +20,43 @@ type Change = {
     ops: any[];
 };
 
+/**
+ * 定石を更新
+ * @param id
+ * @param title 
+ * @param quill 
+ */
+async function send(id: string, title: string, quill: React.RefObject<Quill | null>) {
+    try {
+        if (!title) {
+            title = 'Untitled';
+        }
+        if (!quill.current) {
+            console.error('Quillの参照が取得できません');
+            return;
+        }
+        const contentHtml = quill.current.root.innerHTML;
+
+        const response = await fetch(`/api/approaches/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                contentHtml,
+            }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('定石の更新に失敗: ', error);
+        }
+        console.log('定石を更新しました');
+    } catch (error) {
+        console.error('定石の更新に失敗: ', error);
+    }
+}
+
 export default function Home({ params }: { params: PageParams }) {
     const [title, setTitle] = useState<string>('');
     const [approach, setApproach] = useState<Approach>();
@@ -67,7 +104,7 @@ export default function Home({ params }: { params: PageParams }) {
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}
             />
-            <Link href="/theories/[id]" as={`/theories/${params.id}`}>更新</Link>
+            <button onClick={() => send(params.id || "0", title, quill)}>送信</button>
         </div>
     );
 }

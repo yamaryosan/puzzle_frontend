@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prismaclient';
-import { Approaches } from '@prisma/client';
+import { Approach } from '@prisma/client';
 
 type approachRequest = {
     title: string;
@@ -15,7 +15,7 @@ type approachRequest = {
  */
 export async function GET(req: NextRequest) {
     try {
-        const approaches = await prisma.approaches.findMany();
+        const approaches = await prisma.approach.findMany();
         return NextResponse.json(approaches);
     } catch (error) {
         if (error instanceof Error) {
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         if (!title || !contentHtml) {
             return NextResponse.json({ error: "Title and contentHtml are required" }, { status: 400 });
         }
-        const approach: Approaches = await prisma.approaches.create({
+        const approach: Approach = await prisma.approach.create({
             data: {
                 title,
                 content: contentHtml,

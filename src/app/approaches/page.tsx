@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { getApproaches } from '@/lib/api/approachApi';
 import { useEffect, useState } from 'react';
-import { Approaches } from '@prisma/client';
+import { Approach } from '@prisma/client';
 
 export default function Page() {
-    const [approaches, setApproaches] = useState<Approaches[]>([]);
+    const [approaches, setApproaches] = useState<Approach[]>([]);
 
     useEffect(() => {
         getApproaches().then(approaches => {

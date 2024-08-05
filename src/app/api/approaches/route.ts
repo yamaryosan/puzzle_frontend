@@ -5,6 +5,7 @@ import { Approaches } from '@prisma/client';
 type approachRequest = {
     title: string;
     contentHtml: string;
+    puzzle_id?: number;
 };
 
 /**
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const approachContent: approachRequest = await req.json();
-        const { title, contentHtml } = approachContent;
+        const { title, contentHtml, puzzle_id } = approachContent;
         if (!title || !contentHtml) {
             return NextResponse.json({ error: "Title and contentHtml are required" }, { status: 400 });
         }
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
             data: {
                 title,
                 content: contentHtml,
-                puzzle_id: 1,
+                puzzle_id: puzzle_id ? puzzle_id : undefined,
             },
         });
         return NextResponse.json(approach);

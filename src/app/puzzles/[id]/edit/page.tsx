@@ -4,11 +4,13 @@ import Link from 'next/link';
 import Editor from '@/lib/components/Editor';
 import { useEffect, useState, useRef } from 'react';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
-import { Puzzle } from '@prisma/client';
+import getHintsByPuzzleId from '@/lib/api/hintapi';
+import { Puzzle, Hint } from '@prisma/client';
 import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
+import HintsEditor from '@/lib/components/HintsEditor';
 
 type PageParams = {
     id: string;
@@ -105,6 +107,25 @@ async function fetchInitialPuzzle(id: string): Promise<PuzzleWithCategories | un
     }
 }
 
+/**
+ * 編集前のヒントを取得
+ * @param id パズルID
+ * @returns Promise<Hint[] | undefined> ヒント
+ */
+async function fetchInitialHints(id: string): Promise<Hint[] | undefined> {
+    try {
+        const hints = await getHintsByPuzzleId(id);
+        if (!hints) {
+            console.error("ヒントが見つかりません");
+            return;
+        }
+        console.log("ヒントを取得しました: ", hints);
+        return hints;
+    } catch (error) {
+        console.error("ヒントの取得に失敗: ", error);
+    }
+}
+
 export default function Page({ params }: { params: PageParams }) {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
@@ -117,6 +138,13 @@ export default function Page({ params }: { params: PageParams }) {
 
     const quillDescriptionRef = useRef<any>(null);
     const quillSolutionRef = useRef<any>(null);
+
+    // ヒント群
+    const maxHints = 3;
+    const [hints, setHints] = useState<Hint[]>([]);
+    const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
+    // const [hintsDelta, setHintsDelta] = Array.from({length: maxHints}, () => useState<any>(null));
+    const [hintsDelta, setHintsDelta] = useState(Array(maxHints).fill(null));
 
     // カテゴリー選択状態
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
@@ -134,6 +162,19 @@ export default function Page({ params }: { params: PageParams }) {
         });
     }, [params.id]);
 
+    // 編集前にヒントを取得
+    useEffect(() => {
+        fetchInitialHints(params.id).then((hints) => {
+            if (!hints) {
+                return;
+            }
+            setHints(hints);
+            const initialHintHtmls = hints.map((hint) => hint.content);
+            console.log("ヒントを取得しました: ", initialHintHtmls);
+        });
+    }, [params.id]);
+
+    // 編集前に以前の本文と正答を取得
     useEffect(() => {
         if (puzzle?.description && !quillLoaded) {
             import('quill').then((Quill) => {
@@ -147,6 +188,21 @@ export default function Page({ params }: { params: PageParams }) {
         }
         setTitle(puzzle?.title || "");
     }, [puzzle, quillLoaded]);
+
+    // 編集前に以前のヒントを取得
+    useEffect(() => {
+        import('quill').then((Quill) => {
+            const quill = new Quill.default(document.createElement('div'));
+            const newHintsDelta = Array(maxHints).fill(null);
+
+            hints.forEach((hint, index) => {
+                const hintsDelta = quill.clipboard.convert({ html: hint.content });
+                newHintsDelta[index] = hintsDelta;
+            });
+
+            setHintsDelta(newHintsDelta);
+        });
+    }, [hints, quillLoaded]);
 
     if (!descriptionDelta) {
         return <div>Loading...</div>
@@ -190,6 +246,11 @@ export default function Page({ params }: { params: PageParams }) {
                 defaultValue={solutionDelta}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}
+            />
+            <HintsEditor
+                maxHints={maxHints}
+                defaultValues={hintsDelta}
+                hintQuills={hintQuills}
             />
             {/* カテゴリー */}
             <CategoryCheckbox

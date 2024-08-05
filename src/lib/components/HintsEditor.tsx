@@ -2,9 +2,11 @@ import { useState, useCallback, MutableRefObject } from "react";
 import Quill from "quill";
 
 import HintEditor from "@/lib/components/HintEditor";
+import DeltaClass from 'quill-delta';
 
 type HintsEditorProps = {
     maxHints: number;
+    defaultValues: DeltaClass[];
     hintQuills: MutableRefObject<Quill | null>[];
 }
 
@@ -12,7 +14,7 @@ type HintsEditorProps = {
  * 複数ヒントの編集用エディタ
  * @returns 
  */
-export default function HintsEditor({ maxHints, hintQuills }: HintsEditorProps) {
+export default function HintsEditor({ maxHints, defaultValues, hintQuills }: HintsEditorProps) {
     const [showHints, setShowHints] = useState(() => Array(maxHints).fill(false));
 
     // ヒントの表示切り替え
@@ -35,6 +37,7 @@ export default function HintsEditor({ maxHints, hintQuills }: HintsEditorProps) 
                 <HintEditor
                     key={i}
                     quill={hintQuills[i]}
+                    defaultValue={defaultValues[i]}
                     number={i}
                     show={showHints[i]}
                     onToggle={() => toggleHint(i)}

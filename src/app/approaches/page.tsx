@@ -1,16 +1,25 @@
+'use client';
+
 import Link from 'next/link';
+import { getApproaches } from '@/lib/api/approachApi';
+import { useEffect, useState } from 'react';
+import { Approaches } from '@prisma/client';
 
-type PageParams = {
-    id: string;
-};
+export default function Page() {
+    const [approaches, setApproaches] = useState<Approaches[]>([]);
 
-export default function Page({ params }: { params: PageParams }) {
     return (
         <div>
             <Link href="/approaches/create">定石作成</Link>
-            <Link href="/approaches/1">定石1</Link>
-            <Link href="/approaches/2">定石2</Link>
-            <Link href="/approaches/3">定石3</Link>
+            <h1>定石一覧</h1>
+            {approaches.length === 0 ? <div>定石がありません</div> : null}
+            <ul>
+                {approaches.map(approach => (
+                    <li key={approach.id}>
+                        <Link href={`/approaches/${approach.id}`}>{approach.title}</Link>
+                    </li>
+                ))}
+            </ul>
             <Link href="/">戻る</Link>
         </div>
     );

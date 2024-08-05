@@ -8,6 +8,15 @@ import { Approaches } from '@prisma/client';
 export default function Page() {
     const [approaches, setApproaches] = useState<Approaches[]>([]);
 
+    useEffect(() => {
+        getApproaches().then(approaches => {
+            if (!approaches) {
+                return;
+            }
+            setApproaches(approaches);
+        });
+    }, []);
+
     return (
         <div>
             <Link href="/approaches/create">定石作成</Link>

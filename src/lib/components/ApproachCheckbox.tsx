@@ -1,0 +1,71 @@
+import { useEffect, useState } from "react";
+import { getApproaches } from "../api/approachApi";
+import { Approach } from "@prisma/client";
+
+/**
+ * 定石一覧を取得
+ * @params void
+ * @returns Promise<Approach[]>
+ */
+async function fetch() {
+    const approaches = await getApproaches();
+    return approaches as Approach[];
+}
+
+interface ApproachCheckboxProps {
+    onChange: (approachIds: number[]) => void;
+    value: number[];
+}
+
+export default function ApproachCheckbox({ onChange, value }: ApproachCheckboxProps) {
+    const [approaches, setApproaches] = useState<Approach[] | null>(null);
+    const [checkedApproachIds, setCheckedApproachIds] = useState<number[]>(value);
+    
+    // 定石一覧を取得
+    async function fetchApproaches() {
+        try {
+            const approaches = await fetch();
+            setApproaches(approaches);
+            return approaches;
+        } catch (error) {
+            console.error("定石の取得に失敗: ", error);
+            return null;
+        }
+    }
+
+    useEffect(() => {
+        fetchApproaches();
+    }, []);
+
+    // チェックされた定石のIDを親コンポーネントに渡す
+    useEffect(() => {
+        onChange(checkedApproachIds);
+    }, [checkedApproachIds, onChange]);
+
+    // チェックボックスの状態を変更(チェックされている場合は削除、チェックされていない場合は追加)
+    const handleCheckboxChange = (categoryId: number) => {
+        setCheckedApproachIds(prev => 
+            prev.includes(categoryId)
+                ? prev.filter(id => id !== categoryId)
+                : [...prev, categoryId]
+        );
+    }
+
+    return (
+        <div>
+            <h1>定石</h1>
+            {approaches?.length === 0 && <p>定石がありません</p>}
+            {approaches?.map((approach) => (
+                <div key={approach.id}>
+                    <input
+                        type="checkbox"
+                        id={approach.id.toString()}
+                        checked={checkedApproachIds.includes(approach.id)}
+                        onChange={() => handleCheckboxChange(approach.id)}
+                    />
+                    <label htmlFor={approach.id.toString()}>{approach.title}</label>
+                </div>
+            ))}
+        </div>
+    );
+}

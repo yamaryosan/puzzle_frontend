@@ -6,6 +6,7 @@ import { parse } from "path";
 type puzzleRequest = {
     title: string;
     categoryIds: number[];
+    approachIds: number[];
     descriptionHtml: string;
     solutionHtml: string;
 }
@@ -81,7 +82,7 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         }
         
         const puzzleContent: puzzleRequest = await req.json();
-        const { title, categoryIds, descriptionHtml, solutionHtml } = puzzleContent;
+        const { title, categoryIds, approachIds, descriptionHtml, solutionHtml } = puzzleContent;
 
         // パズルを更新
         const puzzle: Puzzle = await prisma.puzzle.update({
@@ -102,6 +103,19 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
                 data: {
                     puzzle_id: id,
                     category_id: categoryId,
+                },
+            });
+        }
+
+        // 定石を更新 (定石・パズル中間テーブルのデータを一旦削除してから再登録)
+        await prisma.puzzleApproach.deleteMany({
+            where: { puzzle_id: id },
+        });
+        for (const approachId of approachIds) {
+            await prisma.puzzleApproach.create({
+                data: {
+                    puzzle_id: id,
+                    approach_id: approachId,
                 },
             });
         }

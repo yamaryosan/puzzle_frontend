@@ -15,23 +15,21 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
         // 定石IDに紐づく問題のIDを取得
-        const puzzle_id = (await prisma.approach.findUnique({
+        const puzzle_id = await prisma.puzzleApproach.findMany({
             where: {
-                id: id,
+                approach_id: id
             },
             select: {
-                puzzle_id: true,
-            },
-        }))?.puzzle_id;
-        // 問題IDが存在しない場合はnullを返す
-        if (!puzzle_id) {
-            return NextResponse.json([]);
-        }
-        // 上記の問題IDを使って問題を取得
+                puzzle_id: true
+            }
+        });
+        // 問題IDから問題を取得
         const puzzles = await prisma.puzzle.findMany({
             where: {
-                id: puzzle_id
-            },
+                id: {
+                    in: puzzle_id.map((p) => p.puzzle_id)
+                }
+            }
         });
         return NextResponse.json(puzzles);
     } catch (error) {

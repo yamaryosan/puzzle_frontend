@@ -42,9 +42,17 @@ export async function POST(req: NextRequest) {
             data: {
                 title,
                 content: contentHtml,
-                puzzle_id: puzzle_id ? puzzle_id : undefined,
             },
         });
+        // パズルIDが指定されている場合は、定石とパズルを紐づける
+        if (puzzle_id) {
+            await prisma.puzzleApproach.create({
+                data: {
+                    puzzle_id,
+                    approach_id: approach.id,
+                },
+            });
+        }
         return NextResponse.json(approach);
     } catch (error) {
         if (error instanceof Error) {

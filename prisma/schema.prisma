@@ -44,7 +44,7 @@ model Puzzle {
 
   PuzzleCategory PuzzleCategory[]
   Hint Hint[]
-  Approach Approach[]
+  PuzzleApproach PuzzleApproach[]
 }
 
 // カテゴリーテーブル
@@ -84,8 +84,20 @@ model Approach {
   id            Int      @id @default(autoincrement())
   title         String
   content       String
-  puzzle_id     Int?
-  puzzle        Puzzle? @relation(fields: [puzzle_id], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  PuzzleApproach PuzzleApproach[]
+}
+
+// 定石とパズルの中間テーブル
+model PuzzleApproach {
+  puzzle_id    Int
+  puzzle       Puzzle @relation(fields: [puzzle_id], references: [id])
+  approach_id  Int
+  approach     Approach @relation(fields: [approach_id], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@id([puzzle_id, approach_id])
 }

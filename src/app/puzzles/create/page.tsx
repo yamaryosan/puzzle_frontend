@@ -6,6 +6,7 @@ import Editor from '@/lib/components/Editor';
 import { Puzzle } from '@prisma/client';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
+import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 
 type Range = {
     index: number;
@@ -20,6 +21,7 @@ type Change = {
  * 内容を送信
  * @param title タイトル
  * @param categoryIds カテゴリーID
+ * @param approachIds 定石ID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  * @param hintQuills ヒントのQuillの参照
@@ -27,6 +29,7 @@ type Change = {
 async function sendContent(
     title: string,
     categoryIds: number[],
+    approachIds: number[],
     quillDescriptionRef: React.RefObject<Quill | null>,
     quillSolutionRef: React.RefObject<Quill | null>,
     hintQuills: React.RefObject<Quill | null>[]
@@ -76,6 +79,20 @@ async function sendContent(
     }
     console.log("カテゴリーの追加に成功");
 
+    // 定石を追加
+    const approachResponse = await fetch(`/api/puzzles/${puzzleId}/approaches`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ approachIds }),
+    });
+    if (!approachResponse.ok) {
+        const error = await approachResponse.json();
+        console.error("定石の追加に失敗: ", error);
+    }
+    console.log("定石の追加に成功");
+
     // ヒントを追加
     for (let i = 0; i < hintQuills.length; i++) {
         const hintQuill = hintQuills[i].current;
@@ -116,6 +133,8 @@ export default function Page() {
     const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
     // カテゴリー選択状態
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
+    // 定石選択状態
+    const [approachIds, setApproachIds] = useState<number[]>([]);
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -166,8 +185,13 @@ export default function Page() {
             onChange={handleCheckboxChange}
             value={checkedCategories}
             />
+            {/* 定石 */}
+            <ApproachCheckbox
+            onChange={setApproachIds}
+            value={approachIds}
+            />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => sendContent( title, checkedCategories, quillDescriptionRef, quillSolutionRef, hintQuills)}>
+            <button type="button" onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills)}>
                 Send
             </button>
         </div>

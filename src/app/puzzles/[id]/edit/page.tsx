@@ -118,25 +118,6 @@ async function fetchInitialPuzzle(id: string): Promise<PuzzleWithCategories | un
 }
 
 /**
- * 編集前の定石を取得
- * @param id パズルID
- * @returns Promise<ApproachWithRelation[] | undefined> 定石
- */
-async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
-    try {
-        const approaches = await getApproachesByPuzzleId(parseInt(id));
-        if (!approaches) {
-            console.error("定石が見つかりません");
-            return;
-        }
-        console.log("fetchInitialApproachで定石を取得しました: ", approaches);
-        return approaches as ApproachWithRelation[];
-    } catch (error) {
-        console.error("定石の取得に失敗: ", error);
-    }
-}
-
-/**
  * 編集前のヒントを取得
  * @param id パズルID
  * @returns Promise<Hint[] | undefined> ヒント
@@ -195,7 +176,7 @@ export default function Page({ params }: { params: PageParams }) {
 
     // 編集前に定石を取得
     useEffect(() => {
-        function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
+        async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
             return getApproachesByPuzzleId(parseInt(id));
         }
         fetchInitialApproaches(params.id).then((approaches) => {

@@ -5,12 +5,14 @@ import Editor from '@/lib/components/Editor';
 import { useEffect, useState, useRef } from 'react';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import getHintsByPuzzleId from '@/lib/api/hintapi';
-import { Puzzle, Hint } from '@prisma/client';
+import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
+import { Puzzle, Hint, Approach } from '@prisma/client';
 import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
+import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 
 type PageParams = {
     id: string;
@@ -38,15 +40,23 @@ type PuzzleWithCategories = {
     }[]
 }
 
+type ApproachWithRelation = {
+    id: number;
+    puzzle_id: number;
+    approach_id: number;
+    approach: Approach;
+};
+
 /**
  * 内容を送信
  * @param id パズルID
  * @param title タイトル
  * @param categoryIds カテゴリーID
+ * @param approachIds 定石ID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  */
-async function send(id: string, title: string, categoryIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function send(id: string, title: string, categoryIds: number[], approachIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
 {
     // IDが空の場合はエラー
     if (!id) {
@@ -77,7 +87,7 @@ async function send(id: string, title: string, categoryIds: number[], quillDescr
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, categoryIds, descriptionHtml, solutionHtml, difficulty, is_favorite }),
+        body: JSON.stringify({ title, categoryIds, approachIds, descriptionHtml, solutionHtml, difficulty, is_favorite }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -104,6 +114,25 @@ async function fetchInitialPuzzle(id: string): Promise<PuzzleWithCategories | un
         return puzzle;
     } catch (error) {
         console.error("パズルの取得に失敗: ", error);
+    }
+}
+
+/**
+ * 編集前の定石を取得
+ * @param id パズルID
+ * @returns Promise<ApproachWithRelation[] | undefined> 定石
+ */
+async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
+    try {
+        const approaches = await getApproachesByPuzzleId(parseInt(id));
+        if (!approaches) {
+            console.error("定石が見つかりません");
+            return;
+        }
+        console.log("fetchInitialApproachで定石を取得しました: ", approaches);
+        return approaches as ApproachWithRelation[];
+    } catch (error) {
+        console.error("定石の取得に失敗: ", error);
     }
 }
 
@@ -148,8 +177,10 @@ export default function Page({ params }: { params: PageParams }) {
 
     // カテゴリー選択状態
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
+    // 定石選択状態
+    const [approachIds, setApproachIds] = useState<number[]>([]);
 
-    // 編集前にパズルとカテゴリーを取得
+    // 編集前にパズル、カテゴリーを取得
     useEffect(() => {
         fetchInitialPuzzle(params.id).then((puzzle) => {
             if (!puzzle) {
@@ -159,6 +190,21 @@ export default function Page({ params }: { params: PageParams }) {
             const initialCategoryIds = puzzle.PuzzleCategory.map((pc) => pc.category.id);
             console.log("カテゴリーを取得しました: ", initialCategoryIds);
             setCategoryIds(initialCategoryIds);
+        });
+    }, [params.id]);
+
+    // 編集前に定石を取得
+    useEffect(() => {
+        function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
+            return getApproachesByPuzzleId(parseInt(id));
+        }
+        fetchInitialApproaches(params.id).then((approaches) => {
+            if (!approaches) {
+                return;
+            }
+            const initialApproachIds = approaches.map((a) => a.approach_id);
+            console.log("定石を取得しました: ", initialApproachIds);
+            setApproachIds(initialApproachIds);
         });
     }, [params.id]);
 
@@ -214,8 +260,13 @@ export default function Page({ params }: { params: PageParams }) {
     };
 
     // カテゴリーを選択
-    const handleCheckboxChange = (categoryIds: number[]) => {
+    const handleCategoriesChange = (categoryIds: number[]) => {
         setCategoryIds(categoryIds);
+    }
+
+    // 定石を選択
+    const handleApproachesChange = (approachIds: number[]) => {
+        setApproachIds(approachIds);
     }
 
     return (
@@ -247,6 +298,8 @@ export default function Page({ params }: { params: PageParams }) {
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}
             />
+            {/* ヒント */}
+            <p>ヒント</p>
             <HintsEditor
                 maxHints={maxHints}
                 defaultValues={hintsDelta}
@@ -254,11 +307,17 @@ export default function Page({ params }: { params: PageParams }) {
             />
             {/* カテゴリー */}
             <CategoryCheckbox
-                onChange={handleCheckboxChange}
+                onChange={handleCategoriesChange}
                 value={categoryIds}
             />
+            {/* 定石 */}
+            <ApproachCheckbox
+                onChange={handleApproachesChange}
+                value={approachIds}
+            />
+            
             {/* 内容を送信 */}
-            <button type="button" onClick={() => send( params.id || "0", title, categoryIds, quillDescriptionRef, quillSolutionRef)}>
+            <button type="button" onClick={() => send( params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef)}>
                 Send
             </button>
         </div>

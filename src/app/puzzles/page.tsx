@@ -68,7 +68,11 @@ export default function Home() {
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>
                         <Link href={`/puzzles/${puzzle.id}`}>
+                        {puzzle.PuzzleCategory[0] ? (
                         <p>{puzzle.title} - {puzzle.PuzzleCategory[0].category.name}</p>
+                        ) : (
+                        <p>{puzzle.title} - カテゴリー未設定</p>
+                        )}
                         </Link>
                     </li>
                 ))}

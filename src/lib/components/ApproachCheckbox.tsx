@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getApproaches } from "../api/approachApi";
 import { Approach } from "@prisma/client";
+import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
 
 /**
  * 定石一覧を取得
@@ -12,15 +13,38 @@ async function fetch() {
     return approaches as Approach[];
 }
 
+type ApproachWithRelation = {
+    id: number;
+    puzzle_id: number;
+    approach_id: number;
+    approach: Approach;
+};
+
 interface ApproachCheckboxProps {
     onChange: (approachIds: number[]) => void;
+    puzzle_id: string;
     value: number[];
 }
 
-export default function ApproachCheckbox({ onChange, value }: ApproachCheckboxProps) {
+export default function ApproachCheckbox({ onChange, puzzle_id, value }: ApproachCheckboxProps) {
     const [approaches, setApproaches] = useState<Approach[] | null>(null);
     const [checkedApproachIds, setCheckedApproachIds] = useState<number[]>(value);
-    
+
+    // 編集前に定石を取得
+    useEffect(() => {
+        async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
+            return getApproachesByPuzzleId(parseInt(id));
+        }
+        fetchInitialApproaches(puzzle_id).then((approaches) => {
+            if (!approaches) {
+                return;
+            }
+            const initialApproachIds = approaches.map((a) => a.approach_id);
+            console.log("定石を取得しました: ", initialApproachIds);
+            setCheckedApproachIds(initialApproachIds);
+        });
+    }, []); 
+
     // 定石一覧を取得
     async function fetchApproaches() {
         try {

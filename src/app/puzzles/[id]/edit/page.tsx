@@ -5,8 +5,8 @@ import Editor from '@/lib/components/Editor';
 import { useEffect, useState, useRef } from 'react';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import getHintsByPuzzleId from '@/lib/api/hintapi';
-import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
-import { Puzzle, Hint, Approach } from '@prisma/client';
+
+import { Puzzle, Hint } from '@prisma/client';
 import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
@@ -39,13 +39,6 @@ type PuzzleWithCategories = {
         }
     }[]
 }
-
-type ApproachWithRelation = {
-    id: number;
-    puzzle_id: number;
-    approach_id: number;
-    approach: Approach;
-};
 
 /**
  * 内容を送信
@@ -174,21 +167,6 @@ export default function Page({ params }: { params: PageParams }) {
         });
     }, [params.id]);
 
-    // 編集前に定石を取得
-    useEffect(() => {
-        async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
-            return getApproachesByPuzzleId(parseInt(id));
-        }
-        fetchInitialApproaches(params.id).then((approaches) => {
-            if (!approaches) {
-                return;
-            }
-            const initialApproachIds = approaches.map((a) => a.approach_id);
-            console.log("定石を取得しました: ", initialApproachIds);
-            setApproachIds(initialApproachIds);
-        });
-    }, [params.id]);
-
     // 編集前にヒントを取得
     useEffect(() => {
         fetchInitialHints(params.id).then((hints) => {
@@ -294,6 +272,7 @@ export default function Page({ params }: { params: PageParams }) {
             {/* 定石 */}
             <ApproachCheckbox
                 onChange={handleApproachesChange}
+                puzzle_id={params.id || "0"}
                 value={approachIds}
             />
             

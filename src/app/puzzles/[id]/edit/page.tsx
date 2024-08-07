@@ -22,24 +22,6 @@ type Change = {
     ops: any[];
 };
 
-type PuzzleWithCategories = {
-    id: number;
-    title: string;
-    description: string;
-    solution: string;
-    user_answer: string;
-    difficulty: number;
-    is_favorite: boolean;
-    created_at: Date;
-    updated_at: Date;
-    PuzzleCategory: {
-        category: {
-            id: number;
-            name: string;
-        }
-    }[]
-}
-
 /**
  * 内容を送信
  * @param id パズルID
@@ -94,9 +76,9 @@ async function send(id: string, title: string, categoryIds: number[], approachId
 /**
  * 編集前のパズルを取得
  * @param id パズルID
- * @returns Promise<PuzzleWithCategories | undefined> パズル
+ * @returns Promise<Puzzle | undefined> パズル
  */
-async function fetchInitialPuzzle(id: string): Promise<PuzzleWithCategories | undefined> {
+async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
     try {
         const puzzle = await getPuzzleById(id);
         if (!puzzle) {
@@ -132,7 +114,7 @@ async function fetchInitialHints(id: string): Promise<Hint[] | undefined> {
 export default function Page({ params }: { params: PageParams }) {
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
-    const [puzzle, setPuzzle] = useState<PuzzleWithCategories | null>(null);
+    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [title, setTitle] = useState<string>("");
     const [descriptionDelta, setDescriptionDelta] = useState<any>(null);
     const [solutionDelta, setSolutionDelta] = useState<any>(null);
@@ -154,16 +136,13 @@ export default function Page({ params }: { params: PageParams }) {
     // 定石選択状態
     const [approachIds, setApproachIds] = useState<number[]>([]);
 
-    // 編集前にパズル、カテゴリーを取得
+    // 編集前にパズルを取得
     useEffect(() => {
         fetchInitialPuzzle(params.id).then((puzzle) => {
             if (!puzzle) {
                 return;
             }
             setPuzzle(puzzle);
-            const initialCategoryIds = puzzle.PuzzleCategory.map((pc) => pc.category.id);
-            console.log("カテゴリーを取得しました: ", initialCategoryIds);
-            setCategoryIds(initialCategoryIds);
         });
     }, [params.id]);
 
@@ -267,6 +246,7 @@ export default function Page({ params }: { params: PageParams }) {
             {/* カテゴリー */}
             <CategoryCheckbox
                 onChange={handleCategoriesChange}
+                puzzle_id={params.id || "0"}
                 value={categoryIds}
             />
             {/* 定石 */}

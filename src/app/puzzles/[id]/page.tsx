@@ -81,7 +81,7 @@ export default function Page({ params }: { params: PageParams }) {
             <p>お気に入り : {puzzle.is_favorite ? 'YES' : 'NO'}</p>
             <p>カテゴリー : {puzzle.PuzzleCategory.map((p) => p.category.name).join(", ")}</p>
             <Link href="/puzzles/[id]/edit" as={`/puzzles/${params.id}/edit`}>(管理者のみ)編集</Link>
-            <p>解く</p>
+            <Link href="/puzzles/[id]/solve" as={`/puzzles/${params.id}/solve`}>解く</Link>
             <Link href="/puzzles">戻る</Link>
         </div>
     );

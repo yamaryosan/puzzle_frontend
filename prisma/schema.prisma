@@ -39,6 +39,7 @@ model Puzzle {
   user_id       String // ユーザーID(FirebaseのUID)
   difficulty    Int     // 難易度
   is_favorite   Boolean @default(false) // お気に入り
+  is_solved     Boolean @default(false) // 解いたかどうか
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

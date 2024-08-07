@@ -30,7 +30,7 @@ type CategoryWithRelation = {
     id: number;
     puzzle_id: number;
     category_id: number;
-    categories: Category[];
+    category: Category;
 };
 
 interface CategoryCheckboxProps {

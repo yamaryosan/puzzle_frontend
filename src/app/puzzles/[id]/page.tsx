@@ -2,37 +2,29 @@
 
 import Link from 'next/link';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
+import { getCategoriesByPuzzleId } from '@/lib/api/categoryapi';
 import { useEffect, useState, useRef } from 'react';
 import Viewer from '@/lib/components/Viewer';
 import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
+import { Category, Puzzle } from '@prisma/client';
 
 
 type PageParams = {
     id: string;
 };
 
-type PuzzleWithCategories = {
+type CategoryWithRelation = {
     id: number;
-    title: string;
-    description: string;
-    solution: string;
-    user_answer: string;
-    difficulty: number;
-    is_favorite: boolean;
-    created_at: Date;
-    updated_at: Date;
-    PuzzleCategory: {
-        category: {
-            id: number;
-            name: string;
-        }
-    }[]
-}
+    puzzle_id: number;
+    category_id: number;
+    category: Category;
+};
 
 export default function Page({ params }: { params: PageParams }) {
-    const [puzzle, setPuzzle] = useState<PuzzleWithCategories | null>(null);
+    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+    const [categories, setCategories] = useState<CategoryWithRelation[]>([]);
     const quillRef = useRef<Quill | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -47,6 +39,19 @@ export default function Page({ params }: { params: PageParams }) {
             }
         }
         fetchPuzzle();
+    }, [params.id]);
+
+    // パズルのカテゴリーを取得
+    useEffect(() => {
+        async function fetchCategories() {
+            try {
+                const categories = await getCategoriesByPuzzleId(parseInt(params.id));
+                setCategories(categories ?? []);
+            } catch (error) {
+                console.error("カテゴリーの取得に失敗: ", error);
+            }
+        }
+        fetchCategories();
     }, [params.id]);
 
     if (!puzzle) {
@@ -79,7 +84,7 @@ export default function Page({ params }: { params: PageParams }) {
             />
             <p>難易度 : {puzzle.difficulty}</p>
             <p>お気に入り : {puzzle.is_favorite ? 'YES' : 'NO'}</p>
-            <p>カテゴリー : {puzzle.PuzzleCategory.map((p) => p.category.name).join(", ")}</p>
+            <p>カテゴリー : {categories.map((category) => category.category.name).join(", ")}</p>
             <Link href="/puzzles/[id]/edit" as={`/puzzles/${params.id}/edit`}>(管理者のみ)編集</Link>
             <Link href="/puzzles/[id]/solve" as={`/puzzles/${params.id}/solve`}>解く</Link>
             <Link href="/puzzles">戻る</Link>

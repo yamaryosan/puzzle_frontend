@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Puzzle } from "@prisma/client";
+import { Puzzle, Category } from "@prisma/client";
 
 type puzzleRequest = {
     title: string;
@@ -10,7 +10,7 @@ type puzzleRequest = {
 
 /**
  * パズル一覧を取得
- * @returns Promise<PuzzleWithCategories[]>
+ * @returns Promise<Puzzle[]>
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {

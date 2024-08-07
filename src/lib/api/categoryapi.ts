@@ -4,7 +4,7 @@ type CategoryWithRelation = {
     id: number;
     puzzle_id: number;
     category_id: number;
-    categories: Category[];
+    category: Category;
 };
 
 /**
@@ -123,7 +123,7 @@ async function deleteCategory(id: string) {
 /**
  * 問題に紐づいているカテゴリーを取得する
  * @param id 問題ID
- * @returns Promise<CategoryWithRelation[] | undefined>
+ * @returns Promise<CategoryWithRelation[]>
  */
 export async function getCategoriesByPuzzleId(id: number) {
     try {

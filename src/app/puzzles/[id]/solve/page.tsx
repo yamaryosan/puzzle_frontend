@@ -10,6 +10,7 @@ import { Hint, Approach, Category } from "@prisma/client";
 import getHintsByPuzzleId from "@/lib/api/hintapi";
 import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
 import { getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
+import { useRouter } from "next/navigation";
 
 type Change = {
     ops: any[];
@@ -53,7 +54,7 @@ async function send(id: string, answerRef: React.RefObject<Quill | null>): Promi
     }
     const answerHtml = answerRef.current.root.innerHTML;
 
-    const response = await fetch(`/api/puzzles/${id}`, {
+    const response = await fetch(`/api/puzzles/${id}/answer`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -73,6 +74,8 @@ async function send(id: string, answerRef: React.RefObject<Quill | null>): Promi
 }
 
 export default function Page({ params }: { params: { id: string } }) {
+    const router = useRouter();
+
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [answer, setAnswer] = useState<string>('');
     const [range, setRange] = useState<Range>();
@@ -120,6 +123,14 @@ export default function Page({ params }: { params: { id: string } }) {
         }
         fetchApproaches();
     }, []);
+
+    // 送信
+    const handleSend = async () => {
+        const puzzle = await send(params.id, answerRef);
+        if (puzzle) {
+            router.push(`/puzzles/${params.id}/check-answer`);
+        }
+    }
 
     if (!puzzle) {
         return <div>loading...</div>;
@@ -177,6 +188,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 readOnly={true}
                 defaultValue={puzzle.solution}
             />
+            <button onClick={() => handleSend()}>回答を送信</button>
         </div>
     )
 }

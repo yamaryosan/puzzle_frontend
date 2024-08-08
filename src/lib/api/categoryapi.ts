@@ -125,7 +125,7 @@ async function deleteCategory(id: string) {
  * @param id 問題ID
  * @returns Promise<CategoryWithRelation[]>
  */
-export async function getCategoriesByPuzzleId(id: number) {
+export async function getCategoriesByPuzzleId(id: string) {
     try {
         const response = await fetch(`/api/puzzles/${id}/categories`);
         if (!response.ok) {

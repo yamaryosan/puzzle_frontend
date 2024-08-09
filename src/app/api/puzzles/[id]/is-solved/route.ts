@@ -6,4 +6,5 @@ import { NextRequest, NextResponse } from "next/server";
  * @param params パラメータ
  */
 export async function PUT(req: NextRequest, { params }: {params: {id: string}}) {
+    
 }

@@ -1,5 +1,12 @@
 import { Category, Puzzle } from "@prisma/client";
 
+type CategoryWithRelation = {
+    id: number;
+    puzzle_id: number;
+    category_id: number;
+    category: Category;
+};
+
 /**
  * カテゴリー一覧を取得
  * @returns Promise<Category[]>
@@ -111,6 +118,27 @@ async function deleteCategory(id: string) {
         return;
     }
     console.log("カテゴリーの削除に成功");
+}
+
+/**
+ * 問題に紐づいているカテゴリーを取得する
+ * @param id 問題ID
+ * @returns Promise<CategoryWithRelation[]>
+ */
+export async function getCategoriesByPuzzleId(id: string) {
+    try {
+        const response = await fetch(`/api/puzzles/${id}/categories`);
+        if (!response.ok) {
+            const error = await response.json();
+            console.error("カテゴリーの取得に失敗: ", error);
+            return;
+        }
+        const categories = await response.json();
+        console.log("カテゴリーの取得に成功: ", categories);
+        return categories as CategoryWithRelation[];
+    } catch (error) {
+        console.error("カテゴリーの取得に失敗: ", error);
+    }
 }
 
 export { getCategories, createCategory, getCategoryById, updateCategory, deleteCategory, fetchPuzzlesByCategoryId };

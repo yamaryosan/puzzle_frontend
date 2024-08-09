@@ -74,7 +74,7 @@ export async function getPuzzlesByApproachId(id: number) {
  * @param id 問題ID
  * @returns Promise<ApproachWithRelation[]>
  */
-export async function getApproachesByPuzzleId(id: number) {
+export async function getApproachesByPuzzleId(id: string) {
     try {
         const response = await fetch(`/api/puzzles/${id}/approaches`);
         if (!response.ok) {

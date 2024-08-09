@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { getCategories, createCategory } from "@/lib/api/categoryapi";
+import { getCategories, createCategory, getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { Category } from "@prisma/client";
-
-type Categories = Category[];
 
 /**
  * カテゴリー一覧を取得
@@ -11,7 +9,7 @@ type Categories = Category[];
  */
 async function fetch() {
     const categories = await getCategories();
-    return categories as Categories;
+    return categories as Category[];
 }
 
 /**
@@ -28,16 +26,24 @@ async function create(name: string) {
     return newCategory as Category;
 }
 
+type CategoryWithRelation = {
+    id: number;
+    puzzle_id: number;
+    category_id: number;
+    category: Category;
+};
+
 interface CategoryCheckboxProps {
     onChange: (categoryIds: number[]) => void;
+    puzzle_id: string;
     value: number[];
 }
 
-export default function CategoryCheckbox({ onChange, value }: CategoryCheckboxProps) {
-    const [categories, setCategories] = useState<Categories | null>(null);
+export default function CategoryCheckbox({ onChange, puzzle_id, value }: CategoryCheckboxProps) {
+    const [categories, setCategories] = useState<Category[] | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
     const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>(value);
-    
+
     // カテゴリー一覧を取得
     async function fetchCategories() {
         try {
@@ -45,13 +51,28 @@ export default function CategoryCheckbox({ onChange, value }: CategoryCheckboxPr
             setCategories(categories);
             return categories;
         } catch (error) {
-            console.error("カテゴリーの取得に失敗: ", error);
+            console.error("定石の取得に失敗: ", error);
             return null;
         }
     }
 
     useEffect(() => {
         fetchCategories();
+    }, []);
+
+    // 選択中のカテゴリー一覧を取得
+    useEffect(() => {
+        async function fetchInitialCategories(id: string): Promise<CategoryWithRelation[] | undefined> {
+            return getCategoriesByPuzzleId(parseInt(id));
+        }
+        fetchInitialCategories(puzzle_id).then((categories) => {
+            if (!categories) {
+                return;
+            }
+            const initialCategoryIds = categories.map((c) => c.category_id);
+            console.log("カテゴリーを取得しました: ", initialCategoryIds);
+            setCheckedCategoryIds(initialCategoryIds);
+        });
     }, []);
 
     // チェックされたカテゴリーのIDを親コンポーネントに渡す
@@ -70,7 +91,8 @@ export default function CategoryCheckbox({ onChange, value }: CategoryCheckboxPr
             // 入力値をリセット
             setNewCategory("");
             // カテゴリー一覧を再取得
-            await fetchCategories();
+            const categories = await fetch();
+            setCategories(categories);
             // 新しいカテゴリーにチェックを入れる
             setCheckedCategoryIds(prev => [...prev, createdCategory.id]);
         } catch (error) {

@@ -3,27 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getPuzzles } from '@/lib/api/puzzleapi';
+import { Puzzle, Category } from '@prisma/client';
 
-type PuzzleWithCategories = {
-    id: number;
-    title: string;
-    description: string;
-    solution: string;
-    user_answer: string;
-    difficulty: number;
-    is_favorite: boolean;
-    created_at: Date;
-    updated_at: Date;
-    PuzzleCategory: {
-        category: {
-            id: number;
-            name: string;
-        }
-    }[]
-}
-
-export default function Home() {
-    const [puzzles, setPuzzles] = useState<PuzzleWithCategories[]>([]);
+export default function Page() {
+    const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [desc, setDesc] = useState(false);
 
     // パズル一覧を取得
@@ -39,19 +23,7 @@ export default function Home() {
         fetchPuzzles();
     }, []);
 
-    // カテゴリー別でパズルを並び替え
-    const handleSortByCategory = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        setDesc(!desc);
-        const sortedPuzzles = [...puzzles].sort((a, b) => {
-            if (desc) {
-                return a.PuzzleCategory[0].category.name.localeCompare(b.PuzzleCategory[0].category.name);
-            } else {
-                return b.PuzzleCategory[0].category.name.localeCompare(a.PuzzleCategory[0].category.name);
-            }
-        });
-        setPuzzles(sortedPuzzles);
-    }
+    // カテゴリーで絞り込み
 
     if (!puzzles) {
     return <div>loading...</div>;
@@ -61,18 +33,14 @@ export default function Home() {
         <div>
             <Link href="/puzzles/create">新しいパズルを作成</Link>
             <p>難易度で並び替え</p>
-            <button onClick={handleSortByCategory}>カテゴリー別で並び替え</button>
+            <button onClick={() => setDesc(!desc)}>昇順/降順</button>
             <p>ランダムに並び替え</p>
             <p>パズル一覧</p>
             <ul>
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>
                         <Link href={`/puzzles/${puzzle.id}`}>
-                        {puzzle.PuzzleCategory[0] ? (
-                        <p>{puzzle.title} - {puzzle.PuzzleCategory[0].category.name}</p>
-                        ) : (
-                        <p>{puzzle.title} - カテゴリー未設定</p>
-                        )}
+                            {puzzle.title}
                         </Link>
                     </li>
                 ))}

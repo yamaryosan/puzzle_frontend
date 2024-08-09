@@ -11,23 +11,23 @@ import { getPuzzleById } from "@/lib/api/puzzleapi";
  * @param isSolved 正解かどうか
  * @returns 
  */
-async function sendIsSolved(req: { id: string; isSolved: boolean; }): Promise<Puzzle | undefined> {
+async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | undefined> {
     // IDが空の場合はエラー
-    if (!req.id) {
+    if (!id) {
         console.error("IDが空です");
         return;
     }
     // IDが0以下の場合はエラー
-    if (parseInt(req.id) <= 0) {
+    if (parseInt(id) <= 0) {
         console.error("IDが不正です");
         return;
     }
-    const response = await fetch(`/api/puzzles/${req.id}/is-solved`, {
+    const response = await fetch(`/api/puzzles/${id}/is-solved`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ is_solved: req.isSolved }),
+        body: JSON.stringify({isSolved})
     });
     if (!response.ok) {
         const error = await response.json();
@@ -40,7 +40,6 @@ async function sendIsSolved(req: { id: string; isSolved: boolean; }): Promise<Pu
 
 export default function Page({ params }: { params: { id: string } }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
-    const [isSolved, setIsSolved] = useState<boolean>(false);
 
     // パズルを取得
     useEffect(() => {
@@ -61,13 +60,13 @@ export default function Page({ params }: { params: { id: string } }) {
 
     // 正解時の処理
     const correct = () => {
-        setIsSolved(true);
+        sendIsSolved(params.id, true);
     };
 
     // 不正解時の処理
     const incorrect = () => {
         const isSolved = false;
-        setIsSolved(false);
+        sendIsSolved(params.id, false);
     };
 
     return (

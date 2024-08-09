@@ -5,8 +5,42 @@ import { Puzzle } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 
+/**
+ * 正解かどうかを送信
+ * @param id パズルID
+ * @param isSolved 正解かどうか
+ * @returns 
+ */
+async function sendIsSolved(req: { id: string; isSolved: boolean; }): Promise<Puzzle | undefined> {
+    // IDが空の場合はエラー
+    if (!req.id) {
+        console.error("IDが空です");
+        return;
+    }
+    // IDが0以下の場合はエラー
+    if (parseInt(req.id) <= 0) {
+        console.error("IDが不正です");
+        return;
+    }
+    const response = await fetch(`/api/puzzles/${req.id}/is-solved`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_solved: req.isSolved }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("パズルの更新に失敗: ", error);
+    }
+    const puzzle = await response.json() as Puzzle;
+    console.log("パズルの更新に成功: ", puzzle);
+    return puzzle;
+}
+
 export default function Page({ params }: { params: { id: string } }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
+    const [isSolved, setIsSolved] = useState<boolean>(false);
 
     // パズルを取得
     useEffect(() => {
@@ -27,12 +61,13 @@ export default function Page({ params }: { params: { id: string } }) {
 
     // 正解時の処理
     const correct = () => {
-        // ここに処理を記述
+        setIsSolved(true);
     };
 
     // 不正解時の処理
     const incorrect = () => {
-        // ここに処理を記述
+        const isSolved = false;
+        setIsSolved(false);
     };
 
     return (

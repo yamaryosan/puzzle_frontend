@@ -4,6 +4,7 @@ import Viewer from "@/lib/components/Viewer";
 import { Puzzle } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
+import { useRouter } from "next/navigation";
 
 /**
  * 正解かどうかを送信
@@ -39,6 +40,8 @@ async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | und
 }
 
 export default function Page({ params }: { params: { id: string } }) {
+    const router = useRouter();
+
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
 
     // パズルを取得
@@ -61,6 +64,7 @@ export default function Page({ params }: { params: { id: string } }) {
     // 正解時の処理
     const correct = () => {
         sendIsSolved(params.id, true);
+        router.push("/puzzles");
     };
 
     // 不正解時の処理

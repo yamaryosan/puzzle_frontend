@@ -45,7 +45,7 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const categories = await getCategoriesByPuzzleId(parseInt(params.id));
+                const categories = await getCategoriesByPuzzleId(params.id);
                 setCategories(categories ?? []);
             } catch (error) {
                 console.error("カテゴリーの取得に失敗: ", error);

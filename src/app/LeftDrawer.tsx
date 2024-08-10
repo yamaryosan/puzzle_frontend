@@ -4,14 +4,15 @@ import {IconButton, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListIt
 import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout, ArrowLeft, ArrowRight } from '@mui/icons-material';
 import AddPuzzleIcon from '@/lib/icons/AddPuzzleIcon';
 import { useState } from 'react';
+import Link from 'next/link';
 
 const menu = [
-    {title: 'パズル一覧', icon: Extension},
-    {title: 'パズル作成', icon: AddCircleOutline},
-    {title: '定石一覧', icon: Quiz},
-    {title: '定石作成', icon: AddCircleOutline},
-    {title: 'プロフィール', icon: AccountCircle},
-    {title: 'ログアウト', icon: Logout},
+    {title: 'パズル一覧', icon: Extension, href: '/puzzles'},
+    {title: 'パズル作成', icon: AddCircleOutline, href: '/puzzles/create'},
+    {title: '定石一覧', icon: Quiz, href: '/approaches'},
+    {title: '定石作成', icon: AddCircleOutline, href: '/approaches/create'},
+    {title: 'プロフィール', icon: AccountCircle, href: '/profile'},
+    {title: 'ログアウト', icon: Logout, href: '/logout'},
 ];
 
 export default function LeftDrawer() {
@@ -33,7 +34,7 @@ export default function LeftDrawer() {
                 transform: 'translateY(-50%)',
                 cursor: 'pointer', 
                 width: '4rem', 
-                height: '80%'
+                height: '100%'
                 }} >
                 < ArrowRight />
             </Box>
@@ -41,9 +42,11 @@ export default function LeftDrawer() {
                 <List>
                     {menu.map((item) => (
                         <ListItem key={item.title}>
-                            <ListItemButton>
+                            <ListItemButton href={item.href}>
                                 <ListItemIcon>
-                                    <item.icon />
+                                    <IconButton>
+                                        <item.icon />
+                                    </IconButton>
                                 </ListItemIcon>
                                 <ListItemText primary={item.title} />
                             </ListItemButton>

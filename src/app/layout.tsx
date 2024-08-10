@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import Main from "@/app/Main";
+import theme from "@/theme";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,9 +18,12 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     return (
         <html lang="ja">
             <body className={inter.className}>
-                <Header />
-                <Main children={children} />
-                <Footer />
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Header />
+                    <Main children={children} />
+                    <Footer />
+                </ThemeProvider>
             </body>
         </html>
     );

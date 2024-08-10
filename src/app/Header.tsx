@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 export default function Header() {
     return (
         <header>
-            <Box sx={{ display: 'flex', bgcolor: 'primary.main', color: 'white', padding: '1rem' }}>
+            <Box sx={{ display: 'flex', bgcolor: 'primary.main', padding: '1rem', color: 'text.secondary' }}>
                 <Link href="/">ホーム</Link>
                 <Link href="/dashboard">ダッシュボード</Link>
                 <Link href="/categories">カテゴリー一覧</Link>

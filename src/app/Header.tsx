@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Box from '@mui/material/Box';
+import { Home, Category, Favorite, Search } from '@mui/icons-material';
 
 export default function Header() {
     return (
@@ -12,11 +13,22 @@ export default function Header() {
                 fontSize: '1.1rem',
                 gap: '1rem',
                 }}>
-                <Link href="/">ホーム</Link>
-                <Link href="/categories">カテゴリー一覧</Link>
-                <Link href="/approaches">定石一覧</Link>
-                <Link href="/favorites">お気に入り</Link>
-            <p>検索ボックス(モーダル)</p>
+                    <Link href="/">
+                    <Home />
+                    ホーム
+                    </Link>
+                    <Link href="/categories">
+                    <Category />
+                    カテゴリー一覧
+                    </Link>
+                    <Link href="/favorites">
+                    <Favorite />
+                    お気に入り
+                    </Link>
+                    <p>
+                    <Search />
+                        検索ボックス(モーダル)
+                    </p>
             </Box>
         </header>
     );

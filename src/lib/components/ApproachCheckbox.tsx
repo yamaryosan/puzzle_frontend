@@ -33,7 +33,7 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     // 編集前に定石を取得
     useEffect(() => {
         async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
-            return getApproachesByPuzzleId(parseInt(id));
+            return getApproachesByPuzzleId(id);
         }
         fetchInitialApproaches(puzzle_id).then((approaches) => {
             if (!approaches) {

@@ -1,7 +1,7 @@
 'use client';
 
-import {Button, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from '@mui/material';
-import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout } from '@mui/icons-material';
+import {IconButton, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from '@mui/material';
+import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout, ArrowLeft, ArrowRight } from '@mui/icons-material';
 import AddPuzzleIcon from '@/lib/icons/AddPuzzleIcon';
 import { useState } from 'react';
 
@@ -23,7 +23,9 @@ export default function LeftDrawer() {
 
     return (
         <>
-            <Button onClick={handleOpen}>Open</Button>
+            <IconButton onClick={handleOpen} sx={{position: 'fixed', top: '50%', left: '0.5rem'}} >
+                < ArrowRight />
+            </IconButton>
             <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
                 <List>
                     {menu.map((item) => (

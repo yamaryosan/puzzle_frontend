@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getPuzzles } from '@/lib/api/puzzleapi';
 import { Puzzle, Category } from '@prisma/client';
+import PuzzleCard from '@/lib/components/PuzzleCard';
 
 export default function Page() {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
@@ -39,9 +40,7 @@ export default function Page() {
             <ul>
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>
-                        <Link href={`/puzzles/${puzzle.id}`}>
-                            {puzzle.title}
-                        </Link>
+                        <PuzzleCard id={puzzle.id} title={puzzle.title} />
                     </li>
                 ))}
             </ul>

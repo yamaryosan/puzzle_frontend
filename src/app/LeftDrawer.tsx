@@ -1,12 +1,17 @@
 'use client';
 
 import {Button, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from '@mui/material';
+import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout } from '@mui/icons-material';
+import AddPuzzleIcon from '@/lib/icons/AddPuzzleIcon';
 import { useState } from 'react';
 
 const menu = [
-    {text: 'Home', icon: 'home'},
-    {text: 'About', icon: 'info'},
-    {text: 'Contact', icon: 'mail'},
+    {title: 'パズル一覧', icon: Extension},
+    {title: 'パズル作成', icon: AddCircleOutline},
+    {title: '定石一覧', icon: Quiz},
+    {title: '定石作成', icon: AddCircleOutline},
+    {title: 'プロフィール', icon: AccountCircle},
+    {title: 'ログアウト', icon: Logout},
 ];
 
 export default function LeftDrawer() {
@@ -22,10 +27,12 @@ export default function LeftDrawer() {
             <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
                 <List>
                     {menu.map((item) => (
-                        <ListItem key={item.text}>
+                        <ListItem key={item.title}>
                             <ListItemButton>
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
+                                <ListItemIcon>
+                                    <item.icon />
+                                </ListItemIcon>
+                                <ListItemText primary={item.title} />
                             </ListItemButton>
                         </ListItem>
                     ))}

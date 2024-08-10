@@ -41,16 +41,18 @@ export default function LeftDrawer() {
             <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
                 <List>
                     {menu.map((item) => (
-                        <ListItem key={item.title}>
-                            <ListItemButton href={item.href}>
-                                <ListItemIcon>
-                                    <IconButton>
-                                        <item.icon />
-                                    </IconButton>
-                                </ListItemIcon>
-                                <ListItemText primary={item.title} />
-                            </ListItemButton>
-                        </ListItem>
+                        <Link href={item.href} key={item.title}>
+                            <ListItem key={item.title}>
+                                <ListItemButton onClick={() => setOpen(false)}>
+                                    <ListItemIcon>
+                                        <IconButton>
+                                            <item.icon />
+                                        </IconButton>
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.title} />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
                     ))}
                 </List>
             </Drawer>

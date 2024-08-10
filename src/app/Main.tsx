@@ -1,10 +1,13 @@
 import LeftDrawer from "@/app/LeftDrawer";
+import { Box } from "@mui/material";
 
 export default function Main({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <>
             <LeftDrawer />
-            {children}
+            <Box sx={{ marginLeft: '4rem', marginTop: '2rem' }}>
+                {children}
+            </Box>
         </>
     )
 }

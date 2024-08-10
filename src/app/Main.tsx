@@ -5,7 +5,7 @@ export default function Main({ children }: Readonly<{ children: React.ReactNode;
     return (
         <>
             <LeftDrawer />
-            <Box sx={{ marginLeft: '4rem', marginTop: '2rem' }}>
+            <Box sx={{ marginX: '4rem', marginTop: '2rem' }}>
                 {children}
             </Box>
         </>

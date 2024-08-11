@@ -33,7 +33,7 @@ export default function LeftDrawer() {
                 alignItems: 'center',
                 transform: 'translateY(-50%)',
                 cursor: 'pointer', 
-                width: '4rem', 
+                width: '2rem', 
                 height: '100%'
                 }} >
                 < ArrowRight />

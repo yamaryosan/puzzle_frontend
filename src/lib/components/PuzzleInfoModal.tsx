@@ -2,8 +2,7 @@ import { Box } from "@mui/material"
 import { Puzzle } from "@prisma/client";
 import Viewer from "@/lib/components/Viewer";
 import Quill from "quill";
-import { useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 
 type PuzzleInfoModalProps = {
@@ -15,8 +14,14 @@ type PuzzleInfoModalProps = {
  * パズルの見出しをホバーすると表示される
  */
 export default function PuzzleInfoModal({ puzzle }: PuzzleInfoModalProps) {
-    const router = useRouter();
     const quillRef = useRef<Quill | null>(null);
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        setIsReady(true);
+      }, []);
+    
+      if (!isReady) return null;
 
     return (
         <>

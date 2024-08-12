@@ -1,3 +1,4 @@
+import { colors } from "@mui/material";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -10,8 +11,14 @@ const config: Config = {
         extend: {
             colors: {
                 primary : {
-                    light: "#012454",
-                    dark: "#000000",
+                    main: colors.indigo[500],
+                    light: colors.indigo[300],
+                    dark: colors.indigo[700],
+                },
+                secondary: {
+                    main: colors.lime[500],
+                    light: colors.lime[300],
+                    dark: colors.lime[700],
                 },
             },
         },

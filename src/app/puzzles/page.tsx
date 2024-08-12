@@ -40,7 +40,7 @@ export default function Page() {
             <ul>
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>
-                        <PuzzleCard id={puzzle.id} title={puzzle.title} />
+                        <PuzzleCard puzzle={puzzle} />
                     </li>
                 ))}
             </ul>

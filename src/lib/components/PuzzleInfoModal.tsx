@@ -30,16 +30,19 @@ export default function PuzzleInfoModal({ puzzle }: PuzzleInfoModalProps) {
             top: "15%",
             left: "15%",
             backgroundColor: "white",
-            opacity: 0.9,
+            opacity: 0.7,
             border: "1px solid black",
             padding: "1rem",
+            ":hover": {
+                opacity: 1,
+            }
         }}>
             <Viewer 
             readOnly={true}
             defaultValue={puzzle.description}
             ref={quillRef}
             />
-            <Link href={`/puzzles/${puzzle.id}/solve`}>解く</Link>
+            <Link href={`/puzzles/${puzzle.id}/solve`} className="text-red-500 hover:text-red-900">解く</Link>
         </Box>
         </>
     );

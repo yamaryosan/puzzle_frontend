@@ -3,6 +3,7 @@ import { Puzzle } from "@prisma/client";
 import Viewer from "@/lib/components/Viewer";
 import Quill from "quill";
 import { useRef, useState, useEffect } from "react";
+import { EmojiObjects, Edit } from "@mui/icons-material";
 import Link from "next/link";
 
 type PuzzleInfoProps = {
@@ -26,7 +27,41 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
             defaultValue={puzzle.description}
             ref={quillRef}
             />
-            <Button className="text-red-500 hover:text-red-900">解く</Button>
+            <Button
+            sx={{
+                marginTop: "1rem",
+                width: "100%",
+                ":hover": {
+                    backgroundColor: "secondary.main",
+                    transition: "background-color 0.3s",
+                    border: "1px solid black",
+                },
+                color: "black",
+            }}
+            >
+                <Link href={`/puzzles/${puzzle.id}/solve`}>
+                <EmojiObjects />
+                <span>解く</span>
+                </Link>
+            </Button>
+
+            <Button
+            sx={{
+                marginTop: "1rem",
+                width: "100%",
+                ":hover": {
+                    backgroundColor: "secondary.main",
+                    transition: "background-color 0.3s",
+                    border: "1px solid black",
+                },
+                color: "black",
+            }}
+            >
+                <Link href={`/puzzles/${puzzle.id}/edit`}>
+                <Edit />
+                <span>編集</span>
+                </Link>
+            </Button>
         </Box>
         </>
     );

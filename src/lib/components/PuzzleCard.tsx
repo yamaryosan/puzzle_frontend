@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Card } from "@mui/material";
+import { Box, Card } from "@mui/material";
 import { useState } from "react";
-import PuzzleInfoModal from "@/lib/components/PuzzleInfoModal";
-import { createPortal } from "react-dom";
+import PuzzleInfo from "@/lib/components/PuzzleInfo";
 import { Puzzle } from "@prisma/client";
 
 type PuzzleCardProps = {
@@ -10,26 +9,29 @@ type PuzzleCardProps = {
 };
 
 export default function PuzzleCard({ puzzle }: PuzzleCardProps) {
-    const [isHovered, setIsHovered] = useState(false);
+    const [isClicked, setIsClicked] = useState(false);
     
     return (
-        <Link href={`/puzzles/${puzzle.id}`}>
-            <Card variant="outlined"
-                sx={{
-                    marginY: 1,
-                    padding: "1rem",
-                    ":hover": {
-                        backgroundColor: "secondary.light",
-                    },
-                    cursor: "pointer",
-                    position: "relative",
-                }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                <h2>{puzzle.title}</h2>
-                {isHovered && createPortal(<PuzzleInfoModal puzzle={puzzle} />, document.body)}
-            </Card>
-        </Link>
+        <Card variant="outlined"
+            sx={{
+                marginY: 1,
+                padding: "1rem",
+                cursor: "pointer",
+                ":hover": {
+                    backgroundColor: "secondary.light",
+                    transition: "background-color 0.3s",
+                },
+            }}
+            onClick={() => setIsClicked(true)}
+        >
+            <h2>{puzzle.title}</h2>
+            <Box sx={{
+                maxHeight: isClicked ? '1000px' : '0px',
+                overflow: 'hidden',
+                transition: 'max-height 0.5s ease-in-out',
+            }}>
+                <PuzzleInfo puzzle={puzzle} />
+            </Box>
+        </Card>
     );
 }

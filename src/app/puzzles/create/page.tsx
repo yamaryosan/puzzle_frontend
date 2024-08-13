@@ -183,11 +183,13 @@ export default function Page() {
             {/* カテゴリ */}
             <CategoryCheckbox 
             onChange={handleCheckboxChange}
+            puzzle_id="0"
             value={checkedCategories}
             />
             {/* 定石 */}
             <ApproachCheckbox
             onChange={setApproachIds}
+            puzzle_id="0"
             value={approachIds}
             />
             {/* 内容を送信 */}

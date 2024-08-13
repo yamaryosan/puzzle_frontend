@@ -27,6 +27,7 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
             defaultValue={puzzle.description}
             ref={quillRef}
             />
+            <Link href={`/puzzles/${puzzle.id}/solve`}>
             <Button
             sx={{
                 marginTop: "1rem",
@@ -39,12 +40,12 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
                 color: "black",
             }}
             >
-                <Link href={`/puzzles/${puzzle.id}/solve`}>
                 <EmojiObjects />
                 <span>解く</span>
-                </Link>
             </Button>
+            </Link>
 
+            <Link href={`/puzzles/${puzzle.id}/edit`}>
             <Button
             sx={{
                 marginTop: "1rem",
@@ -57,11 +58,10 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
                 color: "black",
             }}
             >
-                <Link href={`/puzzles/${puzzle.id}/edit`}>
                 <Edit />
                 <span>編集</span>
-                </Link>
             </Button>
+            </Link>
         </Box>
         </>
     );

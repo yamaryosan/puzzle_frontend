@@ -12,6 +12,9 @@ export default function Page() {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [desc, setDesc] = useState(false);
+    
+    // アクティブなカードのID
+    const [activeCardId, setActiveCardId] = useState<number | null>(null);
 
     // パズル一覧を取得
     useEffect(() => {
@@ -31,6 +34,11 @@ export default function Page() {
     if (!puzzles) {
     return <div>loading...</div>;
     }
+
+    // カードのクリックイベント
+    const handleCardClick = (id: number) => {
+        setActiveCardId(id === activeCardId ? null : id);
+    };
     
     return (
         <div>
@@ -83,7 +91,7 @@ export default function Page() {
             <ul>
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>
-                        <PuzzleCard puzzle={puzzle} />
+                        <PuzzleCard puzzle={puzzle} isActive={puzzle.id === activeCardId} onClick={() => handleCardClick(puzzle.id)} />
                     </li>
                 ))}
             </ul>

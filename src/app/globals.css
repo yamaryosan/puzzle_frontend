@@ -26,6 +26,10 @@
         font-weight: 600;
         line-height: 1.2;
     }
+    input[type="checkbox"],
+    input[type="checkbox"] + label {
+        cursor: pointer;
+    }
 }
 
 @media (prefers-color-scheme: dark) {

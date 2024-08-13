@@ -15,13 +15,6 @@ type PuzzleInfoProps = {
  */
 export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
     const quillRef = useRef<Quill | null>(null);
-    const [isReady, setIsReady] = useState(false);
-
-    useEffect(() => {
-        setIsReady(true);
-      }, []);
-    
-      if (!isReady) return null;
 
     return (
         <>

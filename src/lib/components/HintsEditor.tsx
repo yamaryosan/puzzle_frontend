@@ -36,15 +36,24 @@ export default function HintsEditor({ maxHints, defaultValues, hintQuills }: Hin
         <Box
         sx={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
+            width: "100%"
         }}
         >
-            <h3>ヒント</h3>
             {Array.from({ length: maxHints }, (_, i) => (
-                <>
+                <Box
+                key={i}
+                sx={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    marginY: "0.5rem",
+                    marginX: "0.25rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                }}
+                >
                 <h4>ヒント{`${i + 1}`}:</h4>
                 <HintEditor
-                    key={i}
                     quill={hintQuills[i]}
                     defaultValue={defaultValues[i]}
                     number={i}
@@ -52,7 +61,7 @@ export default function HintsEditor({ maxHints, defaultValues, hintQuills }: Hin
                     onToggle={() => toggleHint(i)}
                     canToggle={canToggleHint(i)}
                 />
-                </>
+                </Box>
             ))}
         </Box>
     )

@@ -11,7 +11,7 @@ type CategoryWithRelation = {
  * カテゴリー一覧を取得
  * @returns Promise<Category[]>
  */
-async function getCategories() {
+export async function getCategories() {
     const response = await fetch("/api/categories");
     if (!response.ok) {
         const error = await response.json();
@@ -27,7 +27,7 @@ async function getCategories() {
  * @param name カテゴリー名
  * @returns Promise<Category>
  */
-async function createCategory(name: string) {
+export async function createCategory(name: string) {
     const response = await fetch("/api/categories", {
         method: "POST",
         headers: {
@@ -49,7 +49,7 @@ async function createCategory(name: string) {
  * @param id カテゴリーID
  * @returns Promise<Category>
  */
-async function getCategoryById(id: string): Promise<Category> {
+export async function getCategoryById(id: string): Promise<Category> {
     const response = await fetch(`/api/categories/${id}`);
     if (!response.ok) {
         const error = await response.json();
@@ -65,7 +65,7 @@ async function getCategoryById(id: string): Promise<Category> {
  * @param id カテゴリーID
  * @returns
  */
-async function fetchPuzzlesByCategoryId(id: string) {
+export async function fetchPuzzlesByCategoryId(id: string) {
     try {
         if (!id) {
             console.error("カテゴリーIDが指定されていません");
@@ -88,7 +88,7 @@ async function fetchPuzzlesByCategoryId(id: string) {
  * @param id カテゴリーID
  * @param name カテゴリー名
  */
-async function updateCategory(id: string, name: string): Promise<Category> {
+export async function updateCategory(id: string, name: string): Promise<Category> {
     const response = await fetch(`/api/categories/${id}`, {
         method: "PUT",
         headers: {
@@ -140,5 +140,3 @@ export async function getCategoriesByPuzzleId(id: string) {
         console.error("カテゴリーの取得に失敗: ", error);
     }
 }
-
-export { getCategories, createCategory, getCategoryById, updateCategory, deleteCategory, fetchPuzzlesByCategoryId };

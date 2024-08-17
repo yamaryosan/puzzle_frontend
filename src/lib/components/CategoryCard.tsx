@@ -23,7 +23,6 @@ export default function CategoryCard({ category, isActive, onClick }: CategoryCa
                 },
             }}
             onClick={onClick}>
-                <h3 style={{display: "inline-block"}}>{category.name}</h3>
                 <CategoryInfo category={category} isActive={isActive} />
         </Card>
     );

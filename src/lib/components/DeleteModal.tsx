@@ -65,8 +65,25 @@ export default function DeleteModal({ id, onButtonClick }: DeleteModalProps) {
                     <p>本当に削除しますか？</p>
                 </Box>
                 <Box sx={{scale: "1.5"}}>
-                    <Button onClick={() => onButtonClick(false)}>いいえ</Button>
-                    <Button onClick={() => handleDelete()}>はい</Button>
+                    <Button
+                    sx={{
+                        marginRight: "1rem",
+                        backgroundColor: "success.light",
+                        color: "white",
+                        ":hover": {
+                            backgroundColor: "success.dark",
+                        },
+                    }}
+                    onClick={() => onButtonClick(false)}>いいえ</Button>
+                    <Button
+                    sx={{
+                        backgroundColor: "error.light",
+                        color: "white",
+                        ":hover": {
+                            backgroundColor: "error.dark",
+                        },
+                    }}
+                    onClick={() => handleDelete()}>はい</Button>
                 </Box>
             </Box>
         </Box>

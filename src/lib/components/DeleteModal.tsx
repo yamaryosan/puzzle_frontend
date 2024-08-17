@@ -1,6 +1,7 @@
 import { deletePuzzle } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Box, Button } from "@mui/material";
 
 type DeleteModalProps = {
     id: string,
@@ -13,7 +14,6 @@ type DeleteModalProps = {
  * @param onButtonClick ボタンがクリックされたときの処理
  */
 export default function DeleteModal({ id, onButtonClick }: DeleteModalProps) {
-    // ルーターを取得
     const router = useRouter();
 
     // エスケープキーが押されたらモーダルを閉じる
@@ -36,10 +36,40 @@ export default function DeleteModal({ id, onButtonClick }: DeleteModalProps) {
     };
 
     return (
-        <div className="bg-white p-4 shadow-lg rounded-lg">
-        <p>本当に削除しますか？</p>
-        <button onClick={() => handleDelete()}>はい</button>
-        <button onClick={() => onButtonClick(false)}>いいえ</button>
-        </div>
+        <>
+        <Box
+        sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 2,
+        }}>
+            <Box
+            sx={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                backgroundColor: "white",
+                padding: "3rem",
+                zIndex: 2,
+                boxShadow: 24,
+                borderRadius: 2,
+                textAlign: "center",
+            }}
+            >
+                <Box sx={{ marginBottom: "1rem" }}>
+                    <p>本当に削除しますか？</p>
+                </Box>
+                <Box sx={{scale: "1.5"}}>
+                    <Button onClick={() => onButtonClick(false)}>いいえ</Button>
+                    <Button onClick={() => handleDelete()}>はい</Button>
+                </Box>
+            </Box>
+        </Box>
+        </>
     );
 }

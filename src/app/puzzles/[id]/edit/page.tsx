@@ -219,7 +219,7 @@ export default function Page({ params }: { params: PageParams }) {
             width: '100%',
             padding: '1rem',
         }}>
-            <div className="fixed top-20 left-20" id="delete_modal"></div>
+            <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
                     <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />

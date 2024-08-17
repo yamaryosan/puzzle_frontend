@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Category } from '@prisma/client';
+import { Box } from '@mui/material';
+import CategoryCard from '@/lib/components/CategoryCard';
 
 /**
  * カテゴリー一覧を表示
@@ -33,14 +35,14 @@ export default function Categories() {
     }, []);
 
     return (
-        <div>
-            {categories.map((category) => (
-                <div key={category.id}>
-                    <Link href={`/categories/${category.id}`}>
-                        {category.name}
-                    </Link>
-                </div>
-            ))}
-        </div>
+        <>
+        {categories.map((category) => (
+            <div key={category.id}>
+                <Link href={`/categories/${category.id}`}>
+                    <CategoryCard category={category} />
+                </Link>
+            </div>
+        ))}
+        </>
     );
 }

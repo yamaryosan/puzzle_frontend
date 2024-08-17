@@ -14,7 +14,7 @@ import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import TitleEditor from '@/lib/components/TitleEditor';
-import { Edit, Upload, Delete } from '@mui/icons-material';
+import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 
 type PageParams = {
@@ -315,7 +315,7 @@ export default function Page({ params }: { params: PageParams }) {
                 onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef)}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
-                    <span>編集を終了</span>
+                    <span>編集完了</span>
                     </Box>
                 </Button>
                 <Button
@@ -329,7 +329,7 @@ export default function Page({ params }: { params: PageParams }) {
                 }}
                 onClick={toggleDeleteModal}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.4", color: "black" }}>
-                        {isDeleteModalOpen ? "閉じる" : <Delete />}
+                        {isDeleteModalOpen ? <Clear /> : <Delete />}
                     </Box>
                 </Button>
             </Box>

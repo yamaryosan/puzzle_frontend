@@ -108,7 +108,7 @@ export async function updateCategory(id: string, name: string): Promise<Category
 /**
  * カテゴリーを削除
  */
-async function deleteCategory(id: string) {
+export async function deleteCategory(id: string) {
     const response = await fetch(`/api/categories/${id}`, {
         method: "DELETE",
     });

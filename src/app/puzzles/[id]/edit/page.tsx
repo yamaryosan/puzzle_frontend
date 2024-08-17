@@ -14,7 +14,7 @@ import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import TitleEditor from '@/lib/components/TitleEditor';
-import { Edit, Upload } from '@mui/icons-material';
+import { Edit, Upload, Delete } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 
 type PageParams = {
@@ -211,6 +211,7 @@ export default function Page({ params }: { params: PageParams }) {
     }
 
     return (
+        <>
         <Box 
         sx={{
             display: 'flex',
@@ -218,9 +219,6 @@ export default function Page({ params }: { params: PageParams }) {
             width: '100%',
             padding: '1rem',
         }}>
-            <button onClick={toggleDeleteModal}>
-                {isDeleteModalOpen ? "削除確認ダイアログを閉じる" : "削除確認ダイアログを開く"}
-            </button>
             <div className="fixed top-20 left-20" id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
@@ -297,12 +295,11 @@ export default function Page({ params }: { params: PageParams }) {
                     value={approachIds}
                 />
             </Box>
-            
-            {/* 内容を送信 */}
+
             <Box
             sx={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
                 paddingY: '1rem',
                 marginY: '1rem',
             }}>
@@ -310,7 +307,7 @@ export default function Page({ params }: { params: PageParams }) {
                 sx={{
                     padding: '1.5rem',
                     backgroundColor: 'secondary.light',
-                    width: '100%',
+                    width: '20%',
                     ":hover": {
                         backgroundColor: 'secondary.main',
                     }
@@ -321,7 +318,22 @@ export default function Page({ params }: { params: PageParams }) {
                     <span>編集を終了</span>
                     </Box>
                 </Button>
+                <Button
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'error.light',
+                    width: '20%',
+                    ":hover": {
+                        backgroundColor: 'error.main',
+                    },
+                }}
+                onClick={toggleDeleteModal}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.4", color: "black" }}>
+                        {isDeleteModalOpen ? "閉じる" : <Delete />}
+                    </Box>
+                </Button>
             </Box>
         </Box>
+        </>
     );
 }

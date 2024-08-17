@@ -11,10 +11,15 @@ type CategoryInfoProps = {
 };
 
 export default function CategoryInfo({ category, isActive }: CategoryInfoProps) {
+
+    const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+    }
+
     return (
         <>
         {isActive && (
-            <Button>
+            <Button onClick={handleEditClick}>
                 <Edit />
             </Button>
         )}

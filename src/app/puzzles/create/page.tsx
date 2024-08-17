@@ -9,6 +9,7 @@ import HintsEditor from '@/lib/components/HintsEditor';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import { AddCircleOutline, Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
+import TitleEditor from '@/lib/components/TitleEditor';
 
 type Range = {
     index: number;
@@ -167,27 +168,11 @@ export default function Page() {
                 <AddCircleOutline />
                 <span>パズル作成</span>
             </h2>
+                <TitleEditor title={title} setTitle={setTitle} />
             <Box
             sx={{
                 paddingY: '0.5rem',
-                input: {
-                    width: '100%',
-                    padding: '0.5rem',
-                    fontSize: '1rem',
-                    border: '1px solid #ccc',
-                    borderRadius: '0.25rem',
-                },
-            }}
-            >
-                <h3>タイトル</h3>
-                <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
-            </Box>
-
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}
-            >
+            }}>
                 <h3>問題文</h3>
                 <Editor
                 ref={quillDescriptionRef}
@@ -201,8 +186,7 @@ export default function Page() {
             <Box
             sx={{
                 paddingY: '0.5rem',
-            }}
-            >
+            }}>
                 <h3>正答</h3>
                 <Editor
                 ref={quillSolutionRef}

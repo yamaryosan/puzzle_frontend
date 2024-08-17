@@ -1,11 +1,16 @@
 import { Category } from "@prisma/client";
 import { Box, Card } from "@mui/material";
+import CategoryInfo from "@/lib/components/CategoryInfo";
+import { useState } from "react";
 
 type CategoryCardProps = {
     category: Category;
+    isActive: boolean;
+    onClick: () => void;
 };
 
-export default function CategoryCard({ category }: CategoryCardProps) {
+export default function CategoryCard({ category, isActive, onClick }: CategoryCardProps) {
+    
     return (
         <Card variant="outlined"
             sx={{
@@ -17,8 +22,9 @@ export default function CategoryCard({ category }: CategoryCardProps) {
                     transition: "background-color 0.3s",
                 },
             }}
-        >
-            <h2>{category.name}</h2>
+            onClick={onClick}>
+                <h3 style={{display: "inline-block"}}>{category.name}</h3>
+                <CategoryInfo category={category} isActive={isActive} />
         </Card>
     );
 }

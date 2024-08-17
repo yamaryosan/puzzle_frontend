@@ -27,6 +27,9 @@ async function fetchCategories() {
 export default function Categories() {
     const [categories, setCategories] = useState<Category[]>([]);
 
+    // アクティブなカードのID
+    const [activeCardId, setActiveCardId] = useState<number | null>(null);
+
     // カテゴリー一覧を取得
     useEffect(() => {
         fetchCategories().then((categories) => {
@@ -34,13 +37,16 @@ export default function Categories() {
         });
     }, []);
 
+    // カードのクリックイベント
+    const handleCardClick = (id: number) => {
+        setActiveCardId(id === activeCardId ? null : id);
+    };
+
     return (
         <>
         {categories.map((category) => (
             <div key={category.id}>
-                <Link href={`/categories/${category.id}`}>
-                    <CategoryCard category={category} />
-                </Link>
+                <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
             </div>
         ))}
         </>

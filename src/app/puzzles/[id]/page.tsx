@@ -90,7 +90,7 @@ export default function Page({ params }: { params: PageParams }) {
             >
                 <h3>カテゴリー: </h3>
                 <span>{categories?.map(category => (
-                    <span key={category.id}>{category.category.name} </span>
+                    <span key={category.category_id}>{category.category.name} </span>
                 ))}</span>
             </Box>
 

@@ -4,6 +4,9 @@ import Link from "next/link";
 import Editor from "@/lib/components/Editor";
 import { useState, useEffect, useRef } from "react";
 import Quill from 'quill';
+import { Box, Button } from "@mui/material";
+import { AddCircleOutline, Upload } from "@mui/icons-material";
+import TitleEditor from "@/lib/components/TitleEditor";
 
 type Range = {
     index: number;
@@ -72,17 +75,46 @@ export default function Page() {
     }
 
     return (
-        <div>
-            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <Editor
-            ref={quill}
-            readOnly={false}
-            defaultValue={new DeltaClass([{ insert: 'Hello World!' }])}
-            onSelectionChange={setRange}
-            onTextChange={setLastChange}
-            />
-            <button onClick={() => send(title, quill)}>送信</button>
-            <Link href="/approaches">戻る</Link>
-        </div>
+        <Box 
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            padding: '1rem',
+        }}>
+            <h2>
+                <AddCircleOutline />
+                <span>定石作成</span>
+            </h2>
+            <TitleEditor title={title} setTitle={setTitle} />
+
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>問題文</h3>
+                <Editor
+                ref={quill}
+                readOnly={false}
+                defaultValue={new DeltaClass([{  }])}
+                onSelectionChange={setRange}
+                onTextChange={setLastChange}/>
+            </Box>
+
+            <Button onClick={() => send(title, quill)}
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'secondary.light',
+                    width: '100%',
+                    ":hover": {
+                        backgroundColor: 'secondary.main',
+                    }
+                }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                    <Upload />
+                    <span>作成</span>
+                </Box>
+            </Button>
+        </Box>
     );
 }

@@ -12,7 +12,7 @@ const menu = [
     {title: '定石一覧', icon: Quiz, href: '/approaches'},
     {title: '定石作成', icon: AddCircleOutline, href: '/approaches/create'},
     {title: 'プロフィール', icon: AccountCircle, href: '/profile'},
-    {title: 'ログアウト', icon: Logout, href: '/logout'},
+    {title: 'ログアウト', icon: Logout, href: '/signout'},
 ];
 
 export default function LeftDrawer() {

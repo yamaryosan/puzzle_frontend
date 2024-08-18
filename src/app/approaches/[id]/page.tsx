@@ -29,7 +29,7 @@ export default function Page({ params }: { params: PageParams }) {
     // 定石に紐づく問題情報を取得
     useEffect(() => {
         async function fetchPuzzles() {
-            const puzzles = await getPuzzlesByApproachId(parseInt(params.id));
+            const puzzles = await getPuzzlesByApproachId(params.id);
             if (!puzzles) {
                 return;
             }

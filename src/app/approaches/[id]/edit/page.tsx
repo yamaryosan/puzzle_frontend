@@ -6,6 +6,9 @@ import { useState, useEffect, useRef } from 'react';
 import { getApproach } from '@/lib/api/approachApi';
 import Quill from 'quill';
 import { Approach } from '@prisma/client';
+import { Box, Button } from '@mui/material';
+import { Edit, Upload } from '@mui/icons-material';
+import TitleEditor from '@/lib/components/TitleEditor';
 
 type PageParams = {
     id: string;
@@ -95,16 +98,46 @@ export default function Home({ params }: { params: PageParams }) {
     }
 
     return (
-        <div>
-            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
-            <Editor
+        <Box 
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            padding: '1rem',
+        }}>
+            <h2>
+                <Edit />
+                <span>定石編集</span>
+            </h2>
+            <TitleEditor title={title} setTitle={setTitle} />
+
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>説明文</h3>
+                <Editor
                 ref={quill}
                 readOnly={false}
                 defaultValue={DeltaClass}
                 onSelectionChange={setRange}
-                onTextChange={setLastChange}
-            />
-            <button onClick={() => send(params.id || "0", title, quill)}>送信</button>
-        </div>
+                onTextChange={setLastChange}/>
+            </Box>
+            
+            <Button onClick={() => send(params.id || "0", title, quill)}
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'secondary.light',
+                    width: '100%',
+                    ":hover": {
+                        backgroundColor: 'secondary.main',
+                    }
+                }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                        <Upload />
+                        <span>編集完了</span>
+                    </Box>                    
+                </Button>
+        </Box>
     );
 }

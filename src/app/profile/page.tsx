@@ -3,9 +3,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import useAuth from '@/lib/hooks/useAuth';
+import { AccountBoxOutlined } from '@mui/icons-material';
+import ProfileCard from '@/lib/components/ProfileCard';
 
 export default function Profile() {
     const {user, authLoading} = useAuth();
+
+    // ログインしていない場合
+    if (!user) {
+        return (
+            <div>
+                <h2>
+                    <AccountBoxOutlined />
+                    プロフィール
+                </h2>
+                <p>ログインしていません</p>
+                <Link href="/signin">ログイン</Link>
+            </div>
+        );
+    }
 
     // 読み込み中
     if (authLoading) {
@@ -14,11 +30,11 @@ export default function Profile() {
 
     return (
         <div>
-            <h1>プロフィール</h1>
-            <p>ユーザー名: {user?.displayName}</p>
-            <p>メールアドレス: {user?.email}</p>
-            <Link href="/profile/edit">プロフィール編集</Link>
-            <Link href="/dashboard">ダッシュボードへ</Link>
+            <h2>
+                <AccountBoxOutlined />
+                プロフィール
+            </h2>
+            <ProfileCard user={user} />
         </div>
     );
 }

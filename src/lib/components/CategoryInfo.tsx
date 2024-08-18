@@ -29,11 +29,25 @@ async function updateCategoryName(categoryId: string, categoryName: string) {
 export default function CategoryInfo({ category, isActive }: CategoryInfoProps) {
     const [categoryName, setCategoryName] = useState<string>(category.name);
     const [isEdit, setIsEdit] = useState<boolean>(false);
+    const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
     // レンダリングのたびにisEditをfalseにする
     useEffect(() => {
         setIsEdit(false);
     }, [isActive]);
+
+    // カテゴリーに紐づくパズル一覧を取得
+    useEffect(() => {
+        const fetchPuzzles = async () => {
+            try {
+                const data = await fetchPuzzlesByCategoryId(category.id.toString()) as Puzzle[];
+                setPuzzles(data);
+            } catch (error) {
+                console.error("カテゴリーに紐づくパズル一覧の取得に失敗: ", error);
+            }
+        }
+        fetchPuzzles();
+    }, [category.id]);
 
     // 入力欄クリック時のイベント
     const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
@@ -82,6 +96,23 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
             transition: 'max-height 0.5s ease-in-out',
         }}>
             {/* カテゴリーに紐づくパズル一覧を表示 */}
+            {puzzles.map((puzzle) => (
+                <Link key={puzzle.id} href={`/puzzles/${puzzle.id}`}>
+                    <Button
+                    sx={{
+                        display: 'block',
+                        textAlign: 'left',
+                        width: '100%',
+                        color: 'black',
+                        '&:hover': {
+                            backgroundColor: "secondary.main",
+                        },
+                    }}
+                    >
+                        <h4>{puzzle.title}</h4>
+                    </Button>
+                </Link>
+            ))}
         </Box>
         </>
     );

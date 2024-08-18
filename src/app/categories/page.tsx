@@ -1,9 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Category } from '@prisma/client';
-import { Box } from '@mui/material';
 import CategoryCard from '@/lib/components/CategoryCard';
 
 /**
@@ -24,7 +22,7 @@ async function fetchCategories() {
     }
 }
 
-export default function Categories() {
+export default function Page() {
     const [categories, setCategories] = useState<Category[]>([]);
 
     // アクティブなカードのID
@@ -35,7 +33,7 @@ export default function Categories() {
         fetchCategories().then((categories) => {
             setCategories(categories);
         });
-    }, []);
+    }, [categories]);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {

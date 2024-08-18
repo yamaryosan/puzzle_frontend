@@ -1,7 +1,6 @@
 import { Category } from "@prisma/client";
-import { Box, Card } from "@mui/material";
+import { Card } from "@mui/material";
 import CategoryInfo from "@/lib/components/CategoryInfo";
-import { useState } from "react";
 
 type CategoryCardProps = {
     category: Category;

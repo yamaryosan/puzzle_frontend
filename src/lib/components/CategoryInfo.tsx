@@ -43,7 +43,7 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
     // 編集ボタンクリック時のイベント
     const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        setIsEdit(!isEdit);
+        setIsEdit(true);
     }
 
     // 編集結果確定ボタンクリック時のイベント

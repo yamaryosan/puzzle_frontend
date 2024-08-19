@@ -3,14 +3,33 @@
 @tailwind utilities;
 
 :root {
-  /*--foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;*/
-  h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.2;
-  }
+    /*--foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;*/
+    h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+    h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+    h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+    input[type="checkbox"],
+    input[type="checkbox"] + label {
+        cursor: pointer;
+    }
 }
 
 @media (prefers-color-scheme: dark) {

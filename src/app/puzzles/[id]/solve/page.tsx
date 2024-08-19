@@ -11,6 +11,8 @@ import getHintsByPuzzleId from "@/lib/api/hintapi";
 import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
 import { getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { useRouter } from "next/navigation";
+import { Box, Button } from "@mui/material";
+import { Send } from "@mui/icons-material";
 
 type Change = {
     ops: any[];
@@ -137,58 +139,102 @@ export default function Page({ params }: { params: { id: string } }) {
     }
 
     return (
-        <div>
-            <h1>{puzzle.title}</h1>
-            <p>カテゴリー</p>
-            {categories?.map(category => (
-                <div key={category.id}>
-                    <h2>{category.name}</h2>
-                </div>
-            ))}
-            {/* パズルの本文 */}
-            <p>本文</p>
-            <Viewer
-                readOnly={true}
-                defaultValue={puzzle.description}
-            />
-            {/* ヒント */}
-            <p>ヒント</p>
-            {hints?.map((hint, index) => (
-                <Viewer
-                    key={hint.id}
-                    readOnly={true}
-                    defaultValue={hint.content}
-                />
-            ))}
-
-            {/* 定石 */}
-            <p>定石</p>
-            {approaches?.map(approach => (
-                <div key={approach.id}>
-                    <h2>{approach.title}</h2>
-                    <Viewer
-                        readOnly={true}
-                        defaultValue={approach.content}
-                    />
-                </div>
-            ))}
-            <p>回答を入力してください</p>
-            {/* パズルの回答 */}
-            <Editor
-            ref={answerRef}
-            readOnly={false}
-            defaultValue={answer}
-            onTextChange={setLastChange}
-            onSelectionChange={setRange}
-            />
+        <Box
+        sx={{
+            padding: "1rem",
+            backgroundColor: "white",
+            borderRadius: "5px",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+        }}>
+            <h2>「{puzzle.title}」の解答画面</h2>
+            <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                paddingY: "0.5rem",
+            }}
+            >
+                <h3>カテゴリー: </h3>
+                <span>{categories?.map(category => (
+                    <span key={category.id}>{category.name} </span>
+                ))}</span>
+            </Box>
             
-            <p>正答</p>
-            {/* パズルの正答 */}
-            <Viewer
-                readOnly={true}
-                defaultValue={puzzle.solution}
-            />
-            <button onClick={() => handleSend()}>回答を送信</button>
-        </div>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>問題文</h3>
+                <Viewer
+                    readOnly={true}
+                    defaultValue={puzzle.description}
+                />
+            </Box>
+
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>ヒント</h3>
+                {hints?.length === 0 && <p>ヒントはありません</p>}
+                {hints?.map((hint) => (
+                    <Viewer
+                        key={hint.id}
+                        readOnly={true}
+                        defaultValue={hint.content}
+                    />
+                ))}
+            </Box>
+
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>定石</h3>
+                {approaches?.map((approach, index) => (
+                    <Box key={approach.id} sx={{ paddingY: '0.5rem' }}>
+                        <h4>{`定石${index + 1} : ${approach.title}`}</h4>
+                        <Viewer
+                            readOnly={true}
+                            defaultValue={approach.content}
+                        />
+                    </Box>
+                ))}
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>回答を入力</h3>
+                <Editor
+                ref={answerRef}
+                readOnly={false}
+                defaultValue={answer}
+                onTextChange={setLastChange}
+                onSelectionChange={setRange}
+                />
+            </Box>
+            <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+            }}>
+                <Button 
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'secondary.light',
+                    width: '20%',
+                    ":hover": {
+                        backgroundColor: 'secondary.main',
+                    }
+                }}
+                onClick={() => handleSend()}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                    <Send />
+                    <span>解答を送信</span>
+                    </Box>
+                </Button>
+            </Box>
+        </Box>
     )
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getCategories, createCategory, getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { Category } from "@prisma/client";
+import { Box, Button } from "@mui/material";
+import { CreateNewFolderOutlined } from "@mui/icons-material";
 
 /**
  * カテゴリー一覧を取得
@@ -63,7 +65,7 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
     // 選択中のカテゴリー一覧を取得
     useEffect(() => {
         async function fetchInitialCategories(id: string): Promise<CategoryWithRelation[] | undefined> {
-            return getCategoriesByPuzzleId(parseInt(id));
+            return getCategoriesByPuzzleId(id);
         }
         fetchInitialCategories(puzzle_id).then((categories) => {
             if (!categories) {
@@ -110,9 +112,23 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
     }
 
     return (
-        <div>
-            <h1>カテゴリー</h1>
+        <>
+        <Box
+        sx={{
+            padding: "1rem",
+            border: "1px solid #ccc",
+            borderRadius: "0.25rem",
+            fontSize: "1.5rem",
+        }}
+        >
             {categories?.length === 0 && <p>カテゴリーがありません</p>}
+            <Box
+            sx={{
+                display: "grid",
+                gap: "1rem",
+                gridTemplateColumns: "2fr 2fr",
+            }}
+            >
             {categories?.map((category) => (
                 <div key={category.id}>
                     <input
@@ -121,15 +137,42 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
                         checked={checkedCategoryIds.includes(category.id)}
                         onChange={() => handleCheckboxChange(category.id)}
                     />
-                    <label htmlFor={category.id.toString()}>{category.name}</label>
+                    <label htmlFor={category.id.toString()} className="cursor-pointer">{category.name}</label>
                 </div>
             ))}
+            </Box>
+
+            <Box
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                paddingTop: "1rem",
+                gap: "1rem",
+            }}
+            >
             <input
                 type="text"
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
+                className="w-full border border-gray-300 rounded-md"
             />
-            <button onClick={handleNewCategory}>追加</button>
-        </div>
+            <Button
+            sx={{
+                color: "black",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                ":hover": {
+                    backgroundColor: "secondary.light",
+                    transition: "background-color 0.3s",
+                }
+            }}
+            onClick={handleNewCategory}>
+                <CreateNewFolderOutlined />
+            </Button>
+            </Box>
+
+        </Box>
+        </>
     );
 }

@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Category } from '@prisma/client';
+import CategoryCard from '@/lib/components/CategoryCard';
 
 /**
  * カテゴリー一覧を表示
@@ -22,25 +22,31 @@ async function fetchCategories() {
     }
 }
 
-export default function Categories() {
+export default function Page() {
     const [categories, setCategories] = useState<Category[]>([]);
+
+    // アクティブなカードのID
+    const [activeCardId, setActiveCardId] = useState<number | null>(null);
 
     // カテゴリー一覧を取得
     useEffect(() => {
         fetchCategories().then((categories) => {
             setCategories(categories);
         });
-    }, []);
+    }, [categories]);
+
+    // カードのクリックイベント
+    const handleCardClick = (id: number) => {
+        setActiveCardId(id === activeCardId ? null : id);
+    };
 
     return (
-        <div>
-            {categories.map((category) => (
-                <div key={category.id}>
-                    <Link href={`/categories/${category.id}`}>
-                        {category.name}
-                    </Link>
-                </div>
-            ))}
-        </div>
+        <>
+        {categories.map((category) => (
+            <div key={category.id}>
+                <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
+            </div>
+        ))}
+        </>
     );
 }

@@ -3,6 +3,7 @@ import Quill from "quill";
 
 import HintEditor from "@/lib/components/HintEditor";
 import DeltaClass from 'quill-delta';
+import { Box } from "@mui/material";
 
 type HintsEditorProps = {
     maxHints: number;
@@ -32,10 +33,27 @@ export default function HintsEditor({ maxHints, defaultValues, hintQuills }: Hin
     };
 
     return (
-        <div>
+        <Box
+        sx={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%"
+        }}
+        >
             {Array.from({ length: maxHints }, (_, i) => (
+                <Box
+                key={i}
+                sx={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    marginY: "0.5rem",
+                    marginX: "0.25rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                }}
+                >
+                <h4>ヒント{`${i + 1}`}:</h4>
                 <HintEditor
-                    key={i}
                     quill={hintQuills[i]}
                     defaultValue={defaultValues[i]}
                     number={i}
@@ -43,7 +61,8 @@ export default function HintsEditor({ maxHints, defaultValues, hintQuills }: Hin
                     onToggle={() => toggleHint(i)}
                     canToggle={canToggleHint(i)}
                 />
+                </Box>
             ))}
-        </div>
+        </Box>
     )
 }

@@ -2,6 +2,7 @@ import { MutableRefObject, useState } from 'react';
 import Editor from '@/lib/components/Editor';
 import Quill from 'quill';
 import DeltaClass from 'quill-delta';
+import { Box, Button } from '@mui/material';
 
 type Range = {
     index: number;
@@ -27,13 +28,28 @@ export default function HintEditor({ quill, defaultValue, number, show, onToggle
     const [_, setShow] = useState(false);
 
     return (
-        <div>
-            <button onClick={onToggle} disabled={!canToggle}>
+        <Box>
+            <Button 
+            sx={{
+                marginY: 1,
+                ":hover": {
+                    backgroundColor: "secondary.light",
+                    transition: "background-color 0.3s",
+                },
+                ":disabled": {
+                    backgroundColor: "grey",
+                    color: "white",
+                    cursor: "not-allowed",
+                    ":hover": {
+                        backgroundColor: "grey"
+                    },
+                },
+            }}
+            onClick={onToggle} disabled={!canToggle}>
                 {show ? '非表示' : '表示'}
-            </button>
+            </Button>
             {show && (
                 <div>
-                    <p>ヒント</p>
                     <Editor
                     readOnly={false}
                     defaultValue={defaultValue}
@@ -43,6 +59,6 @@ export default function HintEditor({ quill, defaultValue, number, show, onToggle
                     />
                 </div>
             )}
-        </div>
+        </Box>
     )
 }

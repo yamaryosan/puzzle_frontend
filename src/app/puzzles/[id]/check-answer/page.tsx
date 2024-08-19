@@ -5,6 +5,8 @@ import { Puzzle } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
+import { Box, Button } from "@mui/material";
+import { Rule, Check, Clear } from "@mui/icons-material";
 
 /**
  * 正解かどうかを送信
@@ -75,19 +77,88 @@ export default function Page({ params }: { params: { id: string } }) {
 
     return (
         <>
-            <p>あなたの回答</p>
-            <Viewer
-            readOnly={true}
-            defaultValue={puzzle.user_answer}
-            />
-            <p>正答</p>
-            <Viewer
-            readOnly={true}
-            defaultValue={puzzle?.solution}
-            />
-            <p>正誤</p>
-            <button onClick={correct}>正解</button>
-            <button onClick={incorrect}>不正解</button>
+        <Box 
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            padding: '1rem',
+        }}>
+            <h2>
+                <Rule />
+                <span>答え合わせ</span>
+            </h2>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>問題</h3>
+                <Viewer
+                readOnly={true}
+                defaultValue={puzzle.description}
+                />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>あなたの解答</h3>
+                <Viewer
+                readOnly={true}
+                defaultValue={puzzle.user_answer}
+                />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>正解</h3>
+                <Viewer
+                readOnly={true}
+                defaultValue={puzzle?.solution}
+                />
+            </Box>
+            <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                paddingY: '1rem',
+                marginY: '1rem',
+                gap: '2rem',
+            }}>
+                <Button 
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'success.light',
+                    width: '20%',
+                    ":hover": {
+                        backgroundColor: 'success.main',
+                    }
+                }}
+                onClick={correct}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                        <Check />
+                        正解！
+                    </Box>
+                </Button>
+
+                <Button
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'error.light',
+                    width: '20%',
+                    ":hover": {
+                        backgroundColor: 'error.main',
+                    }
+                }}
+                onClick={incorrect}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                        <Clear />
+                        不正解...
+                    </Box>
+                </Button>
+            </Box>
+        </Box>
         </>
     )
 }

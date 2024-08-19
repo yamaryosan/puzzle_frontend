@@ -7,6 +7,9 @@ import { Puzzle } from '@prisma/client';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
+import { AddCircleOutline, Upload } from '@mui/icons-material';
+import { Box, Button } from '@mui/material';
+import TitleEditor from '@/lib/components/TitleEditor';
 
 type Range = {
     index: number;
@@ -154,46 +157,92 @@ export default function Page() {
     };
 
     return (
-        <div>
-            <p>タイトル</p>
-            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
-            {/* 本文(description) */}
-            <p>内容</p>
-            <Editor
-            ref={quillDescriptionRef}
-            readOnly={readOnly}
-            defaultValue={new DeltaClass([{ insert: 'Hello World!' }])}
-            onSelectionChange={setRange}
-            onTextChange={setLastChange}
-            />
-            <p>正答</p>
-            <Editor
-            ref={quillSolutionRef}
-            readOnly={readOnly}
-            defaultValue={new DeltaClass([{ insert: 'Hello World!' }])}
-            onSelectionChange={setRange}
-            onTextChange={setLastChange}
-            />
-            {/* ヒント */}
+        <Box 
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            padding: '1rem',
+        }}>
+            <h2>
+                <AddCircleOutline />
+                <span>パズル作成</span>
+            </h2>
+                <TitleEditor title={title} setTitle={setTitle} />
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>問題文</h3>
+                <Editor
+                ref={quillDescriptionRef}
+                readOnly={readOnly}
+                defaultValue={new DeltaClass([{  }])}
+                onSelectionChange={setRange}
+                onTextChange={setLastChange}
+                />
+            </Box>
+
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>正答</h3>
+                <Editor
+                ref={quillSolutionRef}
+                readOnly={readOnly}
+                defaultValue={new DeltaClass([{ }])}
+                onSelectionChange={setRange}
+                onTextChange={setLastChange}
+                />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+            <h3>ヒント</h3>
             <HintsEditor
             maxHints={maxHints}
             defaultValues={Array.from({ length: maxHints }, () => new DeltaClass([{ }]))}
             hintQuills={hintQuills}
             />
-            {/* カテゴリ */}
+            </Box>
+            <h3>カテゴリー</h3>
             <CategoryCheckbox 
             onChange={handleCheckboxChange}
+            puzzle_id="0"
             value={checkedCategories}
             />
-            {/* 定石 */}
+            <h3>定石</h3>
             <ApproachCheckbox
             onChange={setApproachIds}
+            puzzle_id="0"
             value={approachIds}
             />
             {/* 内容を送信 */}
-            <button type="button" onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills)}>
-                Send
-            </button>
-        </div>
+            <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                paddingY: '1rem',
+                marginY: '1rem',
+            }}>
+                <Button 
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'secondary.light',
+                    width: '100%',
+                    ":hover": {
+                        backgroundColor: 'secondary.main',
+                    }
+                }}
+                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills)}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                    <Upload />
+                    <span>作成</span>
+                    </Box>
+                </Button>
+            </Box>
+        </Box>
     );
 }

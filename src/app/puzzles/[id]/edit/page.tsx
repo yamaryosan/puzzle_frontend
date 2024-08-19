@@ -13,6 +13,9 @@ import DeleteModal from '@/lib/components/DeleteModal';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
+import TitleEditor from '@/lib/components/TitleEditor';
+import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
+import { Box, Button } from '@mui/material';
 
 type PageParams = {
     id: string;
@@ -208,58 +211,129 @@ export default function Page({ params }: { params: PageParams }) {
     }
 
     return (
-        <div>
-            <button onClick={toggleDeleteModal}>
-                {isDeleteModalOpen ? "削除確認ダイアログを閉じる" : "削除確認ダイアログを開く"}
-            </button>
-            <div className="fixed top-20 left-20" id="delete_modal"></div>
+        <>
+        <Box 
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            padding: '1rem',
+        }}>
+            <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
                     <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
                 </Portal>
             )}
-            <p>タイトル</p>
-            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
-            <p>本文</p>
-            <Editor
-                ref={quillDescriptionRef}
-                readOnly={false}
-                defaultValue={descriptionDelta}
-                onSelectionChange={setRange}
-                onTextChange={setLastChange}
-            />
-            <p>解答</p>
-            <Editor
-                ref={quillSolutionRef}
-                readOnly={false}
-                defaultValue={solutionDelta}
-                onSelectionChange={setRange}
-                onTextChange={setLastChange}
-            />
-            {/* ヒント */}
-            <p>ヒント</p>
-            <HintsEditor
-                maxHints={maxHints}
-                defaultValues={hintsDelta}
-                hintQuills={hintQuills}
-            />
-            {/* カテゴリー */}
-            <CategoryCheckbox
+            <h2>
+                <Edit />
+                <span>パズル編集</span>
+            </h2>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <TitleEditor title={title} setTitle={setTitle} />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>問題文</h3>
+                <Editor
+                    ref={quillDescriptionRef}
+                    readOnly={false}
+                    defaultValue={descriptionDelta}
+                    onSelectionChange={setRange}
+                    onTextChange={setLastChange}
+                />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>正答</h3>
+                <Editor
+                    ref={quillSolutionRef}
+                    readOnly={false}
+                    defaultValue={solutionDelta}
+                    onSelectionChange={setRange}
+                    onTextChange={setLastChange}
+                />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>ヒント</h3>
+                <HintsEditor
+                    maxHints={maxHints}
+                    defaultValues={hintsDelta}
+                    hintQuills={hintQuills}
+                />
+            </Box>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>カテゴリー</h3>
+                <CategoryCheckbox
                 onChange={handleCategoriesChange}
                 puzzle_id={params.id || "0"}
                 value={categoryIds}
             />
+            </Box>
             {/* 定石 */}
-            <ApproachCheckbox
-                onChange={handleApproachesChange}
-                puzzle_id={params.id || "0"}
-                value={approachIds}
-            />
-            
-            {/* 内容を送信 */}
-            <button type="button" onClick={() => send( params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef)}>
-                Send
-            </button>
-        </div>
+            <Box
+            sx={{
+                paddingY: '0.5rem',
+            }}>
+                <h3>定石</h3>
+                <ApproachCheckbox
+                    onChange={handleApproachesChange}
+                    puzzle_id={params.id || "0"}
+                    value={approachIds}
+                />
+            </Box>
+
+            <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                paddingY: '1rem',
+                marginY: '1rem',
+            }}>
+                <Button 
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'secondary.light',
+                    width: '20%',
+                    ":hover": {
+                        backgroundColor: 'secondary.main',
+                    }
+                }}
+                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef)}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                    <Upload />
+                    <span>編集完了</span>
+                    </Box>
+                </Button>
+                <Button
+                sx={{
+                    padding: '1.5rem',
+                    backgroundColor: 'error.light',
+                    width: '20%',
+                    ":hover": {
+                        backgroundColor: 'error.main',
+                    },
+                }}
+                onClick={toggleDeleteModal}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.4", color: "black" }}>
+                        {isDeleteModalOpen ? <Clear /> : <Delete />}
+                    </Box>
+                </Button>
+            </Box>
+        </Box>
+        </>
     );
 }

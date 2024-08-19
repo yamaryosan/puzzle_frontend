@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getApproaches } from "../api/approachApi";
 import { Approach } from "@prisma/client";
 import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
+import { Box } from "@mui/material";
 
 /**
  * 定石一覧を取得
@@ -33,7 +34,7 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     // 編集前に定石を取得
     useEffect(() => {
         async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
-            return getApproachesByPuzzleId(parseInt(id));
+            return getApproachesByPuzzleId(id);
         }
         fetchInitialApproaches(puzzle_id).then((approaches) => {
             if (!approaches) {
@@ -76,9 +77,22 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     }
 
     return (
-        <div>
-            <h1>定石</h1>
+        <Box
+        sx={{
+            padding: "1rem",
+            border: "1px solid #ccc",
+            borderRadius: "0.25rem",
+            fontSize: "1.5rem",
+        }}
+        >
             {approaches?.length === 0 && <p>定石がありません</p>}
+            <Box
+            sx={{
+                display: "grid",
+                gap: "1rem",
+                gridTemplateColumns: "2fr 2fr",
+            }}
+            >
             {approaches?.map((approach) => (
                 <div key={approach.id}>
                     <input
@@ -90,6 +104,7 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
                     <label htmlFor={approach.id.toString()}>{approach.title}</label>
                 </div>
             ))}
-        </div>
+            </Box>
+        </Box>
     );
 }

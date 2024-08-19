@@ -3,7 +3,9 @@ import firebaseApp from '@/app/firebase';
 import { useState, useEffect } from 'react';
 import { updateProfile } from 'firebase/auth';
 import { updateUserInPrisma } from '@/lib/api/userapi';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import { Edit } from '@mui/icons-material';
+import { Email, BadgeOutlined } from '@mui/icons-material';
 
 type GoogleAuthProfileCardProps = {
     user: User | null;
@@ -72,20 +74,44 @@ export default function GoogleAuthProfileCard({ user }: GoogleAuthProfileCardPro
 
     return (
         <>
-        {isEditing ? (
-            <>
-            <Box component="input" type="text" value={username} onClick={handleInputClick} onChange={(e) => setUsername(e.target.value)} required
-            sx={{ width: "20%", display: "inline-block", paddingY: "0.5rem", fontSize: "1.5rem" }}/>
-            <button onClick={handleUpdateClick}>更新</button>
-            <p>メールアドレス: {user?.email}</p>
-            </>
-        ) : (
-            <>
-                <p style={{display: "inline-block"}}>{user?.displayName}</p>
-                <button onClick={handleEditClick}>編集</button>
-            <p>メールアドレス: {user?.email}</p>
-            </>
-        )}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+            <BadgeOutlined style={{marginRight: "1rem"}} />
+            {isEditing ? (
+                <>
+                <Box component="input" type="text" value={username} onClick={handleInputClick} onChange={(e) => setUsername(e.target.value)} required
+                sx={{ width: "20%", display: "inline-block", paddingY: "0.5rem", fontSize: "1.5rem", marginRight: "1rem" }}/>
+                <Button onClick={handleUpdateClick}>
+                    <Edit />
+                </Button>
+                </>
+            ) : (
+                <>
+                <Box component="p"
+                sx={{
+                    width: "20%",
+                    display: "inline-block",
+                    paddingY: "0.5rem",
+                    fontSize: "1.5rem",
+                    marginRight: "1rem",
+                    border: "0.1rem solid #ccc",
+                    borderRadius: "0.2rem",
+                    backgroundColor: "grey.300",
+                    }}>{user?.displayName}</Box>
+                <Button onClick={handleEditClick}>
+                    <Edit />
+                </Button>
+                </>
+            )}
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Email style={{marginRight: "1rem"}} />
+            <Box component="p"
+            sx={{
+                display: "inline-block",
+                paddingY: "0.5rem",
+                fontSize: "1.5rem",
+                }}>{user?.email}</Box>
+        </Box>
         </>
     )
 };

@@ -70,7 +70,9 @@ export default function Page() {
                 <AccountBoxOutlined />
                 プロフィール
             </h2>
-            <GoogleAuthProfileCard user={user} />
+            <Box sx={{ marginTop: "1rem" }}>
+                <GoogleAuthProfileCard user={user} />
+            </Box>
         </Box>
     );
 }

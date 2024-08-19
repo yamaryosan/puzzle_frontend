@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
+import { getAuth, User } from 'firebase/auth';
 import { Box } from '@mui/material';
-
-type User = {
-    displayName: string | null;
-    email: string | null;
-};
 
 export default function ProfileCard({ user }: { user: User }) {
     const [username, setUsername] = useState(user.displayName || '');

@@ -11,7 +11,7 @@ import DeleteModal from '@/lib/components/DeleteModal';
 import { Category, Puzzle } from '@prisma/client';
 import { Box, Button } from '@mui/material';
 import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
-
+import FavoriteButton from '@/lib/components/FavoriteButton';
 
 type PageParams = {
     id: string;
@@ -27,7 +27,6 @@ type CategoryWithRelation = {
 export default function Page({ params }: { params: PageParams }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<CategoryWithRelation[]>([]);
-    const quillRef = useRef<Quill | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // パズルを取得
@@ -73,14 +72,14 @@ export default function Page({ params }: { params: PageParams }) {
             borderRadius: "5px",
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
         }}>
-            <div id="delete_modal"></div>
-            {isDeleteModalOpen && (
-                <Portal element={document.getElementById("delete_modal")!}>
-                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
-                </Portal>
-            )}
-
-            <h2>{puzzle.title}</h2>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
+                    <FavoriteButton
+                        checked={puzzle.is_favorite}
+                        onChange={(checked) => {
+                            setPuzzle({ ...puzzle, is_favorite: checked });
+                        }}/>
+            </Box>
             <Box
             sx={{
                 display: "flex",
@@ -95,7 +94,6 @@ export default function Page({ params }: { params: PageParams }) {
             </Box>
 
             <p>難易度 : {puzzle.difficulty}</p>
-            <p>お気に入り : {puzzle.is_favorite ? 'YES' : 'NO'}</p>
 
             <Box
                 sx={{
@@ -161,6 +159,12 @@ export default function Page({ params }: { params: PageParams }) {
                     </Box>
                 </Button>
             </Box>
+            <div id="delete_modal"></div>
+            {isDeleteModalOpen && (
+                <Portal element={document.getElementById("delete_modal")!}>
+                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+                </Portal>
+            )}            
         </Box>
     );
 }

@@ -55,7 +55,7 @@ export async function deletePuzzle(id: string) {
  * @param id パズルID
  */
 export async function toggleFavoritePuzzle(id: string) {
-    const response = await fetch(`/api/puzzles/${id}/favorite`, {
+    const response = await fetch(`/api/puzzles/${id}/favorites`, {
         method: "PUT",
     });
     if (!response.ok) {

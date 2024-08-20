@@ -75,7 +75,7 @@ export default function Page({ params }: { params: PageParams }) {
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
                     <FavoriteButton
-                        checked={puzzle.is_favorite}
+                        initialChecked={puzzle.is_favorite}
                         puzzleId={params.id}
                         onChange={(checked) => {
                             setPuzzle({ ...puzzle, is_favorite: checked });

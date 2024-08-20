@@ -42,6 +42,9 @@ const darkTheme: ThemeOptions = {
             secondary: '#b0b0b0',
             disabled: '#6c6c6c',
         },
+        error: {
+            main: '#ff1744',
+        }
     },
     typography: {
         h1: {

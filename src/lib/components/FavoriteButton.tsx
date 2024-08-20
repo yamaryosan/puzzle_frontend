@@ -1,12 +1,19 @@
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { toggleFavoritePuzzle } from "@/lib/api/puzzleapi";
 
 type FavoriteButtonProps = {
     checked: boolean;
     onChange: (checked: boolean) => void;
+    puzzleId: string;
 };
 
-export default function FavoriteButton({ checked, onChange }: FavoriteButtonProps) {
+export default function FavoriteButton({ checked, onChange, puzzleId }: FavoriteButtonProps) {
+    const handleChange = async (checked: boolean) => {
+        await toggleFavoritePuzzle(puzzleId);
+        onChange(checked);
+    };
+
     return (
         <FormControlLabel
             control={
@@ -14,7 +21,7 @@ export default function FavoriteButton({ checked, onChange }: FavoriteButtonProp
                 icon={<FavoriteBorder sx={{ color: "grey.300" }}/>}
                 checkedIcon={<Favorite />}
                 checked={checked}
-                onChange={(event) => onChange(event.target.checked)}
+                onChange={(e) => handleChange(e.target.checked)}
                 name="favorite"
                 color="error"
                 size="large"

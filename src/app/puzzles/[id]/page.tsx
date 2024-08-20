@@ -76,6 +76,7 @@ export default function Page({ params }: { params: PageParams }) {
                 <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
                     <FavoriteButton
                         checked={puzzle.is_favorite}
+                        puzzleId={params.id}
                         onChange={(checked) => {
                             setPuzzle({ ...puzzle, is_favorite: checked });
                         }}/>

@@ -10,6 +10,7 @@ type ResultSliderProps = {
 export default function ResultSlider({ result }: ResultSliderProps) {
     const [show, setShow] = useState(false);
 
+    // 検索結果がある場合は表示
     useEffect(() => {
         if (result.length > 0) {
             setShow(true);

@@ -33,7 +33,7 @@ export default function Page() {
         fetchCategories().then((categories) => {
             setCategories(categories);
         });
-    }, [categories]);
+    }, []);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {

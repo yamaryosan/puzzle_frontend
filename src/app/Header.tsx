@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Box from '@mui/material/Box';
 import { Home, Category, Favorite, Search } from '@mui/icons-material';
+import SearchBox from '@/lib/components/SearchBox';
 
 export default function Header() {
     return (
@@ -12,6 +13,7 @@ export default function Header() {
                 color: 'text.secondary',
                 fontSize: '1.1rem',
                 gap: '1rem',
+                alignItems: 'center',
                 }}>
                     <Link href="/">
                     <Home />
@@ -25,10 +27,7 @@ export default function Header() {
                     <Favorite />
                     お気に入り
                     </Link>
-                    <p>
-                    <Search />
-                        検索ボックス(モーダル)
-                    </p>
+                    <SearchBox />
             </Box>
         </header>
     );

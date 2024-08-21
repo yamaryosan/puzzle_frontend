@@ -79,3 +79,27 @@ export async function getFavoritePuzzles() {
     console.log("お気に入りのパズルの取得に成功: ", puzzles);
     return puzzles;
 }
+
+/**
+ * 検索ワードからパズルを検索
+ * @param keyword 検索ワード
+ * @returns Promise<Puzzles>
+ */
+export async function searchPuzzles(keyword: string) {
+    const response = await fetch("/api/puzzles/search",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ search: keyword }),
+        }
+    );
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("パズルの検索に失敗: ", error);
+    }
+    const puzzles = await response.json() as Puzzle[];
+    console.log("パズルの検索に成功: ", puzzles);
+    return puzzles;
+}

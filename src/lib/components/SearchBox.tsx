@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { InputBase } from "@mui/material";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
-import ResultModal from "@/lib/components/ResultModal";
+import ResultSlider from "@/lib/components/ResultSlider";
 
 export default function SearchBox() {
     const [searchText, setSearchText] = useState("");
@@ -34,15 +34,22 @@ export default function SearchBox() {
 
     return (
         <>
-        <Box sx={{ display: "flex", color: "black" }}>
+        <Box sx={{ display: "flex", color: "black", position: "relative" }}>
             <InputBase type="text" placeholder="検索..." value={searchText} onChange={handleChange}
             sx={{ backgroundColor: "white", padding: "0.25rem", paddingLeft: "0.75rem", borderRadius: "5px", width: "300px" }}
             />
             <Button sx={{ color: "white", scale: "1.5" }}>
                 <Search />
             </Button>
+            <Box sx={{
+                position: "absolute",
+                backgroundColor: "white",
+                top: "100%",
+                left: "0",
+                width: "300px" }}>
+            <ResultSlider result={searchResults} />
+            </Box>
         </Box>
-        <ResultModal result={searchResults} />
         </>
     );
 }

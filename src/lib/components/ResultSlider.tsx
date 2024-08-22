@@ -1,5 +1,5 @@
 import { Puzzle } from "@prisma/client";
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Grow, List, ListItem, ListItemText, Paper } from "@mui/material";
 import Link from "next/link";
 

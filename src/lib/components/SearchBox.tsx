@@ -2,7 +2,7 @@
 
 import { Search } from "@mui/icons-material";
 import { Button, Box } from "@mui/material";
-import { useState, useEffect, useRef, use } from "react";
+import { useState, useEffect, useRef } from "react";
 import { InputBase } from "@mui/material";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
@@ -31,11 +31,13 @@ export default function SearchBox() {
         fetchPuzzles();
     }, [searchText]);
 
-    // フォーカスが外れたら検索結果を非表示
+    // フォーカスが外れたら0.2秒後に検索結果を非表示(検索結果をクリックできるようにするため)
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
+        async function handleClickOutside(event: MouseEvent) {
             if (searchBoxRef.current && !searchBoxRef.current.contains(event.target as Node)) {
-                setIsInputFocused(false);
+                setTimeout(() => {
+                    setIsInputFocused(false);
+                }, 200);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -58,11 +60,18 @@ export default function SearchBox() {
             <InputBase type="text" placeholder="検索..." value={searchText} onChange={handleChange} onFocus={handleFocus} inputRef={searchBoxRef}
             sx={{ backgroundColor: "white", padding: "0.25rem", paddingLeft: "0.75rem", borderRadius: "5px", width: "300px" }}
             />
-            <Link href={`/search/${searchText}`}>
-                <Button sx={{ color: "white", scale: "1.5", marginLeft: "1rem" }}>
+            {searchText.trim().length > 0 ? (
+                <Link href={`/search/${searchText}`}>
+                    <Button sx={{ color: "white", scale: "1.5", marginLeft: "1rem" }}>
+                        <Search />
+                    </Button>
+                </Link>
+            ):(
+                <Button sx={{ color: "white", scale: "1.5", marginLeft: "1rem" }} disabled>
                     <Search />
                 </Button>
-            </Link>
+            )}
+
             {isInputFocused && (
                 <Box sx={{
                     position: "absolute",

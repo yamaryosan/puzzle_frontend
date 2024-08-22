@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, List, ListItem } from "@mui/material";
+import { List } from "@mui/material";
 import { useState, useEffect } from "react";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
@@ -9,8 +9,7 @@ import PuzzleCard from "@/lib/components/PuzzleCard";
 export default function Page({ params }: { params: { query: string } }) {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
-    const decodedQuery = decodeURIComponent(params.query);
-    const sanitizedQuery = decodedQuery.replace(/\+/g, " ");
+    const decodedQuery = decodeURIComponent(params.query).replace(/\+/g, " ");
    
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
@@ -38,7 +37,7 @@ export default function Page({ params }: { params: { query: string } }) {
 
     return (
         <>
-        <h2>{`"${sanitizedQuery}" の検索結果`}</h2>
+        <h2>{`"${decodedQuery}" の検索結果`}</h2>
         <List>
             {puzzles?.map((puzzle) => (
                 <li key={puzzle.id} >

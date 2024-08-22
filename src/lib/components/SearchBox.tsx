@@ -7,6 +7,7 @@ import { InputBase } from "@mui/material";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
 import ResultSlider from "@/lib/components/ResultSlider";
+import Link from "next/link";
 
 export default function SearchBox() {
     const [searchText, setSearchText] = useState("");
@@ -38,9 +39,11 @@ export default function SearchBox() {
             <InputBase type="text" placeholder="検索..." value={searchText} onChange={handleChange}
             sx={{ backgroundColor: "white", padding: "0.25rem", paddingLeft: "0.75rem", borderRadius: "5px", width: "300px" }}
             />
-            <Button sx={{ color: "white", scale: "1.5" }}>
-                <Search />
-            </Button>
+            <Link href={`/search/${searchText}`}>
+                <Button sx={{ color: "white", scale: "1.5", marginLeft: "1rem" }}>
+                    <Search />
+                </Button>
+            </Link>
             <Box sx={{
                 position: "absolute",
                 backgroundColor: "white",

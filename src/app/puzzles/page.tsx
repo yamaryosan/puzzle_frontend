@@ -47,8 +47,7 @@ export default function Page() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center"
-            }}
-            >
+            }}>
                 <Link href="/puzzles/create" className="flex items-center w-full bg-secondary-light hover:bg-secondary-dark">
                     <Box sx={{ display: "flex", alignItems: "center", width: "100%", justifyContent: "center", paddingY: "1rem", marginX: "0.5rem"}}>
                         <AddCircleOutline /> 

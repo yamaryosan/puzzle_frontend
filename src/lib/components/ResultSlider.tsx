@@ -9,11 +9,13 @@ type ResultSliderProps = {
 
 export default function ResultSlider({ result }: ResultSliderProps) {
     const [show, setShow] = useState(false);
+    const [length, setLength] = useState(0);
 
     // 検索結果がある場合は表示
     useEffect(() => {
         if (result.length > 0) {
             setShow(true);
+            setLength(result.length);
         }
         return () => {
             setShow(false);
@@ -26,7 +28,6 @@ export default function ResultSlider({ result }: ResultSliderProps) {
 
     return (
         <>
-        {/* モーダル本体 */}
         <Grow in={show} style={{transformOrigin: "0 0 0"}} {...(show ? {timeout: 300} : {})}>
             <Paper
             elevation={3}
@@ -40,6 +41,7 @@ export default function ResultSlider({ result }: ResultSliderProps) {
                 zIndex: 1,
                 mt: 1,
             }}>
+                <p style={{padding: '0.5rem'}}>{length}件の検索結果</p>
                 <List>
                     {result.slice(0, 5).map((puzzle) => (
                         <ListItem

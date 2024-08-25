@@ -168,65 +168,59 @@ export default function Page() {
                 <AddCircleOutline />
                 <span>パズル作成</span>
             </h2>
-                <TitleEditor title={title} setTitle={setTitle} />
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+
+            <TitleEditor title={title} setTitle={setTitle} />
+
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Editor
                 ref={quillDescriptionRef}
                 readOnly={readOnly}
                 defaultValue={new DeltaClass([{  }])}
                 onSelectionChange={setRange}
-                onTextChange={setLastChange}
-                />
+                onTextChange={setLastChange} />
             </Box>
 
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正答</h3>
                 <Editor
                 ref={quillSolutionRef}
                 readOnly={readOnly}
                 defaultValue={new DeltaClass([{ }])}
                 onSelectionChange={setRange}
-                onTextChange={setLastChange}
-                />
+                onTextChange={setLastChange} />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
-            <h3>ヒント</h3>
-            <HintsEditor
-            maxHints={maxHints}
-            defaultValues={Array.from({ length: maxHints }, () => new DeltaClass([{ }]))}
-            hintQuills={hintQuills}
-            />
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>ヒント</h3>
+                <HintsEditor
+                maxHints={maxHints}
+                defaultValues={Array.from({ length: maxHints }, () => new DeltaClass([{ }]))}
+                hintQuills={hintQuills} />
             </Box>
-            <h3>カテゴリー</h3>
-            <CategoryCheckbox 
-            onChange={handleCheckboxChange}
-            puzzle_id="0"
-            value={checkedCategories}
-            />
-            <h3>定石</h3>
-            <ApproachCheckbox
-            onChange={setApproachIds}
-            puzzle_id="0"
-            value={approachIds}
-            />
-            {/* 内容を送信 */}
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>カテゴリー</h3>
+                <CategoryCheckbox 
+                onChange={handleCheckboxChange}
+                puzzle_id="0"
+                value={checkedCategories} />
+            </Box>
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>定石</h3>
+                <ApproachCheckbox
+                onChange={setApproachIds}
+                puzzle_id="0"
+                value={approachIds} />
+            </Box>
+
             <Box
             sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 paddingY: '1rem',
-                marginY: '1rem',
-            }}>
+                marginY: '1rem' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',

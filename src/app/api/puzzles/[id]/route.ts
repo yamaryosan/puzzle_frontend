@@ -9,6 +9,7 @@ type puzzleRequest = {
     approachIds: number[];
     descriptionHtml: string;
     solutionHtml: string;
+    difficulty: number;
 }
 
 type PuzzleWithCategories = {
@@ -82,7 +83,7 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         }
         
         const puzzleContent: puzzleRequest = await req.json();
-        const { title, categoryIds, approachIds, descriptionHtml, solutionHtml } = puzzleContent;
+        const { title, categoryIds, approachIds, descriptionHtml, solutionHtml, difficulty } = puzzleContent;
 
         // パズルを更新
         const puzzle: Puzzle = await prisma.puzzle.update({
@@ -91,6 +92,7 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
                 title: title,
                 description: descriptionHtml,
                 solution: solutionHtml,
+                difficulty: difficulty,
             },
         });
 

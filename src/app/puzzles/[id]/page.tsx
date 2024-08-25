@@ -93,8 +93,11 @@ export default function Page({ params }: { params: PageParams }) {
                     <span key={category.category_id}>{category.category.name} </span>
                 ))}</span>
             </Box>
-
-            <DifficultViewer value={puzzle.difficulty} />
+            
+            <Box sx={{ display: "flex", alignItems: "center", paddingY: "0.5rem" }}>
+                <h3>難易度: </h3>
+                <DifficultViewer value={puzzle.difficulty} />
+            </Box>
 
             <Box
                 sx={{

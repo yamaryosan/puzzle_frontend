@@ -25,7 +25,7 @@ export default function LeftDrawer() {
     return (
         <>
             <Box onClick={handleOpen} sx={{
-                position: 'fixed', 
+                position: 'absolute', 
                 top: '50%', 
                 left: '0',
                 display: 'flex',
@@ -33,7 +33,7 @@ export default function LeftDrawer() {
                 alignItems: 'center',
                 transform: 'translateY(-50%)',
                 cursor: 'pointer', 
-                width: '4rem', 
+                width: '4rem',
                 height: '100%'
                 }} >
                 < ArrowRight />

@@ -10,7 +10,7 @@ export default function Header() {
                 display: 'flex', 
                 bgcolor: 'primary.main',
                 padding: '1rem', 
-                color: 'text.secondary',
+                color: 'white',
                 fontSize: '1.1rem',
                 gap: '1rem',
                 alignItems: 'center',

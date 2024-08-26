@@ -144,6 +144,16 @@ export async function DELETE(req: NextRequest, { params }: {params: {id: string}
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
+        // パズル・カテゴリー中間テーブルのデータを削除
+        await prisma.puzzleCategory.deleteMany({
+            where: { puzzle_id: id },
+        });
+
+        // パズル・定石中間テーブルのデータを削除
+        await prisma.puzzleApproach.deleteMany({
+            where: { puzzle_id: id },
+        });
+
         // パズルを削除
         await prisma.puzzle.delete({
             where: { id: id },

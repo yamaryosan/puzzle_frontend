@@ -41,6 +41,19 @@ export default function Page() {
         setDesc(!desc);
     };
 
+    // ランダムにシャッフル
+    const handleShuffle = () => {
+        setPuzzles(prevPuzzles => {
+            // 新しい配列を作成してシャッフル
+            const shuffled = [...prevPuzzles];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        });
+    };
+
     if (!puzzles) {
     return <div>loading...</div>;
     }
@@ -91,9 +104,9 @@ export default function Page() {
                         backgroundColor: "secondary.dark"
                     }
                     }}>
-                    <button onClick={() => setDesc(!desc)} className="block py-4 w-full flex justify-center">
-                    <Shuffle />
-                    <span>シャッフル</span>
+                    <button onClick={handleShuffle} className="block py-4 w-full flex justify-center">
+                        <Shuffle />
+                        <span>シャッフル</span>
                     </button>
                 </Box>
             </Box>

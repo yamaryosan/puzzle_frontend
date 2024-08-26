@@ -4,6 +4,7 @@ import { useState } from "react";
 import PuzzleInfo from "@/lib/components/PuzzleInfo";
 import { Puzzle } from "@prisma/client";
 import FavoriteButton from "@/lib/components/FavoriteButton";
+import CompletionStatusIcon from "@/lib/components/CompletionStatusIcon";
 
 type PuzzleCardProps = {
     puzzle: Puzzle;
@@ -28,15 +29,16 @@ export default function PuzzleCard({ puzzle, isActive, onClick }: PuzzleCardProp
                     transition: "background-color 0.3s",
                 },
             }}
-            onClick={onClick}
-        >
+            onClick={onClick}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
-                    <FavoriteButton
-                        initialChecked={puzzle.is_favorite}
-                        puzzleId={puzzle.id.toString()}
-                        onChange={handleFavoriteChange}
-                        />
+                <Box sx={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <CompletionStatusIcon isSolved={puzzle.is_solved} />
+                <FavoriteButton
+                    initialChecked={puzzle.is_favorite}
+                    puzzleId={puzzle.id.toString()}
+                    onChange={handleFavoriteChange}/>
+                </Box>
             </Box>
             <Box sx={{
                 maxHeight: isActive ? '1000px' : '0px',

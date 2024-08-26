@@ -13,6 +13,7 @@ import { Box, Button } from '@mui/material';
 import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
 import DifficultViewer from '@/lib/components/DifficultyViewer';
+import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
 
 type PageParams = {
     id: string;
@@ -75,12 +76,15 @@ export default function Page({ params }: { params: PageParams }) {
         }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
+                <Box sx={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                    <CompletionStatusIcon isSolved={puzzle.is_solved} />
                     <FavoriteButton
                         initialChecked={puzzle.is_favorite}
                         puzzleId={params.id}
                         onChange={(checked) => {
                             setPuzzle({ ...puzzle, is_favorite: checked });
                         }}/>
+                </Box>
             </Box>
             <Box
             sx={{

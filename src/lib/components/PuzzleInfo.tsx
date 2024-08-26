@@ -5,6 +5,7 @@ import Quill from "quill";
 import { useRef, useState, useEffect } from "react";
 import { EmojiObjects, Edit } from "@mui/icons-material";
 import Link from "next/link";
+import DifficultViewer from "@/lib/components/DifficultyViewer";
 
 type PuzzleInfoProps = {
     puzzle: Puzzle;
@@ -19,14 +20,19 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
 
     return (
         <>
-        <Box sx={{
-            padding: "1rem",
-        }}>
-            <Viewer 
-            readOnly={true}
-            defaultValue={puzzle.description}
-            ref={quillRef}
-            />
+        <Box sx={{ padding: "1rem" }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+                <span>難易度: </span>
+                <DifficultViewer value={puzzle.difficulty}/>
+            </Box>
+            <Box>
+                <p>問題文: </p>
+                <Viewer 
+                readOnly={true}
+                defaultValue={puzzle.description}
+                ref={quillRef}/>
+            </Box>
+
             <Link href={`/puzzles/${puzzle.id}/solve`}>
             <Button
             sx={{
@@ -38,13 +44,11 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
                     border: "1px solid black",
                 },
                 color: "black",
-            }}
-            >
+            }}>
                 <EmojiObjects />
                 <span>解く</span>
             </Button>
             </Link>
-
             <Link href={`/puzzles/${puzzle.id}/edit`}>
             <Button
             sx={{
@@ -56,8 +60,7 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
                     border: "1px solid black",
                 },
                 color: "black",
-            }}
-            >
+            }}>
                 <Edit />
                 <span>編集</span>
             </Button>

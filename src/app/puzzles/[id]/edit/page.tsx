@@ -14,6 +14,7 @@ import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import HintsEditor from '@/lib/components/HintsEditor';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import TitleEditor from '@/lib/components/TitleEditor';
+import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 
@@ -33,8 +34,9 @@ type Change = {
  * @param approachIds 定石ID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
+ * @param difficulty 難易度
  */
-async function send(id: string, title: string, categoryIds: number[], approachIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> 
+async function send(id: string, title: string, categoryIds: number[], approachIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>, difficulty: number): Promise<Puzzle | undefined> 
 {
     // IDが空の場合はエラー
     if (!id) {
@@ -57,7 +59,6 @@ async function send(id: string, title: string, categoryIds: number[], approachId
     }
     const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
     const solutionHtml = quillSolutionRef.current.root.innerHTML;
-    const difficulty = 1;
     const is_favorite = false;
 
     const response = await fetch(`/api/puzzles/${id}`, {
@@ -138,6 +139,8 @@ export default function Page({ params }: { params: PageParams }) {
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
     // 定石選択状態
     const [approachIds, setApproachIds] = useState<number[]>([]);
+    // 難易度
+    const [difficulty, setDifficulty] = useState<number>(1);
 
     // 編集前にパズルを取得
     useEffect(() => {
@@ -161,7 +164,7 @@ export default function Page({ params }: { params: PageParams }) {
         });
     }, [params.id]);
 
-    // 編集前に以前の本文と正答を取得
+    // 編集前に以前の内容を取得
     useEffect(() => {
         if (puzzle?.description && !quillLoaded) {
             import('quill').then((Quill) => {
@@ -174,6 +177,7 @@ export default function Page({ params }: { params: PageParams }) {
             });
         }
         setTitle(puzzle?.title || "");
+        setDifficulty(puzzle?.difficulty || 1);
     }, [puzzle, quillLoaded]);
 
     // 編集前に以前のヒントを取得
@@ -296,6 +300,11 @@ export default function Page({ params }: { params: PageParams }) {
                 />
             </Box>
 
+            <Box sx={{ paddingY: '0.5rem' }} >
+
+            </Box>
+                <h3>難易度</h3>
+                <DifficultEditor value={difficulty} onChange={setDifficulty} />
             <Box
             sx={{
                 display: 'flex',
@@ -312,7 +321,7 @@ export default function Page({ params }: { params: PageParams }) {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef)}>
+                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, difficulty)}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
                     <span>編集完了</span>

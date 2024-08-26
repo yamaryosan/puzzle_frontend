@@ -10,6 +10,7 @@ import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import { AddCircleOutline, Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import TitleEditor from '@/lib/components/TitleEditor';
+import DifficultEditor from '@/lib/components/DifficultyEditor';
 
 type Range = {
     index: number;
@@ -28,6 +29,7 @@ type Change = {
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
  * @param hintQuills ヒントのQuillの参照
+ * @param difficulty 難易度
  */
 async function sendContent(
     title: string,
@@ -35,7 +37,8 @@ async function sendContent(
     approachIds: number[],
     quillDescriptionRef: React.RefObject<Quill | null>,
     quillSolutionRef: React.RefObject<Quill | null>,
-    hintQuills: React.RefObject<Quill | null>[]
+    hintQuills: React.RefObject<Quill | null>[],
+    difficulty: number,
 ): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
@@ -49,7 +52,6 @@ async function sendContent(
     }
     const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
     const solutionHtml = quillSolutionRef.current.root.innerHTML;
-    const difficulty = 1;
     const is_favorite = false;
 
     // 内容を送信
@@ -138,6 +140,8 @@ export default function Page() {
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
     // 定石選択状態
     const [approachIds, setApproachIds] = useState<number[]>([]);
+    // 難易度
+    const [difficulty, setDifficulty] = useState<number>(1);
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -168,65 +172,64 @@ export default function Page() {
                 <AddCircleOutline />
                 <span>パズル作成</span>
             </h2>
-                <TitleEditor title={title} setTitle={setTitle} />
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+
+            <TitleEditor title={title} setTitle={setTitle} />
+
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Editor
                 ref={quillDescriptionRef}
                 readOnly={readOnly}
                 defaultValue={new DeltaClass([{  }])}
                 onSelectionChange={setRange}
-                onTextChange={setLastChange}
-                />
+                onTextChange={setLastChange} />
             </Box>
 
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正答</h3>
                 <Editor
                 ref={quillSolutionRef}
                 readOnly={readOnly}
                 defaultValue={new DeltaClass([{ }])}
                 onSelectionChange={setRange}
-                onTextChange={setLastChange}
-                />
+                onTextChange={setLastChange} />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
-            <h3>ヒント</h3>
-            <HintsEditor
-            maxHints={maxHints}
-            defaultValues={Array.from({ length: maxHints }, () => new DeltaClass([{ }]))}
-            hintQuills={hintQuills}
-            />
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>ヒント</h3>
+                <HintsEditor
+                maxHints={maxHints}
+                defaultValues={Array.from({ length: maxHints }, () => new DeltaClass([{ }]))}
+                hintQuills={hintQuills} />
             </Box>
-            <h3>カテゴリー</h3>
-            <CategoryCheckbox 
-            onChange={handleCheckboxChange}
-            puzzle_id="0"
-            value={checkedCategories}
-            />
-            <h3>定石</h3>
-            <ApproachCheckbox
-            onChange={setApproachIds}
-            puzzle_id="0"
-            value={approachIds}
-            />
-            {/* 内容を送信 */}
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>カテゴリー</h3>
+                <CategoryCheckbox 
+                onChange={handleCheckboxChange}
+                puzzle_id="0"
+                value={checkedCategories} />
+            </Box>
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>定石</h3>
+                <ApproachCheckbox
+                onChange={setApproachIds}
+                puzzle_id="0"
+                value={approachIds} />
+            </Box>
+
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>難易度</h3>
+                <DifficultEditor value={difficulty} onChange={setDifficulty} />
+            </Box>
+
             <Box
             sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 paddingY: '1rem',
-                marginY: '1rem',
-            }}>
+                marginY: '1rem' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',
@@ -236,7 +239,7 @@ export default function Page() {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills)}>
+                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
                     <span>作成</span>

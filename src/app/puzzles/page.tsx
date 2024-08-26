@@ -10,7 +10,6 @@ import { Box } from '@mui/material';
 
 export default function Page() {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
     const [desc, setDesc] = useState(false);
     
     // アクティブなカードのID
@@ -27,9 +26,20 @@ export default function Page() {
             }
         }
         fetchPuzzles();
+        return () => {
+            setPuzzles([]);
+        }
     }, []);
 
-    // カテゴリーで絞り込み
+    // 難易度でソート
+    const handleSort = () => {
+        if (desc) {
+            setPuzzles(puzzles.sort((a, b) => a.difficulty - b.difficulty));
+        } else {
+            setPuzzles(puzzles.sort((a, b) => b.difficulty - a.difficulty));
+        }
+        setDesc(!desc);
+    };
 
     if (!puzzles) {
     return <div>loading...</div>;
@@ -65,9 +75,9 @@ export default function Page() {
                         backgroundColor: "secondary.dark"
                     }
                     }}>
-                    <button onClick={() => setDesc(!desc)} className="block py-4 w-full flex justify-center">
-                    <Sort />
-                    <span>難易度ソート</span>
+                    <button onClick={handleSort} className="block py-4 w-full flex justify-center">
+                        <Sort />
+                        <span>難易度ソート</span>
                     </button>
                 </Box>
                 <Box sx={{ 

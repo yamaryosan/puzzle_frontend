@@ -12,6 +12,7 @@ import { Category, Puzzle } from '@prisma/client';
 import { Box, Button } from '@mui/material';
 import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
+import DifficultViewer from '@/lib/components/DifficultyViewer';
 
 type PageParams = {
     id: string;
@@ -86,15 +87,17 @@ export default function Page({ params }: { params: PageParams }) {
                 display: "flex",
                 alignItems: "center",
                 paddingY: "0.5rem",
-            }}
-            >
+            }}>
                 <h3>カテゴリー: </h3>
                 <span>{categories?.map(category => (
                     <span key={category.category_id}>{category.category.name} </span>
                 ))}</span>
             </Box>
-
-            <p>難易度 : {puzzle.difficulty}</p>
+            
+            <Box sx={{ display: "flex", alignItems: "center", paddingY: "0.5rem" }}>
+                <h3>難易度: </h3>
+                <DifficultViewer value={puzzle.difficulty} />
+            </Box>
 
             <Box
                 sx={{

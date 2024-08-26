@@ -33,12 +33,30 @@ export default function Page() {
 
     // 難易度でソート
     const handleSort = () => {
-        if (desc) {
-            setPuzzles(puzzles.sort((a, b) => a.difficulty - b.difficulty));
-        } else {
-            setPuzzles(puzzles.sort((a, b) => b.difficulty - a.difficulty));
-        }
+        setPuzzles(prevPuzzles => {
+            const sortedPuzzles = [...prevPuzzles].sort((a, b) => {
+                if (desc) {
+                    return a.difficulty - b.difficulty;
+                } else {
+                    return b.difficulty - a.difficulty;
+                }
+            });
+            return sortedPuzzles;
+        });
         setDesc(!desc);
+    };
+
+    // ランダムにシャッフル
+    const handleShuffle = () => {
+        setPuzzles(prevPuzzles => {
+            // 新しい配列を作成してシャッフル
+            const shuffled = [...prevPuzzles];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        });
     };
 
     if (!puzzles) {
@@ -91,9 +109,9 @@ export default function Page() {
                         backgroundColor: "secondary.dark"
                     }
                     }}>
-                    <button onClick={() => setDesc(!desc)} className="block py-4 w-full flex justify-center">
-                    <Shuffle />
-                    <span>シャッフル</span>
+                    <button onClick={handleShuffle} className="block py-4 w-full flex justify-center">
+                        <Shuffle />
+                        <span>シャッフル</span>
                     </button>
                 </Box>
             </Box>

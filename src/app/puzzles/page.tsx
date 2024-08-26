@@ -33,11 +33,16 @@ export default function Page() {
 
     // 難易度でソート
     const handleSort = () => {
-        if (desc) {
-            setPuzzles(puzzles.sort((a, b) => a.difficulty - b.difficulty));
-        } else {
-            setPuzzles(puzzles.sort((a, b) => b.difficulty - a.difficulty));
-        }
+        setPuzzles(prevPuzzles => {
+            const sortedPuzzles = [...prevPuzzles].sort((a, b) => {
+                if (desc) {
+                    return a.difficulty - b.difficulty;
+                } else {
+                    return b.difficulty - a.difficulty;
+                }
+            });
+            return sortedPuzzles;
+        });
         setDesc(!desc);
     };
 

@@ -1,4 +1,4 @@
-import { MutableRefObject, useState } from 'react';
+import { MutableRefObject, useEffect, useState } from 'react';
 import Editor from '@/lib/components/Editor';
 import Quill from 'quill';
 import DeltaClass from 'quill-delta';
@@ -17,15 +17,14 @@ type HintEditorProps = {
     quill: MutableRefObject<Quill | null>;
     defaultValue: DeltaClass;
     number: number;
-    show: boolean;
-    onToggle: () => void;
     canToggle: boolean;
+    show: boolean;
+    toggleShow: () => void;
 };
 
-export default function HintEditor({ quill, defaultValue, number, show, onToggle, canToggle }: HintEditorProps) {
+export default function HintEditor({ quill, defaultValue, number, canToggle, show, toggleShow }: HintEditorProps) {
     const [range, setRange] = useState<Range | undefined>(undefined);
     const [lastChange, setLastChange] = useState<Change | undefined>(undefined);
-    const [_, setShow] = useState(false);
 
     return (
         <Box>
@@ -45,19 +44,17 @@ export default function HintEditor({ quill, defaultValue, number, show, onToggle
                     },
                 },
             }}
-            onClick={onToggle} disabled={!canToggle}>
-                {show ? '非表示' : '表示'}
+            disabled={!canToggle}
+            onClick={toggleShow} >
+                {show ? "非表示" : "表示"}
             </Button>
             {show && (
-                <div>
-                    <Editor
-                    readOnly={false}
-                    defaultValue={defaultValue}
-                    onSelectionChange={setRange}
-                    onTextChange={setLastChange}
-                    ref={quill}
-                    />
-                </div>
+                <Editor
+                readOnly={false}
+                defaultValue={defaultValue}
+                onSelectionChange={setRange}
+                onTextChange={setLastChange}
+                ref={quill}/>
             )}
         </Box>
     )

@@ -21,31 +21,21 @@ export default function HintsEditor({ maxHints, defaultValues, hintQuills }: Hin
     // 各ヒントの表示/非表示状態
     const [show, setShow] = useState(() => Array(maxHints).fill(false));
 
-    useEffect(() => {
-        const newCanToggle = Array(maxHints).fill(false);
-        let allPreviousShown = true; // すべての前のヒントが表示されているかどうか
-
-        for (let i = 0; i < maxHints; i++) {
-            // 最初のヒントはトグル可
-            if (i === 0) {
-                newCanToggle[i] = true;
-            }
-            // すべての前のヒントが表示されている場合、トグル可
-            if (allPreviousShown && show[i - 1]) {
-                newCanToggle[i] = true;
-            }
-            if (!show[i]) {
-                allPreviousShown = false;
-            }
-
-            // すべての後のヒントが非表示の場合、トグル不可
-            if (show.slice(i + 1).some(s => s)) {
-                newCanToggle[i] = false;
-            }
+    // トグルされるべき項目を返す
+    const toggleable = (arr: boolean[]) => {
+        // 最後のtrueのインデックスを取得
+        const lastTrueIndex = arr.lastIndexOf(true);
+        // 一つもtrueがない場合、最初だけをtrueにした配列を返す
+        if (lastTrueIndex === -1) {
+            return arr.map((_, index) => index === 0);
         }
+        // 最後のtrueとその次の項目をtrueにした配列を返す
+        return arr.map((_, index) => index === lastTrueIndex || index === lastTrueIndex + 1);
+    };
 
-        setCanToggle(newCanToggle);
-    }, [show, maxHints]);
+    useEffect(() => {
+        setCanToggle(toggleable(show));
+    }, [show]);
 
     // トグルボタンがクリックされたときの処理(表示/非表示を切り替える)
     const toggleShow = (index: number) => {

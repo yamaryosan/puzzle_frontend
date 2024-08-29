@@ -34,9 +34,18 @@ type Change = {
  * @param approachIds 定石ID
  * @param quillDescriptionRef 本文のQuillの参照
  * @param quillSolutionRef 正答のQuillの参照
+ * @param hintQuills ヒントのQuillの参照
  * @param difficulty 難易度
  */
-async function send(id: string, title: string, categoryIds: number[], approachIds: number[], quillDescriptionRef: React.RefObject<Quill | null>, quillSolutionRef: React.RefObject<Quill | null>, difficulty: number): Promise<Puzzle | undefined> 
+async function send(
+    id: string,
+    title: string,
+    categoryIds: number[],
+    approachIds: number[],
+    quillDescriptionRef: React.RefObject<Quill | null>,
+    quillSolutionRef: React.RefObject<Quill | null>,
+    hintQuills:React.RefObject<Quill | null>[],
+    difficulty: number): Promise<Puzzle | undefined> 
 {
     // IDが空の場合はエラー
     if (!id) {
@@ -74,6 +83,56 @@ async function send(id: string, title: string, categoryIds: number[], approachId
     }
     const puzzle = await response.json();
     console.log("パズルの編集に成功: ", puzzle);
+
+    // カテゴリーを更新
+    const puzzleId = puzzle.id;
+    const categoryResponse = await fetch(`/api/puzzles/${puzzleId}/categories`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ categoryIds }),
+    });
+    if (!categoryResponse.ok) {
+        const error = await categoryResponse.json();
+        console.error("カテゴリーの更新に失敗: ", error);
+    }
+    console.log("カテゴリーの更新に成功");
+
+    // 定石を更新
+    const approachResponse = await fetch(`/api/puzzles/${puzzleId}/approaches`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ approachIds }),
+    });
+    if (!approachResponse.ok) {
+        const error = await approachResponse.json();
+        console.error("定石の更新に失敗: ", error);
+    }
+    console.log("定石の更新に成功");
+
+    // ヒントを更新
+    for (let i = 0; i < hintQuills.length; i++) {
+        const hintQuill = hintQuills[i].current;
+        if (!hintQuill) {
+            continue;
+        }
+        const hintHtml = hintQuill.root.innerHTML;
+        const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ hintHtml }),
+        });
+        if (!hintResponse.ok) {
+            const error = await hintResponse.json();
+            console.error("ヒントの更新に失敗: ", error);
+        }
+        console.log("ヒントの更新に成功");
+    }
     return puzzle;
 }
 
@@ -234,77 +293,56 @@ export default function Page({ params }: { params: PageParams }) {
                 <span>パズル編集</span>
             </h2>
             <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            sx={{ paddingY: '0.5rem' }}>
                 <TitleEditor title={title} setTitle={setTitle} />
             </Box>
             <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Editor
                     ref={quillDescriptionRef}
                     readOnly={false}
                     defaultValue={descriptionDelta}
                     onSelectionChange={setRange}
-                    onTextChange={setLastChange}
-                />
+                    onTextChange={setLastChange}/>
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正答</h3>
                 <Editor
                     ref={quillSolutionRef}
                     readOnly={false}
                     defaultValue={solutionDelta}
                     onSelectionChange={setRange}
-                    onTextChange={setLastChange}
-                />
+                    onTextChange={setLastChange}/>
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>ヒント</h3>
                 <HintsEditor
                     maxHints={maxHints}
                     defaultValues={hintsDelta}
-                    hintQuills={hintQuills}
-                />
+                    hintQuills={hintQuills}/>
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox
                 onChange={handleCategoriesChange}
                 puzzle_id={params.id || "0"}
-                value={categoryIds}
-            />
+                value={categoryIds}/>
             </Box>
             {/* 定石 */}
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>定石</h3>
                 <ApproachCheckbox
                     onChange={handleApproachesChange}
                     puzzle_id={params.id || "0"}
-                    value={approachIds}
-                />
+                    value={approachIds}/>
             </Box>
 
             <Box sx={{ paddingY: '0.5rem' }} >
-
-            </Box>
                 <h3>難易度</h3>
                 <DifficultEditor value={difficulty} onChange={setDifficulty} />
+            </Box>
+
             <Box
             sx={{
                 display: 'flex',
@@ -321,7 +359,7 @@ export default function Page({ params }: { params: PageParams }) {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, difficulty)}>
+                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
                     <span>編集完了</span>

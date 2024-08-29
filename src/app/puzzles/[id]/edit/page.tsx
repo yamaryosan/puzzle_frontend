@@ -223,6 +223,21 @@ export default function Page({ params }: { params: PageParams }) {
         });
     }, [params.id]);
 
+    // 編集前に以前のヒント内容を取得
+    useEffect(() => {
+        import('quill').then((Quill) => {
+            const quill = new Quill.default(document.createElement('div'));
+            const newHintsDelta = Array(maxHints).fill(null);
+
+            hints.forEach((hint, index) => {
+                const hintsDelta = quill.clipboard.convert({ html: hint.content });
+                newHintsDelta[index] = hintsDelta;
+            });
+
+            setHintsDelta(newHintsDelta);
+        });
+    }, [hints, quillLoaded]);
+
     // 編集前に以前の内容を取得
     useEffect(() => {
         if (puzzle?.description && !quillLoaded) {
@@ -238,21 +253,6 @@ export default function Page({ params }: { params: PageParams }) {
         setTitle(puzzle?.title || "");
         setDifficulty(puzzle?.difficulty || 1);
     }, [puzzle, quillLoaded]);
-
-    // 編集前に以前のヒントを取得
-    useEffect(() => {
-        import('quill').then((Quill) => {
-            const quill = new Quill.default(document.createElement('div'));
-            const newHintsDelta = Array(maxHints).fill(null);
-
-            hints.forEach((hint, index) => {
-                const hintsDelta = quill.clipboard.convert({ html: hint.content });
-                newHintsDelta[index] = hintsDelta;
-            });
-
-            setHintsDelta(newHintsDelta);
-        });
-    }, [hints, quillLoaded]);
 
     if (!descriptionDelta) {
         return <div>Loading...</div>

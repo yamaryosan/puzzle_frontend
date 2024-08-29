@@ -21,6 +21,19 @@ export default function HintsEditor({ maxHints, defaultValues, hintQuills }: Hin
     // 各ヒントの表示/非表示状態
     const [show, setShow] = useState(() => Array(maxHints).fill(false));
 
+    useEffect(() => {
+        for (const defaultValue of defaultValues) {
+            const letters = Object.keys(defaultValue?.ops[0] ?? {}).length;
+            if (letters > 0) {
+                setShow((prev) => {
+                    const next = [...prev];
+                    next[prev.indexOf(false)] = true;
+                    return next;
+                });
+            }
+        }
+    }, [hintQuills]);
+
     // トグルされるべき項目を返す
     const toggleable = (arr: boolean[]) => {
         // 最後のtrueのインデックスを取得

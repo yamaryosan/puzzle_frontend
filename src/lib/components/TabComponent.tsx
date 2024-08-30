@@ -49,12 +49,12 @@ export default function TabComponent() {
                 {Array.from({ length: 3 }, (_, i) => (
                     <Tab sx={{ height: 100 }} key={i} label={`タブ${i + 1}`} />
                 ))}
-            </Tabs>
-            {Array.from({ length: 3 }, (_, i) => (
-                <TabPanel key={i} value={value} index={i}>
-                    {`タブ${i + 1}の内容`}
-                </TabPanel>
-            ))}
+        </Tabs>
+        {Array.from({ length: 3 }, (_, i) => (
+            <TabPanel key={i} value={value} index={i}>
+                {`タブ${i + 1}の内容`}
+            </TabPanel>
+        ))}
         </Box>
         </>
     )

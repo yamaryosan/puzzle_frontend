@@ -233,16 +233,10 @@ export default function Page({ params }: { params: PageParams }) {
                 <Edit />
                 <span>パズル編集</span>
             </h2>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <TitleEditor title={title} setTitle={setTitle} />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Editor
                     ref={quillDescriptionRef}
@@ -252,10 +246,7 @@ export default function Page({ params }: { params: PageParams }) {
                     onTextChange={setLastChange}
                 />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正答</h3>
                 <Editor
                     ref={quillSolutionRef}
@@ -265,21 +256,14 @@ export default function Page({ params }: { params: PageParams }) {
                     onTextChange={setLastChange}
                 />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>ヒント</h3>
                 <HintsEditor
                     maxHints={maxHints}
                     defaultValues={hintsDelta}
-                    hintQuills={hintQuills}
-                />
+                    hintQuills={hintQuills}/>
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox
                 onChange={handleCategoriesChange}
@@ -288,10 +272,7 @@ export default function Page({ params }: { params: PageParams }) {
             />
             </Box>
             {/* 定石 */}
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>定石</h3>
                 <ApproachCheckbox
                     onChange={handleApproachesChange}
@@ -301,10 +282,9 @@ export default function Page({ params }: { params: PageParams }) {
             </Box>
 
             <Box sx={{ paddingY: '0.5rem' }} >
-
-            </Box>
                 <h3>難易度</h3>
                 <DifficultEditor value={difficulty} onChange={setDifficulty} />
+            </Box>
             <Box
             sx={{
                 display: 'flex',
@@ -323,8 +303,8 @@ export default function Page({ params }: { params: PageParams }) {
                 }}
                 onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, difficulty)}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                    <Upload />
-                    <span>編集完了</span>
+                        <Upload />
+                        <span>編集完了</span>
                     </Box>
                 </Button>
                 <Button

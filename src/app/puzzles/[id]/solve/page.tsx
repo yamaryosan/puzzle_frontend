@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import HintsViewer from "@/lib/components/HintsViewer";
-import TabComponent from "@/lib/components/TabComponent";
 
 type Change = {
     ops: any[];
@@ -158,7 +157,7 @@ export default function Page({ params }: { params: { id: string } }) {
             </Box>
 
             <Box sx={{ paddingY: '0.5rem' }}>
-                <TabComponent />
+                <HintsViewer puzzleId={params.id} />
             </Box>
 
             <Box sx={{ paddingY: '0.5rem' }}>

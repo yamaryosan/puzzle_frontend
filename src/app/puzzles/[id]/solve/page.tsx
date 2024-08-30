@@ -6,13 +6,14 @@ import Viewer from "@/lib/components/Viewer";
 import Editor from "@/lib/components/Editor";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import Quill from "quill";
-import { Hint, Approach, Category } from "@prisma/client";
-import getHintsByPuzzleId from "@/lib/api/hintapi";
+import { Approach, Category } from "@prisma/client";
 import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
 import { getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Send } from "@mui/icons-material";
+import HintsViewer from "@/lib/components/HintsViewer";
+import TabComponent from "@/lib/components/TabComponent";
 
 type Change = {
     ops: any[];
@@ -82,12 +83,11 @@ export default function Page({ params }: { params: { id: string } }) {
     const [answer, setAnswer] = useState<string>('');
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change | null>(null);
-    const [delta, setDelta] = useState<any[]>([]);
 
     const answerRef = useRef<Quill | null>(null);
 
     const [categories, setCategories] = useState<Category[] | null>(null);
-    const [hints, setHints] = useState<Hint[] | null>(null);
+
     const [approaches, setApproaches] = useState<Approach[] | null>(null);
 
     // パズルを取得
@@ -106,15 +106,6 @@ export default function Page({ params }: { params: { id: string } }) {
             setCategories(categories ? categories.map(category => category.category) : []);
         }
         fetchCategories();
-    }, []);
-
-    // ヒントを取得
-    useEffect(() => {
-        async function fetchHints() {
-            const hints = await getHintsByPuzzleId(params.id);
-            setHints(hints || []);
-        }
-        fetchHints();
     }, []);
 
     // 定石を取得
@@ -152,73 +143,46 @@ export default function Page({ params }: { params: { id: string } }) {
                 display: "flex",
                 alignItems: "center",
                 paddingY: "0.5rem",
-            }}
-            >
+            }}>
                 <h3>カテゴリー: </h3>
                 <span>{categories?.map(category => (
                     <span key={category.id}>{category.name} </span>
                 ))}</span>
             </Box>
             
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Viewer
                     readOnly={true}
-                    defaultValue={puzzle.description}
-                />
+                    defaultValue={puzzle.description}/>
             </Box>
 
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
-                <h3>ヒント</h3>
-                {hints?.length === 0 && <p>ヒントはありません</p>}
-                {hints?.map((hint) => (
-                    <Viewer
-                        key={hint.id}
-                        readOnly={true}
-                        defaultValue={hint.content}
-                    />
-                ))}
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <TabComponent />
             </Box>
 
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>定石</h3>
+                {approaches?.length === 0 && <p>定石はありません</p>}
                 {approaches?.map((approach, index) => (
                     <Box key={approach.id} sx={{ paddingY: '0.5rem' }}>
                         <h4>{`定石${index + 1} : ${approach.title}`}</h4>
                         <Viewer
                             readOnly={true}
-                            defaultValue={approach.content}
-                        />
+                            defaultValue={approach.content}/>
                     </Box>
                 ))}
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>回答を入力</h3>
                 <Editor
                 ref={answerRef}
                 readOnly={false}
                 defaultValue={answer}
                 onTextChange={setLastChange}
-                onSelectionChange={setRange}
-                />
+                onSelectionChange={setRange}/>
             </Box>
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',

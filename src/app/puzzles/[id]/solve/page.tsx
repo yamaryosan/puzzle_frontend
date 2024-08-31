@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import HintsViewer from "@/lib/components/HintsViewer";
+import ApproachesViewer from "@/lib/components/ApproachesViewer";
 
 type Change = {
     ops: any[];
@@ -87,8 +88,6 @@ export default function Page({ params }: { params: { id: string } }) {
 
     const [categories, setCategories] = useState<Category[] | null>(null);
 
-    const [approaches, setApproaches] = useState<Approach[] | null>(null);
-
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
@@ -105,15 +104,6 @@ export default function Page({ params }: { params: { id: string } }) {
             setCategories(categories ? categories.map(category => category.category) : []);
         }
         fetchCategories();
-    }, []);
-
-    // 定石を取得
-    useEffect(() => {
-        async function fetchApproaches() {
-            const approaches = await getApproachesByPuzzleId(params.id) as ApproachWithRelation[];
-            setApproaches(approaches ? approaches.map(approach => approach.approach) : []);
-        }
-        fetchApproaches();
     }, []);
 
     // 送信
@@ -160,15 +150,7 @@ export default function Page({ params }: { params: { id: string } }) {
             </Box>
 
             <Box sx={{ paddingY: '0.5rem' }}>
-                <h3>定石</h3>
-                {approaches?.length === 0 && <p>定石はありません</p>}
-                {approaches?.map((approach, index) => (
-                    <Box key={approach.id} sx={{ paddingY: '0.5rem' }}>
-                        <h4>{`定石${index + 1} : ${approach.title}`}</h4>
-                        <Viewer
-                            defaultValue={approach.content}/>
-                    </Box>
-                ))}
+                <ApproachesViewer puzzleId={params.id} />
             </Box>
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>回答を入力</h3>

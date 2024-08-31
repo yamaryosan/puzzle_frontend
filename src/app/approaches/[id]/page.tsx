@@ -45,10 +45,7 @@ export default function Page({ params }: { params: PageParams }) {
     return (
         <div>
             <h1>{approach.title}</h1>
-            <Viewer 
-            readOnly={true}
-            defaultValue={approach.content}
-            />
+            <Viewer defaultValue={approach.content}/>
             {puzzles?.length === 0 ? <p>問題がありません</p> : ( 
             <div>
                 <p>この定石に関連する問題</p>

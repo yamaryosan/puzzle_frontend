@@ -108,7 +108,7 @@ export default function Page({ params }: { params: PageParams }) {
                     paddingY: '0.5rem',
                 }}>
                     <h3>問題文</h3>
-                    <Viewer readOnly={true} defaultValue={puzzle.description}/>
+                    <Viewer defaultValue={puzzle.description}/>
             </Box>
 
             <Box

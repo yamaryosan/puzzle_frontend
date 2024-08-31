@@ -114,25 +114,24 @@ async function send(
     console.log("定石の更新に成功");
 
     // ヒントを更新
-    for (let i = 0; i < hintQuills.length; i++) {
-        const hintQuill = hintQuills[i].current;
-        if (!hintQuill) {
-            continue;
-        }
-        const hintHtml = hintQuill.root.innerHTML;
-        const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ hintHtml }),
-        });
-        if (!hintResponse.ok) {
-            const error = await hintResponse.json();
-            console.error("ヒントの更新に失敗: ", error);
-        }
-        console.log("ヒントの更新に成功");
+    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML);
+
+    if (!hintHtmls) {
+        console.error("ヒントの取得に失敗");
+        return puzzle;
     }
+    const hintsResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hintHtmls }),
+    });
+    if (!hintsResponse.ok) {
+        const error = await hintsResponse.json();
+        console.error("ヒントの更新に失敗: ", error);
+    }
+    console.log("ヒントの更新に成功");
     return puzzle;
 }
 
@@ -361,8 +360,8 @@ export default function Page({ params }: { params: PageParams }) {
                 }}
                 onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                    <Upload />
-                    <span>編集完了</span>
+                        <Upload />
+                        <span>編集完了</span>
                     </Box>
                 </Button>
                 <Button

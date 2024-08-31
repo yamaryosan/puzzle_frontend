@@ -5,12 +5,11 @@ import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
 interface ViewerProps {
-  readOnly: boolean;
   defaultValue: string;
 }
 
 const Viewer = forwardRef<Quill, ViewerProps>(
-  ({ readOnly, defaultValue }, ref) => {
+  ({ defaultValue }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
@@ -22,7 +21,7 @@ const Viewer = forwardRef<Quill, ViewerProps>(
     // Quillの動的インポート(500エラーを回避)
     import('quill').then((Quill) => {
       quillRef.current = new Quill.default(containerRef.current!, {
-        readOnly: readOnly,
+        readOnly: true,
         modules: {
           toolbar: false
         },

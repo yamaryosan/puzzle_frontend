@@ -28,7 +28,6 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
             <Box>
                 <p>問題文: </p>
                 <Viewer 
-                readOnly={true}
                 defaultValue={puzzle.description}
                 ref={quillRef}/>
             </Box>

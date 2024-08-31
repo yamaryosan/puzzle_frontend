@@ -96,11 +96,18 @@ export async function PUT(req: NextRequest, {params}: {params: {id: string}}) {
         }
 
         // ヒントを更新
-        const { hintHtml } = await req.json();
-        await prisma.hint.updateMany({
+        const { hintHtmls } = await req.json();
+        await prisma.hint.deleteMany({
             where: { puzzle_id: id },
-            data: { content: hintHtml },
         });
+        for (const hintHtml of hintHtmls) {
+            await prisma.hint.create({
+                data: {
+                    puzzle_id: id,
+                    content: hintHtml,
+                },
+            });
+        };
         return NextResponse.json({ message: "Success" });
     } catch (error) {
         if (error instanceof Error) {

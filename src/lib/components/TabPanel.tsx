@@ -1,12 +1,12 @@
 import { Box } from "@mui/material";
 
-type HintTabPanelProps = {
+type TabPanelProps = {
     children: React.ReactNode;
     value: number;
     index: number;
 };
 
-export default function HintTabPanel({ children, value, index }: HintTabPanelProps) {
+export default function TabPanel({ children, value, index }: TabPanelProps) {
     return (
         <div
         role="tabpanel"

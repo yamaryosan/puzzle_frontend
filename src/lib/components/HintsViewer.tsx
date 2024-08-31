@@ -3,7 +3,7 @@ import Quill from "quill";
 
 import DeltaClass from 'quill-delta';
 import { Box, Tabs, Tab } from "@mui/material";
-import HintTabPanel from "@/lib/components/HintTabPanel";
+import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
 import getHintsByPuzzleId from "@/lib/api/hintapi";
 import { Hint } from "@prisma/client";
@@ -78,9 +78,9 @@ export default function HintsViewer({ puzzleId }: HintsViewerProps) {
                 ))}
             </Tabs>
             {hints?.map((hint, index) => (
-                <HintTabPanel value={value} index={index} key={index} >
+                <TabPanel value={value} index={index} key={index} >
                     <Viewer defaultValue={hint.content} />
-                </HintTabPanel>
+                </TabPanel>
             ))}
         </Box>
         </>

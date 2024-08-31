@@ -88,35 +88,19 @@ export default function Page({ params }: { params: { id: string } }) {
                 <Rule />
                 <span>答え合わせ</span>
             </h2>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題</h3>
-                <Viewer
-                readOnly={true}
-                defaultValue={puzzle.description}
-                />
+                <Viewer defaultValue={puzzle.description} />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>あなたの解答</h3>
                 <Viewer
-                readOnly={true}
                 defaultValue={puzzle.user_answer}
                 />
             </Box>
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正解</h3>
-                <Viewer
-                readOnly={true}
-                defaultValue={puzzle?.solution}
-                />
+                <Viewer defaultValue={puzzle?.solution}/>
             </Box>
             <Box
             sx={{

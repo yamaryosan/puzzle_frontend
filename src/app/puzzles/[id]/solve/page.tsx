@@ -152,7 +152,6 @@ export default function Page({ params }: { params: { id: string } }) {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Viewer
-                    readOnly={true}
                     defaultValue={puzzle.description}/>
             </Box>
 
@@ -167,7 +166,6 @@ export default function Page({ params }: { params: { id: string } }) {
                     <Box key={approach.id} sx={{ paddingY: '0.5rem' }}>
                         <h4>{`定石${index + 1} : ${approach.title}`}</h4>
                         <Viewer
-                            readOnly={true}
                             defaultValue={approach.content}/>
                     </Box>
                 ))}

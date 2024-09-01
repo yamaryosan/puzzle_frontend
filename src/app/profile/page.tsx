@@ -1,8 +1,6 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import useAuth from '@/lib/hooks/useAuth';
 import { AccountBoxOutlined } from '@mui/icons-material';
 import GoogleAuthProfileCard from '@/lib/components/GoogleAuthProfileCard';
 import { useState, useEffect } from 'react';

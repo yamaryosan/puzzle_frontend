@@ -29,8 +29,8 @@ async function signIn(auth: Auth, email: string, password: string) {
  * @returns 
  */
 async function redirectToDashboard() {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    window.location.href = '/dashboard';
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    window.location.href = '/';
 }
 
 /**
@@ -61,16 +61,13 @@ async function signInWithGoogle(auth: Auth) {
     }
 }
 
-export default function Home() {
+export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { user, authLoading } = useAuth();
     const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
 
-    const router = useRouter();
-
-    // ロード中はローディング画面を表示
     if (authLoading) {
         return <p>ローディング中...</p>;
     }
@@ -79,8 +76,8 @@ export default function Home() {
         redirectToDashboard();
         return (
             <div>
-                <p>ログインに成功しました。ダッシュボードにリダイレクトします...</p>
-                <p>リダイレクトされない場合は<Link href="/dashboard" className="text-blue-500 hover:underline">こちら</Link></p>
+                <p>ログインに成功しました。ホーム画面にリダイレクトします...</p>
+                <p>リダイレクトされない場合は<Link href="/" className="text-blue-500 hover:underline">こちら</Link></p>
             </div>
         );
     }

@@ -11,6 +11,7 @@ import { AddCircleOutline, Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
+import useAuth from '@/lib/hooks/useAuth';
 
 type Range = {
     index: number;
@@ -30,6 +31,7 @@ type Change = {
  * @param quillSolutionRef 正答のQuillの参照
  * @param hintQuills ヒントのQuillの参照
  * @param difficulty 難易度
+ * @param uId FirebaseユーザーID
  */
 async function sendContent(
     title: string,
@@ -39,6 +41,7 @@ async function sendContent(
     quillSolutionRef: React.RefObject<Quill | null>,
     hintQuills: React.RefObject<Quill | null>[],
     difficulty: number,
+    uId: string
 ): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
@@ -60,7 +63,7 @@ async function sendContent(
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite }),
+        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite, uId }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -142,6 +145,8 @@ export default function Page() {
     const [approachIds, setApproachIds] = useState<number[]>([]);
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
+    // ユーザ情報
+    const { user, authLoading, uId } = useAuth();
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -239,7 +244,7 @@ export default function Page() {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
+                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, uId ?? '' )}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
                     <span>作成</span>

@@ -24,14 +24,15 @@ export default function SearchBox() {
                 return;
             }
             try {
-                const puzzles = await searchPuzzles(searchText, userId ?? "") as Puzzle[];
+                if (!userId) return;
+                const puzzles = await searchPuzzles(searchText, userId) as Puzzle[];
                 setSearchResults(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [searchText]);
+    }, [searchText, userId]);
 
     // フォーカスが外れたら0.2秒後に検索結果を非表示(検索結果をクリックできるようにするため)
     useEffect(() => {

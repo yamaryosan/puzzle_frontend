@@ -107,7 +107,6 @@ export async function searchPuzzles(keyword: string, userId: string) {
         return;
     }
     if (!userId) {
-        console.error("ユーザIDが取得できません");
         return;
     }
     const response = await fetch("/api/puzzles/search",
@@ -116,7 +115,7 @@ export async function searchPuzzles(keyword: string, userId: string) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ search: keyword }),
+            body: JSON.stringify({ search: keyword, userId }),
         }
     );
     if (!response.ok) {

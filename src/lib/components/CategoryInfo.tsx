@@ -50,7 +50,7 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
             }
         }
         fetchPuzzles();
-    }, [category.id]);
+    }, [category.id, userId]);
 
     // 入力欄クリック時のイベント
     const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {

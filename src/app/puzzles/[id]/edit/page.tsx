@@ -214,7 +214,7 @@ export default function Page({ params }: { params: PageParams }) {
             }
             setPuzzle(puzzle);
         });
-    }, [params.id]);
+    }, [params.id, userId]);
 
     // 編集前にヒントを取得
     useEffect(() => {
@@ -226,7 +226,7 @@ export default function Page({ params }: { params: PageParams }) {
             const initialHintHtmls = hints.map((hint) => hint.content);
             console.log("ヒントを取得しました: ", initialHintHtmls);
         });
-    }, [params.id]);
+    }, [params.id, userId]);
 
     // 編集前に以前のヒント内容を取得
     useEffect(() => {

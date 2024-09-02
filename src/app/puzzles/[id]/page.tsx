@@ -30,6 +30,7 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchPuzzle() {
             try {
+                if (!userId) return;
                 const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {
@@ -43,6 +44,7 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
+                if (!userId) return;
                 const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
                 setCategories(categories ?? []);
             } catch (error) {

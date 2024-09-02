@@ -52,6 +52,7 @@ export default function Page({ params }: { params: { id: string } }) {
     useEffect(() => {
         async function fetchPuzzle() {
             try {
+                if (!userId) return;
                 const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {

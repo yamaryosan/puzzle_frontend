@@ -79,20 +79,22 @@ export default function Page({ params }: { params: { id: string } }) {
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
+            if (!userId) return;
             const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
             setPuzzle(puzzle);
         }
         fetchPuzzle();
-    }, []);
+    }, [userId]);
 
     // カテゴリーを取得
     useEffect(() => {
         async function fetchCategories() {
+            if (!userId) return;
             const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
             setCategories(categories);
         }
         fetchCategories();
-    }, []);
+    }, [userId]);
 
     // 送信
     const handleSend = async () => {

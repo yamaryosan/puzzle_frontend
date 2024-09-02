@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import Quill from "quill";
-
-import DeltaClass from 'quill-delta';
 import { Box, Tabs, Tab, Button } from "@mui/material";
 import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
 import getHintsByPuzzleId from "@/lib/api/hintapi";
 import { Hint } from "@prisma/client";
+import useAuth from "@/lib/hooks/useAuth";
 
 type HintsViewerProps = {
     puzzleId: string;
@@ -23,14 +21,17 @@ export default function HintsViewer({ puzzleId }: HintsViewerProps) {
     const [value, setValue] = useState(0);
     const [show, setShow] = useState(false);
 
+    const { user, userId } = useAuth();
+
     // ヒントを取得
     useEffect(() => {
         async function fetchHints() {
-            const hints = await getHintsByPuzzleId(puzzleId);
-            setHints(hints || []);
+            if (!userId) return;
+            const hints = await getHintsByPuzzleId(puzzleId, userId ?? '') as Hint[];
+            setHints(hints);
         }
         fetchHints();
-    }, []);
+    }, [userId, puzzleId]);
 
     // タブの変更
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {

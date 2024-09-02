@@ -50,7 +50,7 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
     // 選択中のカテゴリー一覧を取得
     useEffect(() => {
         async function fetchInitialCategories(id: string): Promise<Category[] | undefined> {
-            return getCategoriesByPuzzleId(id);
+            return getCategoriesByPuzzleId(id, userId);
         }
         fetchInitialCategories(puzzle_id).then((categories) => {
             if (!categories) {

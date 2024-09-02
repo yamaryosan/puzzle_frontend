@@ -7,7 +7,7 @@ type puzzleRequest = {
     descriptionHtml: string;
     solutionHtml: string;
     difficulty: number;
-    uId: string;
+    userId: string;
 }
 
 /**
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
         const puzzleContent: puzzleRequest = await req.json();
-        const { title, descriptionHtml, solutionHtml, difficulty, uId } = puzzleContent;
+        const { title, descriptionHtml, solutionHtml, difficulty, userId } = puzzleContent;
 
         // パズルを作成
         const puzzle: Puzzle = await prisma.puzzle.create({
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 user_answer: "",
                 solution: solutionHtml,
                 difficulty: difficulty,
-                user_id: uId,
+                user_id: userId,
             },
         });
 

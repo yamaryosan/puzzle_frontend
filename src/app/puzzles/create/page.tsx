@@ -41,7 +41,7 @@ async function sendContent(
     quillSolutionRef: React.RefObject<Quill | null>,
     hintQuills: React.RefObject<Quill | null>[],
     difficulty: number,
-    uId: string
+    userId: string
 ): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
@@ -53,6 +53,12 @@ async function sendContent(
         console.error("Quillの参照が取得できません");
         return;
     }
+    // IDが取得できない場合はエラー
+    if (!userId) {
+        console.error("ユーザIDが取得できません");
+        return;
+    }
+    
     const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
     const solutionHtml = quillSolutionRef.current.root.innerHTML;
     const is_favorite = false;
@@ -63,7 +69,7 @@ async function sendContent(
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite, uId }),
+        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite, userId }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -146,7 +152,7 @@ export default function Page() {
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
     // ユーザ情報
-    const { user, authLoading, uId } = useAuth();
+    const { userId } = useAuth();
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -244,7 +250,7 @@ export default function Page() {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, uId ?? '' )}>
+                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "" )}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
                     <span>作成</span>

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import Editor from "@/lib/components/Editor";
 import { useState, useEffect, useRef } from "react";
 import Quill from 'quill';
@@ -8,6 +7,7 @@ import { Box, Button } from "@mui/material";
 import { AddCircleOutline, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
 import useAuth from "@/lib/hooks/useAuth";
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type Range = {
     index: number;
@@ -58,7 +58,7 @@ async function send(title: string, userId: string, quill: React.RefObject<Quill 
 }
 
 export default function Page() {
-    const { userId } = useAuth();
+    const { user, userId } = useAuth();
     const [title, setTitle] = useState<string>('');
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
@@ -79,13 +79,9 @@ export default function Page() {
     }
 
     return (
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        <>
+        {user ? (
+        <Box  sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <AddCircleOutline />
                 <span>定石作成</span>
@@ -117,5 +113,11 @@ export default function Page() {
                 </Box>
             </Button>
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+        </>
     );
 }

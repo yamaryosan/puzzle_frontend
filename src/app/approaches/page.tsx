@@ -8,9 +8,10 @@ import ApproachCard from '@/lib/components/ApproachCard';
 import { Box, Button } from '@mui/material';
 import { AddCircleOutline, QuizOutlined } from '@mui/icons-material';
 import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 export default function Page() {
-    const { userId } = useAuth();
+    const { user, userId } = useAuth();
     const [approaches, setApproaches] = useState<Approach[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
@@ -30,6 +31,8 @@ export default function Page() {
     };
 
     return (
+        <>
+        {user ? (
         <>
         <h2>
             <QuizOutlined />
@@ -61,6 +64,12 @@ export default function Page() {
             ))}
         </ul>
         {approaches.length === 0 && <p>最初の定石を作成しましょう！</p>}
+        </>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
         </>
     );
 }

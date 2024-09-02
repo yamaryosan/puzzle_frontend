@@ -12,6 +12,7 @@ import { Box, Button } from '@mui/material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type Range = {
     index: number;
@@ -152,7 +153,7 @@ export default function Page() {
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
     // ユーザ情報
-    const { userId } = useAuth();
+    const { user, userId } = useAuth();
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -172,13 +173,9 @@ export default function Page() {
     };
 
     return (
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        <>
+        {user ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <AddCircleOutline />
                 <span>パズル作成</span>
@@ -259,5 +256,11 @@ export default function Page() {
                 </Button>
             </Box>
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+        </>
     );
 }

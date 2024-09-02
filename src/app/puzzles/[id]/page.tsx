@@ -13,12 +13,15 @@ import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
 import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type PageParams = {
     id: string;
 };
 
 export default function Page({ params }: { params: PageParams }) {
+    const { user } = useAuth();
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -59,6 +62,8 @@ export default function Page({ params }: { params: PageParams }) {
     };
 
     return (
+        <>
+        {user ? (
         <Box
         sx={{
             padding: "1rem",
@@ -166,5 +171,11 @@ export default function Page({ params }: { params: PageParams }) {
                 </Portal>
             )}            
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+        </>
     );
 }

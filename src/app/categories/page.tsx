@@ -5,9 +5,10 @@ import { Category } from '@prisma/client';
 import CategoryCard from '@/lib/components/CategoryCard';
 import { getCategories } from '@/lib/api/categoryapi';
 import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 export default function Page() {
-    const { userId } = useAuth();
+    const { user, userId } = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
 
     // アクティブなカードのID
@@ -30,11 +31,18 @@ export default function Page() {
 
     return (
         <>
-        {categories.length === 0 && <p>カテゴリーがありません</p>}
-        {categories.map((category) => (
-            <div key={category.id}>
-                <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
+        {!user ? (
+            <div>
+                <RecommendSignInDialog />
             </div>
+        ) : (
+            categories.length === 0 ? (<p>カテゴリーがありません</p>
+            ) : (
+            categories.map((category) => (
+                <div key={category.id}>
+                    <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
+                </div>
+            ))
         ))}
         </>
     );

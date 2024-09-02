@@ -30,6 +30,7 @@ export default function Page() {
 
     return (
         <>
+        {categories.length === 0 && <p>カテゴリーがありません</p>}
         {categories.map((category) => (
             <div key={category.id}>
                 <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />

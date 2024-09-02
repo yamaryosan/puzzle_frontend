@@ -8,7 +8,13 @@ import { Category } from "@prisma/client";
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
-        const categories: Category[] = await prisma.category.findMany();
+        const { searchParams } = new URL(req.url);
+        const user_id = searchParams.get("userId");
+
+        if (!user_id) {
+            throw new Error("ユーザIDが指定されていません");
+        }
+        const categories: Category[] = await prisma.category.findMany({ where: { user_id } });
         return NextResponse.json(categories);
     } catch (error) {
         if (error instanceof Error) {

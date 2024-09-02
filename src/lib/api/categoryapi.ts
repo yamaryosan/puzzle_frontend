@@ -9,17 +9,18 @@ type CategoryWithRelation = {
 
 /**
  * カテゴリー一覧を取得
+ * @param userId ユーザーID
  * @returns Promise<Category[]>
  */
-export async function getCategories() {
-    const response = await fetch("/api/categories");
+export async function getCategories(userId: string) {
+    const response = await fetch(`/api/categories?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("カテゴリーの取得に失敗: ", error);
     }
-    const categories = await response.json();
+    const categories = await response.json() as Category[];
     console.log("カテゴリーの取得に成功: ", categories);
-    return categories as Category[];
+    return categories;
 }
 
 /**

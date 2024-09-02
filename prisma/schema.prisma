@@ -52,6 +52,7 @@ model Puzzle {
 model Category {
   id            Int      @id @default(autoincrement())
   name          String // カテゴリー名
+  user_id       String // ユーザーID(FirebaseのUID)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

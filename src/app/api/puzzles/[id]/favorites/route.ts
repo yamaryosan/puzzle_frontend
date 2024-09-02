@@ -15,8 +15,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        const { searchParams } = new URL(req.url);
-        const user_id = searchParams.get("userId");
+        const user_id = await req.json();
 
         // ユーザIDが指定されていない場合はエラー
         if (!user_id) {

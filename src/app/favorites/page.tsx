@@ -17,6 +17,7 @@ export default function Home() {
     useEffect(() => {
         async function fetchPuzzles() {
             try {
+                if (!userId) return;
                 const puzzles = await getFavoritePuzzles(userId ?? '') as Puzzle[];
                 setPuzzles(puzzles);
             } catch (error) {
@@ -24,7 +25,7 @@ export default function Home() {
             }
         }
         fetchPuzzles();
-    }, []);
+    }, [userId, activeCardId]);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {
@@ -36,11 +37,15 @@ export default function Home() {
         {user ? (
         <div>
             <ul>
-                {puzzles?.map((puzzle) => (
-                    <li key={puzzle.id}>
-                        <PuzzleCard puzzle={puzzle} isActive={puzzle.id === activeCardId} onClick={() => handleCardClick(puzzle.id)} />
-                    </li>
-                ))}
+                {puzzles.length === 0 ?
+                (<p>お気に入りのパズルがありません</p>
+                ) : (
+                    puzzles?.map((puzzle) => (
+                        <li key={puzzle.id}>
+                            <PuzzleCard puzzle={puzzle} isActive={puzzle.id === activeCardId} onClick={() => handleCardClick(puzzle.id)} />
+                        </li>
+                    ))
+                )}
             </ul>
         </div>
         ) : (

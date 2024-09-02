@@ -2,10 +2,11 @@ import { Puzzle } from "@prisma/client";
 
 /**
  * パズル一覧を取得
+ * @params userId ユーザID
  * @returns Promise<Puzzles>
  */
-export async function getPuzzles() {
-    const response = await fetch("/api/puzzles");
+export async function getPuzzles(userId: string) {
+    const response = await fetch(`/api/puzzles?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("パズルの取得に失敗: ", error);

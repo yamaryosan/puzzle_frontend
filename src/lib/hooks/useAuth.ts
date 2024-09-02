@@ -4,8 +4,8 @@ import firebaseApp from '@/app/firebase';
 
 type UserAuth = {
     user: User | null;
-    authLoading: boolean;
-    uId?: string | undefined;
+    authLoading?: boolean;
+    userId?: string | undefined;
 };
 
 /**
@@ -15,7 +15,7 @@ type UserAuth = {
 export default function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [uId, setUId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const auth = getAuth(firebaseApp);
@@ -23,11 +23,11 @@ export default function useAuth() {
       setUser(user);
       setAuthLoading(false);
         if (user) {
-            setUId(user.uid);
+            setUserId(user.uid);
         }
     });
     return () => unsubscribe();
   }, []);
 
-  return { user, authLoading, uId } as UserAuth;
+  return { user, authLoading, userId } as UserAuth;
 }

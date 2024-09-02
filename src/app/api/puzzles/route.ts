@@ -16,7 +16,17 @@ type puzzleRequest = {
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
+        const { searchParams } = new URL(req.url);
+        const uId = searchParams.get("userId");
+
+        if (!uId) {
+            throw new Error("ユーザIDが指定されていません");
+        }
+
         const puzzles = await prisma.puzzle.findMany({
+            where: {
+                user_id: uId
+            },
             include: {
                 PuzzleCategory: {
                     include: {

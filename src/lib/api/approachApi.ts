@@ -1,12 +1,5 @@
 import { Approach, Puzzle } from "@prisma/client";
 
-type ApproachWithRelation = {
-    id: number;
-    puzzle_id: number;
-    approach_id: number;
-    approach: Approach;
-};
-
 /**
  * 定石一覧を取得する
  * @param userId ユーザID
@@ -14,13 +7,21 @@ type ApproachWithRelation = {
  */
 export async function getApproaches(userId: string) {
     try {
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+
+        console.log("ユーザID: ", userId);
+
         const response = await fetch(`/api/approaches?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("定石の取得に失敗: ", error);
             return;
         }
-        const approaches = await response.json();
+
+        const approaches = await response.json() as Approach[];
         console.log("定石の取得に成功: ", approaches);
         return approaches as Approach[];
     } catch (error) {
@@ -73,7 +74,7 @@ export async function getPuzzlesByApproachId(id: string) {
 /**
  * 問題に紐づいている定石を取得する
  * @param id 問題ID
- * @returns Promise<ApproachWithRelation[]>
+ * @returns Promise<Approach[]>
  */
 export async function getApproachesByPuzzleId(id: string) {
     try {
@@ -85,7 +86,7 @@ export async function getApproachesByPuzzleId(id: string) {
         }
         const approaches = await response.json();
         console.log("定石の取得に成功: ", approaches);
-        return approaches as ApproachWithRelation[];
+        return approaches as Approach[];
     } catch (error) {
         console.error("定石の取得に失敗: ", error);
     }

@@ -18,6 +18,7 @@ import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type PageParams = {
     id: string;
@@ -139,11 +140,12 @@ async function send(
 /**
  * 編集前のパズルを取得
  * @param id パズルID
+ * @param userId ユーザID
  * @returns Promise<Puzzle | undefined> パズル
  */
-async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
+async function fetchInitialPuzzle(id: string, userId: string): Promise<Puzzle | undefined> {
     try {
-        const puzzle = await getPuzzleById(id);
+        const puzzle = await getPuzzleById(id, userId);
         if (!puzzle) {
             console.error("パズルが見つかりません");
             return;
@@ -158,11 +160,12 @@ async function fetchInitialPuzzle(id: string): Promise<Puzzle | undefined> {
 /**
  * 編集前のヒントを取得
  * @param id パズルID
+ * @param userId ユーザID
  * @returns Promise<Hint[] | undefined> ヒント
  */
-async function fetchInitialHints(id: string): Promise<Hint[] | undefined> {
+async function fetchInitialHints(id: string, userId: string): Promise<Hint[] | undefined> {
     try {
-        const hints = await getHintsByPuzzleId(id);
+        const hints = await getHintsByPuzzleId(id, userId);
         if (!hints) {
             console.error("ヒントが見つかりません");
             return;
@@ -201,11 +204,11 @@ export default function Page({ params }: { params: PageParams }) {
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
     // ユーザ情報
-    const { userId } = useAuth();
+    const { user, userId } = useAuth();
 
     // 編集前にパズルを取得
     useEffect(() => {
-        fetchInitialPuzzle(params.id).then((puzzle) => {
+        fetchInitialPuzzle(params.id, userId ?? '').then((puzzle) => {
             if (!puzzle) {
                 return;
             }
@@ -215,7 +218,7 @@ export default function Page({ params }: { params: PageParams }) {
 
     // 編集前にヒントを取得
     useEffect(() => {
-        fetchInitialHints(params.id).then((hints) => {
+        fetchInitialHints(params.id, userId ?? '').then((hints) => {
             if (!hints) {
                 return;
             }
@@ -256,10 +259,6 @@ export default function Page({ params }: { params: PageParams }) {
         setDifficulty(puzzle?.difficulty || 1);
     }, [puzzle, quillLoaded]);
 
-    if (!descriptionDelta) {
-        return <div>Loading...</div>
-    }
-
     // 削除確認ダイアログの開閉
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -277,6 +276,7 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
+        {user ? (
         <Box 
         sx={{
             display: 'flex',
@@ -294,12 +294,10 @@ export default function Page({ params }: { params: PageParams }) {
                 <Edit />
                 <span>パズル編集</span>
             </h2>
-            <Box
-            sx={{ paddingY: '0.5rem' }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <TitleEditor title={title} setTitle={setTitle} />
             </Box>
-            <Box
-            sx={{ paddingY: '0.5rem' }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Editor
                     ref={quillDescriptionRef}
@@ -384,6 +382,11 @@ export default function Page({ params }: { params: PageParams }) {
                 </Button>
             </Box>
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
         </>
     );
 }

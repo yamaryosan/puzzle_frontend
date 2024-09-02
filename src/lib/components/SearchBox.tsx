@@ -8,8 +8,10 @@ import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
 import ResultSlider from "@/lib/components/ResultSlider";
 import Link from "next/link";
+import useAuth from "@/lib/hooks/useAuth";
 
 export default function SearchBox() {
+    const { user, userId } = useAuth();
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState<Puzzle[]>([]);
     const [isInputFocused, setIsInputFocused] = useState(false);
@@ -22,7 +24,7 @@ export default function SearchBox() {
                 return;
             }
             try {
-                const puzzles = await searchPuzzles(searchText) as Puzzle[];
+                const puzzles = await searchPuzzles(searchText, userId ?? "") as Puzzle[];
                 setSearchResults(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);
@@ -57,7 +59,7 @@ export default function SearchBox() {
     return (
         <>
         <Box sx={{ display: "flex", color: "black", position: "relative" }}>
-            <InputBase type="text" placeholder="検索..." value={searchText} onChange={handleChange} onFocus={handleFocus} inputRef={searchBoxRef}
+            <InputBase type="text" placeholder="検索..." value={searchText} onChange={handleChange} onFocus={handleFocus} inputRef={searchBoxRef} disabled={!user}
             sx={{ backgroundColor: "white", padding: "0.25rem", paddingLeft: "0.75rem", borderRadius: "5px", width: "300px" }}
             />
             {searchText.trim().length > 0 ? (

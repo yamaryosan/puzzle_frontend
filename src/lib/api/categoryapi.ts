@@ -42,10 +42,19 @@ export async function createCategory(name: string, userId: string) {
 /**
  * カテゴリーIDを指定してカテゴリーを取得
  * @param id カテゴリーID
+ * @param userId ユーザID
  * @returns Promise<Category>
  */
-export async function getCategoryById(id: string): Promise<Category> {
-    const response = await fetch(`/api/categories/${id}`);
+export async function getCategoryById(id: string, userId: string) {
+    if (!id) {
+        console.error("カテゴリーIDが指定されていません");
+        return;
+    }
+    if (!userId) {
+        console.error("ユーザIDが取得できません");
+        return;
+    }
+    const response = await fetch(`/api/categories/${id}?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("カテゴリーの取得に失敗: ", error);
@@ -58,15 +67,20 @@ export async function getCategoryById(id: string): Promise<Category> {
 /**
  * カテゴリーに紐づくパズル一覧を取得
  * @param id カテゴリーID
+ * @param userId ユーザID
  * @returns
  */
-export async function fetchPuzzlesByCategoryId(id: string) {
+export async function fetchPuzzlesByCategoryId(id: string, userId: string) {
     try {
         if (!id) {
             console.error("カテゴリーIDが指定されていません");
             return;
         }
-        const response = await fetch(`/api/categories/${id}/puzzles`);
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+        const response = await fetch(`/api/categories/${id}/puzzles?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("パズルの取得に失敗: ", error);
@@ -118,10 +132,19 @@ export async function deleteCategory(id: string) {
 /**
  * 問題に紐づいているカテゴリーを取得する
  * @param id 問題ID
+ * @param userId ユーザID
  * @returns Promise<Category[]>
  */
-export async function getCategoriesByPuzzleId(id: string) {
+export async function getCategoriesByPuzzleId(id: string, userId: string) {
     try {
+        if (!id) {
+            console.error("問題IDが指定されていません");
+            return;
+        }
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
         const response = await fetch(`/api/puzzles/${id}/categories`);
         if (!response.ok) {
             const error = await response.json();

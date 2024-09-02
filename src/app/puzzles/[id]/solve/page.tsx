@@ -13,6 +13,8 @@ import { Box, Button } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import HintsViewer from "@/lib/components/HintsViewer";
 import ApproachesViewer from "@/lib/components/ApproachesViewer";
+import useAuth from "@/lib/hooks/useAuth";
+import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
 
 type Change = {
     ops: any[];
@@ -72,11 +74,12 @@ export default function Page({ params }: { params: { id: string } }) {
     const answerRef = useRef<Quill | null>(null);
 
     const [categories, setCategories] = useState<Category[] | null>(null);
+    const { user, userId } = useAuth();
 
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
-            const puzzle = await getPuzzleById(params.id);
+            const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
             setPuzzle(puzzle);
         }
         fetchPuzzle();
@@ -85,7 +88,7 @@ export default function Page({ params }: { params: { id: string } }) {
     // カテゴリーを取得
     useEffect(() => {
         async function fetchCategories() {
-            const categories = await getCategoriesByPuzzleId(params.id) as Category[];
+            const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
             setCategories(categories);
         }
         fetchCategories();
@@ -99,11 +102,9 @@ export default function Page({ params }: { params: { id: string } }) {
         }
     }
 
-    if (!puzzle) {
-        return <div>loading...</div>;
-    }
-
     return (
+        <>
+        {user ? (
         <Box
         sx={{
             padding: "1rem",
@@ -111,7 +112,7 @@ export default function Page({ params }: { params: { id: string } }) {
             borderRadius: "5px",
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
         }}>
-            <h2>「{puzzle.title}」の解答画面</h2>
+            <h2>「{puzzle?.title}」の解答画面</h2>
             <Box
             sx={{
                 display: "flex",
@@ -127,7 +128,7 @@ export default function Page({ params }: { params: { id: string } }) {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題文</h3>
                 <Viewer
-                    defaultValue={puzzle.description}/>
+                    defaultValue={puzzle?.description ?? ''} />
             </Box>
 
             <Box sx={{ paddingY: '0.5rem' }}>
@@ -164,5 +165,11 @@ export default function Page({ params }: { params: { id: string } }) {
                 </Button>
             </Box>
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+        </>
     )
 }

@@ -13,7 +13,7 @@ export default function ResultSlider({ result }: ResultSliderProps) {
 
     // 検索結果がある場合は表示
     useEffect(() => {
-        if (result.length > 0) {
+        if (result?.length > 0) {
             setShow(true);
             setLength(result.length);
         }
@@ -43,7 +43,7 @@ export default function ResultSlider({ result }: ResultSliderProps) {
             }}>
                 <p style={{padding: '0.5rem'}}>{length}件の検索結果</p>
                 <List>
-                    {result.slice(0, 5).map((puzzle) => (
+                    {result?.slice(0, 5).map((puzzle) => (
                         <ListItem
                             key={puzzle.id}
                             component={Link}

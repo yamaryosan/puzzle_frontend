@@ -32,11 +32,16 @@ export async function getApproaches(userId: string) {
 /**
  * 各定石を取得する
  * @param id 定石ID
+ * @param userId ユーザID
  * @returns Promise<Approach>
  */
-export async function getApproach(id: number) {
+export async function getApproach(id: string, userId: string) {
     try {
-        const response = await fetch(`/api/approaches/${id}`);
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+        const response = await fetch(`/api/approaches/${id}?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("定石の取得に失敗: ", error);
@@ -53,11 +58,16 @@ export async function getApproach(id: number) {
 /**
  * 定石に紐づいている問題を取得する
  * @param id 定石ID
+ * @param userId ユーザID
  * @returns Promise<Puzzle[]>
  */
-export async function getPuzzlesByApproachId(id: string) {
+export async function getPuzzlesByApproachId(id: string, userId: string) {
     try {
-        const response = await fetch(`/api/approaches/${id}/puzzles`);
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+        const response = await fetch(`/api/approaches/${id}/puzzles?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("問題の取得に失敗: ", error);

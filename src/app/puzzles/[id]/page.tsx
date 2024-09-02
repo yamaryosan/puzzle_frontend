@@ -21,7 +21,7 @@ type PageParams = {
 };
 
 export default function Page({ params }: { params: PageParams }) {
-    const { user } = useAuth();
+    const { user, userId } = useAuth();
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -30,7 +30,7 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchPuzzle() {
             try {
-                const puzzle = await getPuzzleById(params.id);
+                const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
@@ -43,7 +43,7 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const categories = await getCategoriesByPuzzleId(params.id) as Category[];
+                const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
                 setCategories(categories ?? []);
             } catch (error) {
                 console.error("カテゴリーの取得に失敗: ", error);
@@ -51,10 +51,6 @@ export default function Page({ params }: { params: PageParams }) {
         }
         fetchCategories();
     }, [params.id]);
-
-    if (!puzzle) {
-        return <div>loading...</div>;
-    }
 
     // 削除確認ダイアログの開閉
     const toggleDeleteModal = () => {
@@ -72,14 +68,14 @@ export default function Page({ params }: { params: PageParams }) {
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
         }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
+                <h2 style={{display: "inline-block"}}>{puzzle?.title}</h2>
                 <Box sx={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                    <CompletionStatusIcon isSolved={puzzle.is_solved} />
+                    <CompletionStatusIcon isSolved={puzzle?.is_solved ?? false} />
                     <FavoriteButton
-                        initialChecked={puzzle.is_favorite}
+                        initialChecked={puzzle?.is_favorite ?? false}
                         puzzleId={params.id}
                         onChange={(checked) => {
-                            setPuzzle({ ...puzzle, is_favorite: checked });
+                            setPuzzle({ ...puzzle!, is_favorite: checked });
                         }}/>
                 </Box>
             </Box>
@@ -97,15 +93,12 @@ export default function Page({ params }: { params: PageParams }) {
             
             <Box sx={{ display: "flex", alignItems: "center", paddingY: "0.5rem" }}>
                 <h3>難易度: </h3>
-                <DifficultViewer value={puzzle.difficulty} />
+                <DifficultViewer value={puzzle?.difficulty ?? 0} />
             </Box>
 
-            <Box
-                sx={{
-                    paddingY: '0.5rem',
-                }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                     <h3>問題文</h3>
-                    <Viewer defaultValue={puzzle.description}/>
+                    <Viewer defaultValue={puzzle?.description ?? ''} />
             </Box>
 
             <Box

@@ -1,21 +1,23 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Puzzle } from '@prisma/client';
 import { getFavoritePuzzles } from '@/lib/api/puzzleapi';
 import PuzzleCard from '@/lib/components/PuzzleCard';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 export default function Home() {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
+    const { user, userId } = useAuth();
 
     // パズル一覧を取得
     useEffect(() => {
         async function fetchPuzzles() {
             try {
-                const puzzles = await getFavoritePuzzles();
+                const puzzles = await getFavoritePuzzles(userId ?? '') as Puzzle[];
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
@@ -24,16 +26,14 @@ export default function Home() {
         fetchPuzzles();
     }, []);
 
-    if (!puzzles) {
-        return <div>loading...</div>;
-    }
-
     // カードのクリックイベント
     const handleCardClick = (id: number) => {
         setActiveCardId(id === activeCardId ? null : id);
     };
         
     return (
+        <>
+        {user ? (
         <div>
             <ul>
                 {puzzles?.map((puzzle) => (
@@ -43,5 +43,11 @@ export default function Home() {
                 ))}
             </ul>
         </div>
+        ) : (
+            <div>
+                <RecommendSignInDialog />
+            </div>
+        )}
+        </>
     );
 }

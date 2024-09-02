@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import Quill from "quill";
-
-import DeltaClass from 'quill-delta';
 import { Box, Tabs, Tab, Button } from "@mui/material";
 import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
@@ -24,8 +21,8 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
     // 定石を取得
     useEffect(() => {
         async function fetchapproaches() {
-            const approaches = await getApproachesByPuzzleId(puzzleId);
-            setApproaches(approaches ? approaches.map(approach => approach.approach) : []);
+            const approaches = await getApproachesByPuzzleId(puzzleId) as Approach[];
+            setApproaches(approaches);
         }
         fetchapproaches();
     }, []);

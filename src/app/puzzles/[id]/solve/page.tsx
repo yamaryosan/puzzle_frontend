@@ -6,8 +6,7 @@ import Viewer from "@/lib/components/Viewer";
 import Editor from "@/lib/components/Editor";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import Quill from "quill";
-import { Approach, Category } from "@prisma/client";
-import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
+import { Category } from "@prisma/client";
 import { getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
@@ -17,20 +16,6 @@ import ApproachesViewer from "@/lib/components/ApproachesViewer";
 
 type Change = {
     ops: any[];
-};
-
-type ApproachWithRelation = {
-    id: number;
-    puzzle_id: number;
-    approach_id: number;
-    approach: Approach;
-};
-
-type CategoryWithRelation = {
-    id: number;
-    puzzle_id: number;
-    category_id: number;
-    category: Category;
 };
 
 /**
@@ -100,8 +85,8 @@ export default function Page({ params }: { params: { id: string } }) {
     // カテゴリーを取得
     useEffect(() => {
         async function fetchCategories() {
-            const categories = await getCategoriesByPuzzleId(params.id) as CategoryWithRelation[];
-            setCategories(categories ? categories.map(category => category.category) : []);
+            const categories = await getCategoriesByPuzzleId(params.id) as Category[];
+            setCategories(categories);
         }
         fetchCategories();
     }, []);

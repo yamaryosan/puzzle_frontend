@@ -9,11 +9,12 @@ type ApproachWithRelation = {
 
 /**
  * 定石一覧を取得する
+ * @param userId ユーザID
  * @returns Promise<Approach[]>
  */
-export async function getApproaches() {
+export async function getApproaches(userId: string) {
     try {
-        const response = await fetch('/api/approaches');
+        const response = await fetch(`/api/approaches?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("定石の取得に失敗: ", error);

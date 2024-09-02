@@ -86,6 +86,7 @@ model Approach {
   id            Int      @id @default(autoincrement())
   title         String
   content       String
+  user_id       String // ユーザーID(FirebaseのUID)  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

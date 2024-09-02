@@ -7,6 +7,7 @@ import Quill from 'quill';
 import { Box, Button } from "@mui/material";
 import { AddCircleOutline, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
+import useAuth from "@/lib/hooks/useAuth";
 
 type Range = {
     index: number;
@@ -20,13 +21,18 @@ type Change = {
 /**
  * タイトルを定石を送信
  * @param title タイトル
+ * @param userId ユーザID
  * @param quill エディタのQuill
  * @returns 
  */
-async function send(title: string, quill: React.RefObject<Quill | null>) {
+async function send(title: string, userId: string, quill: React.RefObject<Quill | null>) {
     try {
         if (!title) {
             title = 'Untitled';
+        }
+        if (!userId) {
+            console.error('ユーザIDが取得できません');
+            return;
         }
         if (!quill.current) {
             console.error('Quillの参照が取得できません');
@@ -39,10 +45,7 @@ async function send(title: string, quill: React.RefObject<Quill | null>) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                title,
-                contentHtml,
-            }),
+            body: JSON.stringify({ title, userId, contentHtml }),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -55,6 +58,7 @@ async function send(title: string, quill: React.RefObject<Quill | null>) {
 }
 
 export default function Page() {
+    const { userId } = useAuth();
     const [title, setTitle] = useState<string>('');
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
@@ -88,11 +92,8 @@ export default function Page() {
             </h2>
             <TitleEditor title={title} setTitle={setTitle} />
 
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
-                <h3>問題文</h3>
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <h3>本文</h3>
                 <Editor
                 ref={quill}
                 readOnly={false}
@@ -101,7 +102,7 @@ export default function Page() {
                 onTextChange={setLastChange}/>
             </Box>
 
-            <Button onClick={() => send(title, quill)}
+            <Button onClick={() => send(title, userId ?? '', quill)}
                 sx={{
                     padding: '1.5rem',
                     backgroundColor: 'secondary.light',

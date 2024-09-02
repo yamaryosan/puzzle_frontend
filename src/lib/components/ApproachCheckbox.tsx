@@ -3,23 +3,7 @@ import { getApproaches } from "../api/approachApi";
 import { Approach } from "@prisma/client";
 import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
 import { Box } from "@mui/material";
-
-/**
- * 定石一覧を取得
- * @params void
- * @returns Promise<Approach[]>
- */
-async function fetch() {
-    const approaches = await getApproaches();
-    return approaches as Approach[];
-}
-
-type ApproachWithRelation = {
-    id: number;
-    puzzle_id: number;
-    approach_id: number;
-    approach: Approach;
-};
+import useAuth from '@/lib/hooks/useAuth';
 
 interface ApproachCheckboxProps {
     onChange: (approachIds: number[]) => void;
@@ -28,29 +12,31 @@ interface ApproachCheckboxProps {
 }
 
 export default function ApproachCheckbox({ onChange, puzzle_id, value }: ApproachCheckboxProps) {
+    const { userId } = useAuth();
     const [approaches, setApproaches] = useState<Approach[] | null>(null);
     const [checkedApproachIds, setCheckedApproachIds] = useState<number[]>(value);
 
     // 編集前に定石を取得
     useEffect(() => {
-        async function fetchInitialApproaches(id: string): Promise<ApproachWithRelation[] | undefined> {
+        async function fetchInitialApproaches(id: string): Promise<Approach[] | undefined> {
             return getApproachesByPuzzleId(id);
         }
         fetchInitialApproaches(puzzle_id).then((approaches) => {
             if (!approaches) {
                 return;
             }
-            const initialApproachIds = approaches.map((a) => a.approach_id);
+            const initialApproachIds = approaches.map(approach => approach.id);
             console.log("定石を取得しました: ", initialApproachIds);
             setCheckedApproachIds(initialApproachIds);
         });
-    }, []); 
+    }, []);
 
     // 定石一覧を取得
     async function fetchApproaches() {
         try {
-            const approaches = await fetch();
-            setApproaches(approaches);
+            if (!userId) return;
+            const approaches = await getApproaches(userId ?? '');
+            setApproaches(approaches || []);
             return approaches;
         } catch (error) {
             console.error("定石の取得に失敗: ", error);
@@ -60,7 +46,7 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
 
     useEffect(() => {
         fetchApproaches();
-    }, []);
+    }, [userId]);
 
     // チェックされた定石のIDを親コンポーネントに渡す
     useEffect(() => {
@@ -83,25 +69,18 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
             border: "1px solid #ccc",
             borderRadius: "0.25rem",
             fontSize: "1.5rem",
-        }}
-        >
+        }}>
             {approaches?.length === 0 && <p>定石がありません</p>}
-            <Box
-            sx={{
-                display: "grid",
-                gap: "1rem",
-                gridTemplateColumns: "2fr 2fr",
-            }}
-            >
+            <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: "2fr 2fr" }}>
             {approaches?.map((approach) => (
                 <div key={approach.id}>
                     <input
                         type="checkbox"
-                        id={approach.id.toString()}
+                        id={`approach_${approach.id.toString()}`}
                         checked={checkedApproachIds.includes(approach.id)}
                         onChange={() => handleCheckboxChange(approach.id)}
                     />
-                    <label htmlFor={approach.id.toString()}>{approach.title}</label>
+                    <label htmlFor={`approach_${approach.id.toString()}`}>{approach.title}</label>
                 </div>
             ))}
             </Box>

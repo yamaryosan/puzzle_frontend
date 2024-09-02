@@ -14,13 +14,19 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         if (isNaN(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
+        const { searchParams } = new URL(req.url);
+        const user_id = searchParams.get("userId");
+        // ユーザIDが指定されていない場合はエラー
+        if (!user_id) {
+            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+        }
         // 定石IDに紐づく問題のIDを取得
         const puzzle_id = await prisma.puzzleApproach.findMany({
             where: {
-                approach_id: id
+                approach_id: id,
             },
             select: {
-                puzzle_id: true
+                puzzle_id: true,
             }
         });
         // 問題IDから問題を取得
@@ -28,9 +34,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             where: {
                 id: {
                     in: puzzle_id.map((p) => p.puzzle_id)
-                }
+                },
+                user_id: user_id
             }
         });
+
         return NextResponse.json(puzzles);
     } catch (error) {
         if (error instanceof Error) {

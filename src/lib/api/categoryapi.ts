@@ -1,39 +1,34 @@
 import { Category, Puzzle } from "@prisma/client";
 
-type CategoryWithRelation = {
-    id: number;
-    puzzle_id: number;
-    category_id: number;
-    category: Category;
-};
-
 /**
  * カテゴリー一覧を取得
+ * @param userId ユーザーID
  * @returns Promise<Category[]>
  */
-export async function getCategories() {
-    const response = await fetch("/api/categories");
+export async function getCategories(userId: string) {
+    const response = await fetch(`/api/categories?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("カテゴリーの取得に失敗: ", error);
     }
-    const categories = await response.json();
+    const categories = await response.json() as Category[];
     console.log("カテゴリーの取得に成功: ", categories);
-    return categories as Category[];
+    return categories;
 }
 
 /**
  * 新規カテゴリー作成
  * @param name カテゴリー名
+ * @param userId ユーザID
  * @returns Promise<Category>
  */
-export async function createCategory(name: string) {
+export async function createCategory(name: string, userId: string) {
     const response = await fetch("/api/categories", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, userId }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -47,10 +42,19 @@ export async function createCategory(name: string) {
 /**
  * カテゴリーIDを指定してカテゴリーを取得
  * @param id カテゴリーID
+ * @param userId ユーザID
  * @returns Promise<Category>
  */
-export async function getCategoryById(id: string): Promise<Category> {
-    const response = await fetch(`/api/categories/${id}`);
+export async function getCategoryById(id: string, userId: string) {
+    if (!id) {
+        console.error("カテゴリーIDが指定されていません");
+        return;
+    }
+    if (!userId) {
+        console.error("ユーザIDが取得できません");
+        return;
+    }
+    const response = await fetch(`/api/categories/${id}?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("カテゴリーの取得に失敗: ", error);
@@ -63,15 +67,20 @@ export async function getCategoryById(id: string): Promise<Category> {
 /**
  * カテゴリーに紐づくパズル一覧を取得
  * @param id カテゴリーID
+ * @param userId ユーザID
  * @returns
  */
-export async function fetchPuzzlesByCategoryId(id: string) {
+export async function fetchPuzzlesByCategoryId(id: string, userId: string) {
     try {
         if (!id) {
             console.error("カテゴリーIDが指定されていません");
             return;
         }
-        const response = await fetch(`/api/categories/${id}/puzzles`);
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+        const response = await fetch(`/api/categories/${id}/puzzles?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("パズルの取得に失敗: ", error);
@@ -123,10 +132,19 @@ export async function deleteCategory(id: string) {
 /**
  * 問題に紐づいているカテゴリーを取得する
  * @param id 問題ID
- * @returns Promise<CategoryWithRelation[]>
+ * @param userId ユーザID
+ * @returns Promise<Category[]>
  */
-export async function getCategoriesByPuzzleId(id: string) {
+export async function getCategoriesByPuzzleId(id: string, userId: string) {
     try {
+        if (!id) {
+            console.error("問題IDが指定されていません");
+            return;
+        }
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
         const response = await fetch(`/api/puzzles/${id}/categories`);
         if (!response.ok) {
             const error = await response.json();
@@ -135,7 +153,7 @@ export async function getCategoriesByPuzzleId(id: string) {
         }
         const categories = await response.json();
         console.log("カテゴリーの取得に成功: ", categories);
-        return categories as CategoryWithRelation[];
+        return categories as Category[];
     } catch (error) {
         console.error("カテゴリーの取得に失敗: ", error);
     }

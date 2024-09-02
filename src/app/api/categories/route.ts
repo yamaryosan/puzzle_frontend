@@ -8,7 +8,13 @@ import { Category } from "@prisma/client";
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
-        const categories: Category[] = await prisma.category.findMany();
+        const { searchParams } = new URL(req.url);
+        const user_id = searchParams.get("userId");
+
+        if (!user_id) {
+            throw new Error("ユーザIDが指定されていません");
+        }
+        const categories: Category[] = await prisma.category.findMany({ where: { user_id } });
         return NextResponse.json(categories);
     } catch (error) {
         if (error instanceof Error) {
@@ -25,19 +31,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
  */
 export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
-        const { name } = await req.json();
+        const { name, userId } = await req.json();
 
         // カテゴリー名が空の場合は作成しない
         if (name === "") {
             return NextResponse.json({ error: "Name is empty" }, { status: 400 });
         }
         // カテゴリー名が重複している場合は作成しない
-        const existingCategory = await prisma.category.findFirst({ where: { name } });
+        const existingCategory = await prisma.category.findFirst(
+            { where: { name, user_id: userId } }
+        );
         if (existingCategory) {
             return NextResponse.json({ error: "Name is already exists" }, { status: 400 });
         }
 
-        const category: Category = await prisma.category.create({ data: { name } });
+        const category: Category = await prisma.category.create({
+            data: { name, user_id: userId }
+        });
 
         return NextResponse.json(category, { status: 201 });
     } catch (error) {

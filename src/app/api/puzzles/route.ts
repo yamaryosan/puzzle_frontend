@@ -1,12 +1,13 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Puzzle, Category } from "@prisma/client";
+import { Puzzle } from "@prisma/client";
 
 type puzzleRequest = {
     title: string;
     descriptionHtml: string;
     solutionHtml: string;
     difficulty: number;
+    userId: string;
 }
 
 /**
@@ -15,7 +16,15 @@ type puzzleRequest = {
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
-        const puzzles = await prisma.puzzle.findMany({
+        const { searchParams } = new URL(req.url);
+        const user_id = searchParams.get("userId");
+
+        if (!user_id) {
+            throw new Error("ユーザIDが指定されていません");
+        }
+
+        const puzzles: Puzzle[] = await prisma.puzzle.findMany({
+            where: { user_id },
             include: {
                 PuzzleCategory: {
                     include: {
@@ -40,7 +49,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
         const puzzleContent: puzzleRequest = await req.json();
-        const { title, descriptionHtml, solutionHtml, difficulty } = puzzleContent;
+        const { title, descriptionHtml, solutionHtml, difficulty, userId } = puzzleContent;
 
         // パズルを作成
         const puzzle: Puzzle = await prisma.puzzle.create({
@@ -50,7 +59,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 user_answer: "",
                 solution: solutionHtml,
                 difficulty: difficulty,
-                user_id: "",
+                user_id: userId,
             },
         });
 

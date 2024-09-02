@@ -7,6 +7,8 @@ import { getPuzzleById } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Rule, Check, Clear } from "@mui/icons-material";
+import useAuth from "@/lib/hooks/useAuth";
+import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
 
 /**
  * 正解かどうかを送信
@@ -43,25 +45,22 @@ async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | und
 
 export default function Page({ params }: { params: { id: string } }) {
     const router = useRouter();
-
+    const { user, userId } = useAuth();
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
 
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
             try {
-                const puzzle = await getPuzzleById(params.id);
+                if (!userId) return;
+                const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
             }
         }
         fetchPuzzle();
-    }, [params.id]);
-
-    if (!puzzle) {
-        return <div>loading...</div>;
-    }
+    }, [params.id, userId]);
 
     // 正解時の処理
     const correct = () => {
@@ -75,32 +74,29 @@ export default function Page({ params }: { params: { id: string } }) {
         sendIsSolved(params.id, false);
     };
 
+    if (!puzzle) {
+        return <div>読み込み中...</div>;
+    }
+
     return (
         <>
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        {user ? (
+        <Box sx={{  display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <Rule />
                 <span>答え合わせ</span>
             </h2>
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>問題</h3>
-                <Viewer defaultValue={puzzle.description} />
+                <Viewer defaultValue={puzzle?.description ?? ""}/>
             </Box>
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>あなたの解答</h3>
-                <Viewer
-                defaultValue={puzzle.user_answer}
-                />
+                <Viewer defaultValue={puzzle?.user_answer ?? ""} />
             </Box>
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正解</h3>
-                <Viewer defaultValue={puzzle?.solution}/>
+                <Viewer defaultValue={puzzle?.solution ?? ""}/>
             </Box>
             <Box
             sx={{
@@ -143,6 +139,11 @@ export default function Page({ params }: { params: { id: string } }) {
                 </Button>
             </Box>
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
         </>
     )
 }

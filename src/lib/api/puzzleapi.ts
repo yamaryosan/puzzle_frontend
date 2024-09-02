@@ -2,10 +2,11 @@ import { Puzzle } from "@prisma/client";
 
 /**
  * パズル一覧を取得
+ * @params userId ユーザID
  * @returns Promise<Puzzles>
  */
-export async function getPuzzles() {
-    const response = await fetch("/api/puzzles");
+export async function getPuzzles(userId: string) {
+    const response = await fetch(`/api/puzzles?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("パズルの取得に失敗: ", error);
@@ -18,9 +19,18 @@ export async function getPuzzles() {
 /**
  * IDからパズルを取得
  * @param id パズルID
+ * @param userId ユーザID
  * @returns Promise<Puzzle>
  */
-export async function getPuzzleById(id: string) {
+export async function getPuzzleById(id: string, userId: string) {
+    if (!id) {
+        console.error("パズルIDが指定されていません");
+        return;
+    }
+    if (!userId) {
+        console.error("ユーザIDが取得できません");
+        return;
+    }
     const response = await fetch(`/api/puzzles/${id}`);
     if (!response.ok) {
         const error = await response.json();
@@ -53,10 +63,15 @@ export async function deletePuzzle(id: string) {
 /**
  * パズルのお気に入り登録/解除の切り替え
  * @param id パズルID
+ * @param userId ユーザID
  */
-export async function toggleFavoritePuzzle(id: string) {
+export async function toggleFavoritePuzzle(id: string, userId: string) {
     const response = await fetch(`/api/puzzles/${id}/favorites`, {
         method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -67,10 +82,15 @@ export async function toggleFavoritePuzzle(id: string) {
 
 /**
  * お気に入りのパズル一覧を取得
+ * @param userId ユーザID
  * @returns Promise<Puzzles>
  */
-export async function getFavoritePuzzles() {
-    const response = await fetch("/api/puzzles/favorites");
+export async function getFavoritePuzzles(userId: string) {
+    if (!userId) {
+        console.error("ユーザIDが取得できません");
+        return;
+    }
+    const response = await fetch(`/api/puzzles/favorites?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("お気に入りのパズルの取得に失敗: ", error);
@@ -83,16 +103,24 @@ export async function getFavoritePuzzles() {
 /**
  * 検索ワードからパズルを検索
  * @param keyword 検索ワード
+ * @param userId ユーザID
  * @returns Promise<Puzzles>
  */
-export async function searchPuzzles(keyword: string) {
+export async function searchPuzzles(keyword: string, userId: string) {
+    if (!keyword) {
+        console.error("検索ワードが指定されていません");
+        return;
+    }
+    if (!userId) {
+        return;
+    }
     const response = await fetch("/api/puzzles/search",
         {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ search: keyword }),
+            body: JSON.stringify({ search: keyword, userId }),
         }
     );
     if (!response.ok) {

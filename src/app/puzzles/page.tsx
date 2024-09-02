@@ -7,8 +7,11 @@ import { Puzzle, Category } from '@prisma/client';
 import PuzzleCard from '@/lib/components/PuzzleCard';
 import { Sort, Shuffle, AddCircleOutline } from '@mui/icons-material';
 import { Box } from '@mui/material';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 export default function Page() {
+    const { user, userId } = useAuth();
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     const [desc, setDesc] = useState(false);
     
@@ -18,8 +21,9 @@ export default function Page() {
     // パズル一覧を取得
     useEffect(() => {
         async function fetchPuzzles() {
+            if (userId == null) return;
             try {
-                const puzzles = await getPuzzles();
+                const puzzles = await getPuzzles(userId || "");
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
@@ -29,7 +33,7 @@ export default function Page() {
         return () => {
             setPuzzles([]);
         }
-    }, []);
+    }, [userId]);
 
     // 難易度でソート
     const handleSort = () => {
@@ -69,13 +73,10 @@ export default function Page() {
     };
     
     return (
+        <>
+        { user ? (
         <div>
-            <Box
-            sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-            }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Link href="/puzzles/create" className="flex items-center w-full bg-secondary-light hover:bg-secondary-dark">
                     <Box sx={{ display: "flex", alignItems: "center", width: "100%", justifyContent: "center", paddingY: "1rem", marginX: "0.5rem"}}>
                         <AddCircleOutline /> 
@@ -115,6 +116,7 @@ export default function Page() {
                     </button>
                 </Box>
             </Box>
+            { puzzles.length === 0 && <p>最初のパズルを作成しましょう！</p> }
             <ul>
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>
@@ -123,5 +125,11 @@ export default function Page() {
                 ))}
             </ul>
         </div>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+    </>
     );
 }

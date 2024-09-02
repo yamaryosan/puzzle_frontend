@@ -1,26 +1,38 @@
 'use client';
 
 import {IconButton, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box} from '@mui/material';
-import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout, ArrowLeft, ArrowRight } from '@mui/icons-material';
+import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout, Login, ArrowRight } from '@mui/icons-material';
 import AddPuzzleIcon from '@/lib/icons/AddPuzzleIcon';
 import { useState } from 'react';
+import useAuth from '@/lib/hooks/useAuth';
 import Link from 'next/link';
+import { title } from 'process';
 
-const menu = [
+const baseMenu = [
     {title: 'パズル一覧', icon: Extension, href: '/puzzles'},
     {title: 'パズル作成', icon: AddCircleOutline, href: '/puzzles/create'},
     {title: '定石一覧', icon: Quiz, href: '/approaches'},
     {title: '定石作成', icon: AddCircleOutline, href: '/approaches/create'},
+];
+
+const authMenu = [
     {title: 'プロフィール', icon: AccountCircle, href: '/profile'},
-    {title: 'ログアウト', icon: Logout, href: '/signout'},
+    {title: 'サインアウト', icon: Logout, href: '/signout'},
+];
+
+const guestMenu = [
+    {title: 'サインイン', icon: Login, href: '/signin'},
 ];
 
 export default function LeftDrawer() {
     const [open, setOpen] = useState(false);
+    const { user, authLoading } = useAuth();
+
+    const menu = baseMenu.concat(user ? authMenu : guestMenu);
 
     const handleOpen = () => {
         setOpen(true);
-    }
+    };
 
     return (
         <>

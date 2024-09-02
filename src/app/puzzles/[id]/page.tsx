@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import { getCategoriesByPuzzleId } from '@/lib/api/categoryapi';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Viewer from '@/lib/components/Viewer';
-import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 import { Category, Puzzle } from '@prisma/client';
@@ -14,41 +13,39 @@ import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
 import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type PageParams = {
     id: string;
 };
 
-type CategoryWithRelation = {
-    id: number;
-    puzzle_id: number;
-    category_id: number;
-    category: Category;
-};
-
 export default function Page({ params }: { params: PageParams }) {
+    const { user, userId } = useAuth();
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [categories, setCategories] = useState<CategoryWithRelation[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
             try {
-                const puzzle = await getPuzzleById(params.id);
+                if (!userId) return;
+                const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
             }
         }
         fetchPuzzle();
-    }, [params.id]);
+    }, [params.id, userId]);
 
     // パズルのカテゴリーを取得
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const categories = await getCategoriesByPuzzleId(params.id);
+                if (!userId) return;
+                const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
                 setCategories(categories ?? []);
             } catch (error) {
                 console.error("カテゴリーの取得に失敗: ", error);
@@ -57,16 +54,14 @@ export default function Page({ params }: { params: PageParams }) {
         fetchCategories();
     }, [params.id]);
 
-    if (!puzzle) {
-        return <div>loading...</div>;
-    }
-
     // 削除確認ダイアログの開閉
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
     return (
+        <>
+        {user ? (
         <Box
         sx={{
             padding: "1rem",
@@ -75,14 +70,14 @@ export default function Page({ params }: { params: PageParams }) {
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
         }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
+                <h2 style={{display: "inline-block"}}>{puzzle?.title}</h2>
                 <Box sx={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                    <CompletionStatusIcon isSolved={puzzle.is_solved} />
+                    <CompletionStatusIcon isSolved={puzzle?.is_solved ?? false} />
                     <FavoriteButton
-                        initialChecked={puzzle.is_favorite}
+                        initialChecked={puzzle?.is_favorite ?? false}
                         puzzleId={params.id}
                         onChange={(checked) => {
-                            setPuzzle({ ...puzzle, is_favorite: checked });
+                            setPuzzle({ ...puzzle!, is_favorite: checked });
                         }}/>
                 </Box>
             </Box>
@@ -94,21 +89,18 @@ export default function Page({ params }: { params: PageParams }) {
             }}>
                 <h3>カテゴリー: </h3>
                 <span>{categories?.map(category => (
-                    <span key={category.category_id}>{category.category.name} </span>
+                    <span key={category.id}>{category.name}</span>
                 ))}</span>
             </Box>
             
             <Box sx={{ display: "flex", alignItems: "center", paddingY: "0.5rem" }}>
                 <h3>難易度: </h3>
-                <DifficultViewer value={puzzle.difficulty} />
+                <DifficultViewer value={puzzle?.difficulty ?? 0} />
             </Box>
 
-            <Box
-                sx={{
-                    paddingY: '0.5rem',
-                }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                     <h3>問題文</h3>
-                    <Viewer defaultValue={puzzle.description}/>
+                    <Viewer defaultValue={puzzle?.description ?? ''} />
             </Box>
 
             <Box
@@ -174,5 +166,11 @@ export default function Page({ params }: { params: PageParams }) {
                 </Portal>
             )}            
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+        </>
     );
 }

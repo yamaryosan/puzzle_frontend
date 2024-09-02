@@ -1,25 +1,27 @@
 import { Approach, Puzzle } from "@prisma/client";
 
-type ApproachWithRelation = {
-    id: number;
-    puzzle_id: number;
-    approach_id: number;
-    approach: Approach;
-};
-
 /**
  * 定石一覧を取得する
+ * @param userId ユーザID
  * @returns Promise<Approach[]>
  */
-export async function getApproaches() {
+export async function getApproaches(userId: string) {
     try {
-        const response = await fetch('/api/approaches');
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+
+        console.log("ユーザID: ", userId);
+
+        const response = await fetch(`/api/approaches?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("定石の取得に失敗: ", error);
             return;
         }
-        const approaches = await response.json();
+
+        const approaches = await response.json() as Approach[];
         console.log("定石の取得に成功: ", approaches);
         return approaches as Approach[];
     } catch (error) {
@@ -30,11 +32,16 @@ export async function getApproaches() {
 /**
  * 各定石を取得する
  * @param id 定石ID
+ * @param userId ユーザID
  * @returns Promise<Approach>
  */
-export async function getApproach(id: number) {
+export async function getApproach(id: string, userId: string) {
     try {
-        const response = await fetch(`/api/approaches/${id}`);
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+        const response = await fetch(`/api/approaches/${id}?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("定石の取得に失敗: ", error);
@@ -51,11 +58,16 @@ export async function getApproach(id: number) {
 /**
  * 定石に紐づいている問題を取得する
  * @param id 定石ID
+ * @param userId ユーザID
  * @returns Promise<Puzzle[]>
  */
-export async function getPuzzlesByApproachId(id: string) {
+export async function getPuzzlesByApproachId(id: string, userId: string) {
     try {
-        const response = await fetch(`/api/approaches/${id}/puzzles`);
+        if (!userId) {
+            console.error("ユーザIDが取得できません");
+            return;
+        }
+        const response = await fetch(`/api/approaches/${id}/puzzles?userId=${userId}`);
         if (!response.ok) {
             const error = await response.json();
             console.error("問題の取得に失敗: ", error);
@@ -72,7 +84,7 @@ export async function getPuzzlesByApproachId(id: string) {
 /**
  * 問題に紐づいている定石を取得する
  * @param id 問題ID
- * @returns Promise<ApproachWithRelation[]>
+ * @returns Promise<Approach[]>
  */
 export async function getApproachesByPuzzleId(id: string) {
     try {
@@ -84,7 +96,7 @@ export async function getApproachesByPuzzleId(id: string) {
         }
         const approaches = await response.json();
         console.log("定石の取得に成功: ", approaches);
-        return approaches as ApproachWithRelation[];
+        return approaches as Approach[];
     } catch (error) {
         console.error("定石の取得に失敗: ", error);
     }

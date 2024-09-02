@@ -5,12 +5,15 @@ import { getCategoryById, fetchPuzzlesByCategoryId, updateCategory, deleteCatego
 import { Puzzle, Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type PageParams = {
     id: string;
 };
 
 export default function Page({ params }: { params: PageParams}) {
+    const { user, userId } = useAuth();
     const [category, setCategory] = useState<Category | null>(null);
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     const [isEditing, setIsEditing] = useState(false);
@@ -20,19 +23,23 @@ export default function Page({ params }: { params: PageParams}) {
 
     // カテゴリー情報を取得
     useEffect(() => {
-        getCategoryById(params.id).then((category) => {
+        async function fetchCategory() {
+            const category = await getCategoryById(params.id, userId ?? '') as Category;
             if (!category) return;
             setCategory(category);
             setEditedName(category.name);
-        });
+        }
+        fetchCategory();
     }, [params.id]);
 
     // カテゴリーに紐づくパズル一覧を取得
     useEffect(() => {
-        fetchPuzzlesByCategoryId(params.id).then((puzzles) => {
+        async function fetchPuzzles() {
+            const puzzles = await fetchPuzzlesByCategoryId(params.id, userId ?? '');
             if (!puzzles) return;
             setPuzzles(puzzles);
-        });
+        }
+        fetchPuzzles();
     }, [params.id]);
 
     // 編集モードを切り替え
@@ -61,6 +68,8 @@ export default function Page({ params }: { params: PageParams}) {
     };
 
     return (
+        <>
+        {user ? (
         <div>
             {isEditing ? (
                 <div>
@@ -86,5 +95,11 @@ export default function Page({ params }: { params: PageParams}) {
             </ul>
             <Link href="/categories">カテゴリー一覧に戻る</Link>
         </div>
+        ) : (
+            <div>
+                <RecommendSignInDialog />
+            </div>
+        )}
+        </>
     );
 }

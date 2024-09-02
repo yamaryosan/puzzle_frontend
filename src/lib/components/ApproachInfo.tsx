@@ -2,8 +2,9 @@ import { Approach, Puzzle } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzlesByApproachId } from "@/lib/api/approachApi";
 import { Button, Box } from "@mui/material";
-import { Edit, Update } from "@mui/icons-material";
+import { Update } from "@mui/icons-material";
 import Link from "next/link";
+import useAuth from "@/lib/hooks/useAuth";
 
 type ApproachInfoProps = {
     approach: Approach;
@@ -13,24 +14,21 @@ type ApproachInfoProps = {
 export default function ApproachCard({ approach, isActive }: ApproachInfoProps) {
     const [approachTitle, setApproachTitle] = useState<string>(approach.title);
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+    const { userId } = useAuth();
 
     // 定石に紐づくパズル一覧を取得
     useEffect(() => {
         const fetchPuzzles = async () => {
             try {
-                const data = await getPuzzlesByApproachId(approach.id.toString()) as Puzzle[];
+                if (!userId) return;
+                const data = await getPuzzlesByApproachId(approach.id.toString(), userId ?? '') as Puzzle[];
                 setPuzzles(data);
             } catch (error) {
                 console.error("定石に紐づくパズル一覧の取得に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [approach.id]);
-
-    // 編集ボタンクリック時のイベント
-    const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-    }
+    }, [approach.id, userId]);
 
     return (
         <>

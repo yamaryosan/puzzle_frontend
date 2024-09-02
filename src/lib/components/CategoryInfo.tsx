@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { updateCategory } from "@/lib/api/categoryapi";
 import { fetchPuzzlesByCategoryId } from "@/lib/api/categoryapi";
 import { Update } from "@mui/icons-material";
+import useAuth from "@/lib/hooks/useAuth";
 
 type CategoryInfoProps = {
     category: Category;
@@ -27,6 +28,7 @@ async function updateCategoryName(categoryId: string, categoryName: string) {
 }
 
 export default function CategoryInfo({ category, isActive }: CategoryInfoProps) {
+    const { userId } = useAuth();
     const [categoryName, setCategoryName] = useState<string>(category.name);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
@@ -40,14 +42,15 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
     useEffect(() => {
         const fetchPuzzles = async () => {
             try {
-                const data = await fetchPuzzlesByCategoryId(category.id.toString()) as Puzzle[];
+                if (!userId) return;
+                const data = await fetchPuzzlesByCategoryId(category.id.toString(), userId ?? '') as Puzzle[];
                 setPuzzles(data);
             } catch (error) {
                 console.error("カテゴリーに紐づくパズル一覧の取得に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [category.id]);
+    }, [category.id, userId]);
 
     // 入力欄クリック時のイベント
     const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {

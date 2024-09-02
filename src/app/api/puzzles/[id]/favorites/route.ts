@@ -15,6 +15,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
+        const user_id = await req.json();
+
+        // ユーザIDが指定されていない場合はエラー
+        if (!user_id) {
+            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+        }
+
         // パズルが存在しない場合はエラー
         const puzzle = await prisma.puzzle.findUnique({
             where: { id },
@@ -26,7 +33,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         // お気に入り登録/解除を切り替え
         const favorite = !puzzle.is_favorite;
         await prisma.puzzle.update({
-            where: { id },
+            where: { id, user_id },
             data: {
                 is_favorite: favorite,
             },

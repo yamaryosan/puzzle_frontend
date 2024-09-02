@@ -4,6 +4,7 @@ import { Approach } from '@prisma/client';
 
 type approachRequest = {
     title: string;
+    userId: string;
     contentHtml: string;
     puzzle_id?: number;
 };
@@ -15,7 +16,14 @@ type approachRequest = {
  */
 export async function GET(req: NextRequest) {
     try {
-        const approaches = await prisma.approach.findMany();
+        const { searchParams } = new URL(req.url);
+
+        const user_id = searchParams.get('userId');
+        if (!user_id) {
+            throw new Error("ユーザIDが指定されていません");
+        }
+
+        const approaches = await prisma.approach.findMany({where: {user_id}});
         return NextResponse.json(approaches);
     } catch (error) {
         if (error instanceof Error) {
@@ -34,13 +42,17 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const approachContent: approachRequest = await req.json();
-        const { title, contentHtml, puzzle_id } = approachContent;
+        const { title, userId, contentHtml, puzzle_id } = approachContent;
         if (!title || !contentHtml) {
             return NextResponse.json({ error: "Title and contentHtml are required" }, { status: 400 });
+        }
+        if (!userId) {
+            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
         }
         const approach: Approach = await prisma.approach.create({
             data: {
                 title,
+                user_id: userId,
                 content: contentHtml,
             },
         });

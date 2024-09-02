@@ -3,26 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Category } from '@prisma/client';
 import CategoryCard from '@/lib/components/CategoryCard';
-
-/**
- * カテゴリー一覧を表示
- * @returns 
- */
-async function fetchCategories() {
-    try {
-        const response = await fetch("/api/categories");
-        if (!response.ok) {
-            const error = await response.json();
-            console.error("カテゴリーの取得に失敗: ", error);
-        }
-        const categories = await response.json();
-        return categories;
-    } catch (error) {
-        console.error("カテゴリーの取得に失敗: ", error);
-    }
-}
+import { getCategories } from '@/lib/api/categoryapi';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 export default function Page() {
+    const { user, userId } = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
 
     // アクティブなカードのID
@@ -30,10 +16,13 @@ export default function Page() {
 
     // カテゴリー一覧を取得
     useEffect(() => {
-        fetchCategories().then((categories) => {
-            setCategories(categories);
-        });
-    }, []);
+        async function fetchCategories() {
+            if (!userId) return;
+            const categories = await getCategories(userId ?? '');
+            setCategories(categories || []);
+        }
+        fetchCategories();
+    }, [userId, activeCardId]);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {
@@ -42,10 +31,18 @@ export default function Page() {
 
     return (
         <>
-        {categories.map((category) => (
-            <div key={category.id}>
-                <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
+        {!user ? (
+            <div>
+                <RecommendSignInDialog />
             </div>
+        ) : (
+            categories.length === 0 ? (<p>カテゴリーがありません</p>
+            ) : (
+            categories.map((category) => (
+                <div key={category.id}>
+                    <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
+                </div>
+            ))
         ))}
         </>
     );

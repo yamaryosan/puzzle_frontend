@@ -11,6 +11,8 @@ import { AddCircleOutline, Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type Range = {
     index: number;
@@ -30,6 +32,7 @@ type Change = {
  * @param quillSolutionRef 正答のQuillの参照
  * @param hintQuills ヒントのQuillの参照
  * @param difficulty 難易度
+ * @param uId FirebaseユーザーID
  */
 async function sendContent(
     title: string,
@@ -39,6 +42,7 @@ async function sendContent(
     quillSolutionRef: React.RefObject<Quill | null>,
     hintQuills: React.RefObject<Quill | null>[],
     difficulty: number,
+    userId: string
 ): Promise<Puzzle | undefined> 
 {
     // タイトルが空の場合はUntitledとする
@@ -50,6 +54,12 @@ async function sendContent(
         console.error("Quillの参照が取得できません");
         return;
     }
+    // IDが取得できない場合はエラー
+    if (!userId) {
+        console.error("ユーザIDが取得できません");
+        return;
+    }
+    
     const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
     const solutionHtml = quillSolutionRef.current.root.innerHTML;
     const is_favorite = false;
@@ -60,7 +70,7 @@ async function sendContent(
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite }),
+        body: JSON.stringify({ title, descriptionHtml, solutionHtml, difficulty, is_favorite, userId }),
     });
     if (!response.ok) {
         const error = await response.json();
@@ -142,6 +152,8 @@ export default function Page() {
     const [approachIds, setApproachIds] = useState<number[]>([]);
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
+    // ユーザ情報
+    const { user, userId } = useAuth();
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -161,13 +173,9 @@ export default function Page() {
     };
 
     return (
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        <>
+        {user ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <AddCircleOutline />
                 <span>パズル作成</span>
@@ -206,6 +214,7 @@ export default function Page() {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox 
+                userId={userId || ""}
                 onChange={handleCheckboxChange}
                 puzzle_id="0"
                 value={checkedCategories} />
@@ -239,7 +248,7 @@ export default function Page() {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
+                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "" )}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                     <Upload />
                     <span>作成</span>
@@ -247,5 +256,11 @@ export default function Page() {
                 </Button>
             </Box>
         </Box>
+        ) : (
+        <div>
+            <RecommendSignInDialog />
+        </div>
+        )}
+        </>
     );
 }

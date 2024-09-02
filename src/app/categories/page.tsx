@@ -21,7 +21,7 @@ export default function Page() {
             setCategories(categories || []);
         }
         fetchCategories();
-    }, [userId]);
+    }, [userId, activeCardId]);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {

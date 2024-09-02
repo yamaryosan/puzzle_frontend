@@ -30,11 +30,6 @@ export default function ApproachCard({ approach, isActive }: ApproachInfoProps) 
         fetchPuzzles();
     }, [approach.id, userId]);
 
-    // 編集ボタンクリック時のイベント
-    const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-    }
-
     return (
         <>
         <h3 style={{display: "inline-block"}}>{approach.title}</h3>

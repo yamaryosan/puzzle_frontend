@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Editor from '@/lib/components/Editor';
 import { useState, useEffect, useRef } from 'react';
 import { getApproach } from '@/lib/api/approachApi';
@@ -9,6 +8,8 @@ import { Approach } from '@prisma/client';
 import { Box, Button } from '@mui/material';
 import { Edit, Upload } from '@mui/icons-material';
 import TitleEditor from '@/lib/components/TitleEditor';
+import useAuth from '@/lib/hooks/useAuth';
+import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 
 type PageParams = {
     id: string;
@@ -69,17 +70,19 @@ export default function Home({ params }: { params: PageParams }) {
 
     const quill = useRef<Quill | null>(null);
 
+    const { user, userId } = useAuth();
+
     // 編集前に以前の定石を取得
     useEffect(() => {
         if (!params.id) {
             return;
         }
         async function fetchApproach() {
-            const approach = await getApproach(Number(params.id));
+            const approach = await getApproach(params.id, userId ?? '') as Approach;
             setApproach(approach);
         }
         fetchApproach();
-    }, [params.id]);
+    }, [params.id, userId]);
 
     // 編集前に以前の定石を取得
     useEffect(() => {
@@ -93,28 +96,17 @@ export default function Home({ params }: { params: PageParams }) {
         setTitle(approach?.title || '');
     }, [approach]);
 
-    if (!DeltaClass) {
-        return <div>Loading...</div>
-    }
-
     return (
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        <>
+        {user ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <Edit />
                 <span>定石編集</span>
             </h2>
             <TitleEditor title={title} setTitle={setTitle} />
 
-            <Box
-            sx={{
-                paddingY: '0.5rem',
-            }}>
+            <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>説明文</h3>
                 <Editor
                 ref={quill}
@@ -139,5 +131,11 @@ export default function Home({ params }: { params: PageParams }) {
                     </Box>                    
                 </Button>
         </Box>
+        ) : (
+            <div>
+                <RecommendSignInDialog />
+            </div>
+        )}
+        </>
     );
 }

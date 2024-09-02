@@ -19,13 +19,6 @@ async function create(name: string, userId: string) {
     return newCategory as Category;
 }
 
-type CategoryWithRelation = {
-    id: number;
-    puzzle_id: number;
-    category_id: number;
-    category: Category;
-};
-
 type CategoryCheckboxProps = {
     userId: string;
     onChange: (categoryIds: number[]) => void;
@@ -56,14 +49,14 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
 
     // 選択中のカテゴリー一覧を取得
     useEffect(() => {
-        async function fetchInitialCategories(id: string): Promise<CategoryWithRelation[] | undefined> {
+        async function fetchInitialCategories(id: string): Promise<Category[] | undefined> {
             return getCategoriesByPuzzleId(id);
         }
         fetchInitialCategories(puzzle_id).then((categories) => {
             if (!categories) {
                 return;
             }
-            const initialCategoryIds = categories.map((c) => c.category_id);
+            const initialCategoryIds = categories.map(category => category.id);
             console.log("カテゴリーを取得しました: ", initialCategoryIds);
             setCheckedCategoryIds(initialCategoryIds);
         });

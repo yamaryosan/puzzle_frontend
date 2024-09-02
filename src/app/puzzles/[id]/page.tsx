@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import { getCategoriesByPuzzleId } from '@/lib/api/categoryapi';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Viewer from '@/lib/components/Viewer';
-import Quill from 'quill';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 import { Category, Puzzle } from '@prisma/client';
@@ -19,16 +18,9 @@ type PageParams = {
     id: string;
 };
 
-type CategoryWithRelation = {
-    id: number;
-    puzzle_id: number;
-    category_id: number;
-    category: Category;
-};
-
 export default function Page({ params }: { params: PageParams }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [categories, setCategories] = useState<CategoryWithRelation[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // パズルを取得
@@ -48,7 +40,7 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const categories = await getCategoriesByPuzzleId(params.id);
+                const categories = await getCategoriesByPuzzleId(params.id) as Category[];
                 setCategories(categories ?? []);
             } catch (error) {
                 console.error("カテゴリーの取得に失敗: ", error);
@@ -94,7 +86,7 @@ export default function Page({ params }: { params: PageParams }) {
             }}>
                 <h3>カテゴリー: </h3>
                 <span>{categories?.map(category => (
-                    <span key={category.category_id}>{category.category.name} </span>
+                    <span key={category.id}>{category.name}</span>
                 ))}</span>
             </Box>
             

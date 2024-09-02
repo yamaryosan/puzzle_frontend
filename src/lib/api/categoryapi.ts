@@ -1,12 +1,5 @@
 import { Category, Puzzle } from "@prisma/client";
 
-type CategoryWithRelation = {
-    id: number;
-    puzzle_id: number;
-    category_id: number;
-    category: Category;
-};
-
 /**
  * カテゴリー一覧を取得
  * @param userId ユーザーID
@@ -125,7 +118,7 @@ export async function deleteCategory(id: string) {
 /**
  * 問題に紐づいているカテゴリーを取得する
  * @param id 問題ID
- * @returns Promise<CategoryWithRelation[]>
+ * @returns Promise<Category[]>
  */
 export async function getCategoriesByPuzzleId(id: string) {
     try {
@@ -137,7 +130,7 @@ export async function getCategoriesByPuzzleId(id: string) {
         }
         const categories = await response.json();
         console.log("カテゴリーの取得に成功: ", categories);
-        return categories as CategoryWithRelation[];
+        return categories as Category[];
     } catch (error) {
         console.error("カテゴリーの取得に失敗: ", error);
     }

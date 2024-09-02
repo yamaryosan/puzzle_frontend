@@ -16,13 +16,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         }
 
         // パズルに紐づくカテゴリーを取得
-        const approaches = await prisma.puzzleCategory.findMany({
+        const puzzleCategories = await prisma.puzzleCategory.findMany({
             where: { puzzle_id: id },
             include: {
                 category: true,
             }
         });
-        return NextResponse.json(approaches);
+        // カテゴリーのみを取得
+        const categories = puzzleCategories.map((puzzleCategory) => puzzleCategory.category);
+        return NextResponse.json(categories);
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });

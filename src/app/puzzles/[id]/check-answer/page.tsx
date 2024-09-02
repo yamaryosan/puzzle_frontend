@@ -60,7 +60,7 @@ export default function Page({ params }: { params: { id: string } }) {
             }
         }
         fetchPuzzle();
-    }, [params.id]);
+    }, [params.id, userId]);
 
     // 正解時の処理
     const correct = () => {
@@ -73,6 +73,10 @@ export default function Page({ params }: { params: { id: string } }) {
         const isSolved = false;
         sendIsSolved(params.id, false);
     };
+
+    if (!puzzle) {
+        return <div>読み込み中...</div>;
+    }
 
     return (
         <>

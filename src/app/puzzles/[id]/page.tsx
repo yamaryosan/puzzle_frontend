@@ -38,7 +38,7 @@ export default function Page({ params }: { params: PageParams }) {
             }
         }
         fetchPuzzle();
-    }, [params.id]);
+    }, [params.id, userId]);
 
     // パズルのカテゴリーを取得
     useEffect(() => {

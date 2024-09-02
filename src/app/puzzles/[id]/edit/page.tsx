@@ -17,6 +17,7 @@ import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
+import useAuth from '@/lib/hooks/useAuth';
 
 type PageParams = {
     id: string;
@@ -199,6 +200,8 @@ export default function Page({ params }: { params: PageParams }) {
     const [approachIds, setApproachIds] = useState<number[]>([]);
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
+    // ユーザ情報
+    const { userId } = useAuth();
 
     // 編集前にパズルを取得
     useEffect(() => {
@@ -324,6 +327,7 @@ export default function Page({ params }: { params: PageParams }) {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox
+                userId={userId || ""}
                 onChange={handleCategoriesChange}
                 puzzle_id={params.id || "0"}
                 value={categoryIds}/>

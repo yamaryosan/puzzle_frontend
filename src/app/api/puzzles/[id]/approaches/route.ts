@@ -16,12 +16,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         }
 
         // パズルに紐づく定石を取得
-        const approaches = await prisma.puzzleApproach.findMany({
+        const puzzleApproaches = await prisma.puzzleApproach.findMany({
             where: { puzzle_id: id },
             include: {
                 approach: true,
-            }
+            },
         });
+        // 定石のみを取得
+        const approaches = puzzleApproaches.map((puzzleApproach) => puzzleApproach.approach);
         return NextResponse.json(approaches);
     } catch (error) {
         if (error instanceof Error) {

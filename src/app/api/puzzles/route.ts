@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Puzzle, Category } from "@prisma/client";
+import { Puzzle } from "@prisma/client";
 
 type puzzleRequest = {
     title: string;
@@ -17,16 +17,14 @@ type puzzleRequest = {
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
         const { searchParams } = new URL(req.url);
-        const uId = searchParams.get("userId");
+        const user_id = searchParams.get("userId");
 
-        if (!uId) {
+        if (!user_id) {
             throw new Error("ユーザIDが指定されていません");
         }
 
-        const puzzles = await prisma.puzzle.findMany({
-            where: {
-                user_id: uId
-            },
+        const puzzles: Puzzle[] = await prisma.puzzle.findMany({
+            where: { user_id },
             include: {
                 PuzzleCategory: {
                     include: {

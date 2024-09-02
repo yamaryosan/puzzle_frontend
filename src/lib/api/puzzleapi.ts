@@ -63,10 +63,15 @@ export async function deletePuzzle(id: string) {
 /**
  * パズルのお気に入り登録/解除の切り替え
  * @param id パズルID
+ * @param userId ユーザID
  */
-export async function toggleFavoritePuzzle(id: string) {
+export async function toggleFavoritePuzzle(id: string, userId: string) {
     const response = await fetch(`/api/puzzles/${id}/favorites`, {
         method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
     });
     if (!response.ok) {
         const error = await response.json();

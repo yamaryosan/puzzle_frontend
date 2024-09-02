@@ -116,6 +116,7 @@ export default function Page() {
                     </button>
                 </Box>
             </Box>
+            { puzzles.length === 0 && <p>最初のパズルを作成しましょう！</p> }
             <ul>
                 {puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>

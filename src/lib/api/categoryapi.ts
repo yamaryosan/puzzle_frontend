@@ -26,15 +26,16 @@ export async function getCategories(userId: string) {
 /**
  * 新規カテゴリー作成
  * @param name カテゴリー名
+ * @param userId ユーザID
  * @returns Promise<Category>
  */
-export async function createCategory(name: string) {
+export async function createCategory(name: string, userId: string) {
     const response = await fetch("/api/categories", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, userId }),
     });
     if (!response.ok) {
         const error = await response.json();

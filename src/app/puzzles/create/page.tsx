@@ -217,6 +217,7 @@ export default function Page() {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox 
+                userId={userId || ""}
                 onChange={handleCheckboxChange}
                 puzzle_id="0"
                 value={checkedCategories} />

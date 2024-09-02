@@ -5,26 +5,17 @@ import { Box, Button } from "@mui/material";
 import { CreateNewFolderOutlined } from "@mui/icons-material";
 
 /**
- * カテゴリー一覧を取得
- * @params void
- * @returns Promise<Categories>
- */
-async function fetch() {
-    const categories = await getCategories();
-    return categories as Category[];
-}
-
-/**
  * 新規カテゴリー作成
  * @param name カテゴリー名
+ * @param userId ユーザID
  * @returns Promise<Category>
  */
-async function create(name: string) {
+async function create(name: string, userId: string) {
     // カテゴリー名が空の場合は作成しない
     if (name === "") {
         return
     }
-    const newCategory = await createCategory(name);
+    const newCategory = await createCategory(name, userId);
     return newCategory as Category;
 }
 
@@ -35,13 +26,14 @@ type CategoryWithRelation = {
     category: Category;
 };
 
-interface CategoryCheckboxProps {
+type CategoryCheckboxProps = {
+    userId: string;
     onChange: (categoryIds: number[]) => void;
     puzzle_id: string;
     value: number[];
 }
 
-export default function CategoryCheckbox({ onChange, puzzle_id, value }: CategoryCheckboxProps) {
+export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }: CategoryCheckboxProps) {
     const [categories, setCategories] = useState<Category[] | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
     const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>(value);
@@ -49,7 +41,7 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
     // カテゴリー一覧を取得
     async function fetchCategories() {
         try {
-            const categories = await fetch();
+            const categories = await getCategories(userId);
             setCategories(categories);
             return categories;
         } catch (error) {
@@ -60,7 +52,7 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
 
     useEffect(() => {
         fetchCategories();
-    }, []);
+    }, [userId]);
 
     // 選択中のカテゴリー一覧を取得
     useEffect(() => {
@@ -85,7 +77,7 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
     // 新規カテゴリー作成
     const handleNewCategory = async () => {
         try {
-            const createdCategory = await create(newCategory);
+            const createdCategory = await create(newCategory, userId);
             if (!createdCategory) {
                 console.error("カテゴリー名が空のため作成できません");
                 return;
@@ -93,7 +85,7 @@ export default function CategoryCheckbox({ onChange, puzzle_id, value }: Categor
             // 入力値をリセット
             setNewCategory("");
             // カテゴリー一覧を再取得
-            const categories = await fetch();
+            const categories = await fetchCategories();
             setCategories(categories);
             // 新しいカテゴリーにチェックを入れる
             setCheckedCategoryIds(prev => [...prev, createdCategory.id]);

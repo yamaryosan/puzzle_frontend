@@ -116,12 +116,13 @@ async function send(
     console.log("定石の更新に成功");
 
     // ヒントを更新
-    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML);
+    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
 
     if (!hintHtmls) {
         console.error("ヒントの取得に失敗");
         return puzzle;
     }
+    console.log(hintHtmls);
     const hintsResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
         method: "PUT",
         headers: {

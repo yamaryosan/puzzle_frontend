@@ -6,24 +6,24 @@ import Delta from 'quill-delta';
 import 'quill/dist/quill.snow.css';
 
 interface EditorProps {
-  readOnly: boolean;
-  defaultValue: any;
-  onTextChange: (delta: any, oldDelta: any, source: string) => void;
-  onSelectionChange: (range: any, oldRange: any, source: string) => void;
+    readOnly: boolean;
+    defaultValue: any;
+    onTextChange: (delta: any, oldDelta: any, source: string) => void;
+    onSelectionChange: (range: any, oldRange: any, source: string) => void;
 }
 
 interface QuillToolbarHandler {
-  addHandler: (format: string, handler: () => void) => void;
+    addHandler: (format: string, handler: () => void) => void;
 }
 
 function createTypeSafeToolbar(quill: Quill): QuillToolbarHandler {
-  const toolbar = quill.getModule('toolbar');
-  return {
-    addHandler: (format: string, handler: () => void) => {
-      (toolbar as any).addHandler(format, handler);
-    },
-  };
-  }
+    const toolbar = quill.getModule('toolbar');
+    return {
+        addHandler: (format: string, handler: () => void) => {
+        (toolbar as any).addHandler(format, handler);
+        },
+    };
+}
 
 /**
  * 画像アップロード処理
@@ -31,13 +31,13 @@ function createTypeSafeToolbar(quill: Quill): QuillToolbarHandler {
  * @returns {Promise<string>} 画像のURL
  */
 const uploadImage = async (file: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append('image', file);
-  const response = await fetch('/api/images', {
-    method: 'POST',
-    body: formData,
-  });
-  return response.text();
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await fetch('/api/images', {
+        method: 'POST',
+        body: formData,
+    });
+    return response.text();
 };
 
 /**画像挿入処理
@@ -45,27 +45,27 @@ const uploadImage = async (file: File): Promise<string> => {
  * @param {File} file 画像ファイル
  */
 const insertImage = async(quill: Quill, file: File) => {
-  const imageUrl = await uploadImage(file);
-  const range = quill.getSelection();
-  quill.insertEmbed(range?.index || 0, 'image', imageUrl);
+    const imageUrl = await uploadImage(file);
+    const range = quill.getSelection();
+    quill.insertEmbed(range?.index || 0, 'image', imageUrl);
 };
 
 /** 画像ハンドラ (ツールバー用)
  * @param {Quill} quill - Quillインスタンス
  */
 const imageHandler = async(quill: Quill) => {
-  const input = document.createElement('input');
-  input.setAttribute('type', 'file');
-  input.setAttribute('accept', 'image/*');
-  input.click();
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
 
-  input.onchange = async () => {
-    const file = input.files?.[0];
-    if (file) {
-      console.log("画像がアップロードされます");
-      await insertImage(quill, file);
-    }
-  };
+    input.onchange = async () => {
+        const file = input.files?.[0];
+        if (file) {
+        console.log("画像がアップロードされます");
+        await insertImage(quill, file);
+        }
+    };
 };
 
 /**
@@ -74,24 +74,22 @@ const imageHandler = async(quill: Quill) => {
  * @param {Quill} quill Quillインスタンス
  */
 const pasteImageHandler = async (event: ClipboardEvent, quill: Quill) => {
-  const file = event.clipboardData?.items;
-  if (!file) {
-    return;
-  }
-  // 画像ファイルごとに処理を行う
-  for (let i = 0; i < file.length; i++) {
-    // 画像以外はスキップ
-    if (file[i].type.indexOf('image') === -1) {
-      continue;
+    const file = event.clipboardData?.items;
+    if (!file) { return; }
+    // 画像ファイルごとに処理を行う
+    for (let i = 0; i < file.length; i++) {
+        // 画像以外はスキップ
+        if (file[i].type.indexOf('image') === -1) {
+            continue;
+        }
+        event.preventDefault();
+        const imageFile = file[i].getAsFile();
+        if (imageFile) {
+            console.log("画像がペーストされます")
+            await insertImage(quill, imageFile);
+        }
+        return; // 画像が見つかったら終了
     }
-    event.preventDefault();
-    const imageFile = file[i].getAsFile();
-    if (imageFile) {
-      console.log("画像がペーストされます")
-      await insertImage(quill, imageFile);
-    }
-    return; // 画像が見つかったら終了
-  }
 };
 
 /**
@@ -100,20 +98,19 @@ const pasteImageHandler = async (event: ClipboardEvent, quill: Quill) => {
  * @param {Quill} quill Quillインスタンス
  */
 const dropImageHandler = async (event: DragEvent, quill: Quill) => {
-  event.preventDefault();
-  event.stopPropagation();
-  const files = event.dataTransfer?.files;
-  if (!files || files.length === 0) return;
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    if (file.type.startsWith('image/')) {
-      const range = quill.getSelection(true);
-      await insertImage(quill, file);
-      // カーソルを画像の後ろに移動
-      quill.setSelection((range?.index || 0) + 1);
+    event.preventDefault();
+    event.stopPropagation();
+    const files = event.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type.startsWith('image/')) {
+            const range = quill.getSelection(true);
+            await insertImage(quill, file);
+            // カーソルを画像の後ろに移動
+            quill.setSelection((range?.index || 0) + 1);
+        }
     }
-  }
 };
 
 /** エディタのコンポーネント
@@ -124,12 +121,8 @@ const dropImageHandler = async (event: DragEvent, quill: Quill) => {
  * @param {Ref} ref - エディタのrefオブジェクト
  * @returns {React.ReactElement} エディタのコンポーネント
  */
-
-/**
- * パズルエディタのコンポーネント
- */
-const Editor = forwardRef<Quill, EditorProps>(
-  ({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
+export const Editor = forwardRef<Quill, EditorProps>(
+    ({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
     const defaultValueRef = useRef<Delta>(defaultValue);
@@ -139,93 +132,89 @@ const Editor = forwardRef<Quill, EditorProps>(
 
     // エディタの状態が変更されたときのコールバックを更新
     useLayoutEffect(() => {
-      onTextChangeRef.current = onTextChange;
-      onSelectionChangeRef.current = onSelectionChange;
+        onTextChangeRef.current = onTextChange;
+        onSelectionChangeRef.current = onSelectionChange;
     }, [onTextChange, onSelectionChange]);
 
     // Quillのインスタンスを取得 (読み取り専用の設定)
     useEffect(() => {
-      if (ref && typeof ref !== 'function' && ref.current) {
-        ref.current.enable(!readOnly);
-      }
+        if (ref && typeof ref !== 'function' && ref.current) {
+            ref.current.enable(!readOnly);
+        }
     }, [ref, readOnly]);
 
     useEffect(() => {
-      // エディタのDOM要素を取得
-      const container = containerRef.current;
-      if (!container) {
-        return;
-      }
-      const editorContainer = container?.appendChild(
-        container.ownerDocument.createElement('div'),
-      );
-      // Quillの動的インポート、Quillインスタンス初期化
-      import('quill').then((module) => {
-        const Quill = module.default;
-        const quillInstance = new Quill(editorContainer, {
-          modules: {
-            toolbar: [
-              [{ header: [1, 2, false] }],
-              ['bold', 'italic', 'underline'],
-              ['image', 'code-block'],
-            ],
-          },
-          theme: 'snow',
+        // エディタのDOM要素を取得
+        const container = containerRef.current;
+        if (!container) { return; }
+        const editorContainer = container?.appendChild(
+            container.ownerDocument.createElement('div'),
+        );
+        // Quillの動的インポート、Quillインスタンス初期化
+        import('quill').then((module) => {
+            const Quill = module.default;
+            const quillInstance = new Quill(editorContainer, {
+                modules: {
+                    toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'code-block'],
+                    ],
+                },
+                theme: 'snow',
+            });
+            
+            // 画像のアップロード処理を設定
+            const toolbar = createTypeSafeToolbar(quillInstance);
+            (toolbar as 
+                { addHandler: (format: string, handler: () => void) => void
+                }).addHandler('image', () => {
+                imageHandler(quillInstance);
+            });
+
+            // 画像ドラッグアンドドロップ時の処理
+            editorContainer.addEventListener('drop', async (event: DragEvent) => {
+                await dropImageHandler(event, quillInstance);
+            }, true);
+
+            // 画像ペースト時の処理
+            editorContainer.addEventListener('paste', async (event: ClipboardEvent) => {
+                await pasteImageHandler(event, quillInstance);
+            }, true);
+
+            setQuill(quillInstance);
+
+            // Quillのインスタンスをrefに設定
+            if (ref) {
+                (ref as React.MutableRefObject<Quill>).current = quillInstance;
+            }
+
+            // 初期値を設定
+            if (defaultValueRef.current) {
+                console.log("初期値を設定します: ", defaultValueRef.current);
+                quillInstance.setContents(defaultValueRef.current);
+            }
+
+            // テキストが変更されたときのコールバック
+            quillInstance?.on(Quill.events.TEXT_CHANGE, (...args) => {
+                onTextChangeRef.current?.(...args);
+            });
+            // 選択範囲が変更されたときのコールバック
+            quillInstance?.on(Quill.events.SELECTION_CHANGE, (...args) => {
+                onSelectionChangeRef.current?.(...args);
+            });
         });
-        
-        // 画像のアップロード処理を設定
-        const toolbar = createTypeSafeToolbar(quillInstance);
-        (toolbar as 
-          { addHandler: (format: string, handler: () => void) => void
-
-          }).addHandler('image', () => {
-          imageHandler(quillInstance);
-        });
-
-        // 画像ドラッグアンドドロップ時の処理
-        editorContainer.addEventListener('drop', async (event: DragEvent) => {
-          await dropImageHandler(event, quillInstance);
-        }, true);
-
-        // 画像ペースト時の処理
-        editorContainer.addEventListener('paste', async (event: ClipboardEvent) => {
-          await pasteImageHandler(event, quillInstance);
-        }, true);
-
-        setQuill(quillInstance);
-
-        // Quillのインスタンスをrefに設定
-        if (ref) {
-          (ref as React.MutableRefObject<Quill>).current = quillInstance;
-        }
-
-        // 初期値を設定
-        if (defaultValueRef.current) {
-          console.log("初期値を設定します: ", defaultValueRef.current);
-          quillInstance.setContents(defaultValueRef.current);
-        }
-
-        // テキストが変更されたときのコールバック
-        quillInstance?.on(Quill.events.TEXT_CHANGE, (...args) => {
-          onTextChangeRef.current?.(...args);
-        });
-        // 選択範囲が変更されたときのコールバック
-        quillInstance?.on(Quill.events.SELECTION_CHANGE, (...args) => {
-          onSelectionChangeRef.current?.(...args);
-        });
-      }
-      );
-      // クリーンアップ
-      return () => {
-        if (typeof ref === 'function') {
-          ref(null);
-        }
-        container.innerHTML = '';
-      };
+        // クリーンアップ
+        return () => {
+            if (typeof ref === 'function') {
+                ref(null);
+            }
+            container.innerHTML = '';
+        };
     }, [ref]);
-
+    
     return <div ref={containerRef}></div>;
-  },
+    },
 );
 
 Editor.displayName = 'Editor';

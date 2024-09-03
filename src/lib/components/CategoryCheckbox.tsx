@@ -106,7 +106,7 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
             fontSize: "1.5rem",
         }}
         >
-            {categories?.length === 0 && <p>カテゴリーがありません</p>}
+            {categories?.length === 0 && <p>カテゴリーを作成しましょう</p>}
             <Box
             sx={{
                 display: "grid",

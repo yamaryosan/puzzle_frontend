@@ -110,26 +110,25 @@ async function sendContent(
     console.log("定石の追加に成功");
 
     // ヒントを追加
-    for (let i = 0; i < hintQuills.length; i++) {
-        let hintQuill = hintQuills[i].current;
-        if (!hintQuill) {
-            hintQuill = new Quill(document.createElement("div"));
-        }
-        const hintHtml = hintQuill.root.innerHTML;
-        const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ hintHtml }),
-        });
-        if (!hintResponse.ok) {
-            const error = await hintResponse.json();
-            console.error("ヒントの追加に失敗: ", error);
-        }
-        console.log("ヒントの追加に成功");
+    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
+    if (!hintHtmls) {
+        console.error("ヒントの取得に失敗");
+        return puzzle;
     }
+    console.log(hintHtmls);
 
+    const hintsResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hintHtmls }),
+    });
+    if (!hintsResponse.ok) {
+        const error = await hintsResponse.json();
+        console.error("ヒントの更新に失敗: ", error);
+    }
+    console.log("ヒントの更新に成功");
     return puzzle;
 }
 

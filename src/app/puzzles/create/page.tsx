@@ -13,6 +13,7 @@ import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useRouter } from 'next/navigation';
 
 type Range = {
     index: number;
@@ -110,9 +111,9 @@ async function sendContent(
 
     // ヒントを追加
     for (let i = 0; i < hintQuills.length; i++) {
-        const hintQuill = hintQuills[i].current;
+        let hintQuill = hintQuills[i].current;
         if (!hintQuill) {
-            continue;
+            hintQuill = new Quill(document.createElement("div"));
         }
         const hintHtml = hintQuill.root.innerHTML;
         const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
@@ -133,6 +134,7 @@ async function sendContent(
 }
 
 export default function Page() {
+    const router = useRouter();
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [readOnly, setReadOnly] = useState(false);
@@ -171,6 +173,14 @@ export default function Page() {
     const handleCheckboxChange = (checkedCategories: number[]) => {
         setCheckedCategories(checkedCategories);
     };
+
+    // 送信ボタン押下時の処理
+    const handleSendButton = async () => {
+        const puzzle = await sendContent(title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "");
+        if (puzzle) {
+            router.push(`/puzzles/${puzzle.id}`);
+        }
+    }
 
     return (
         <>
@@ -232,13 +242,7 @@ export default function Page() {
                 <h3>難易度</h3>
                 <DifficultEditor value={difficulty} onChange={setDifficulty} />
             </Box>
-
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                paddingY: '1rem',
-                marginY: '1rem' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: '1rem', marginY: '1rem' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',
@@ -248,10 +252,10 @@ export default function Page() {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "" )}>
+                onClick={() => handleSendButton()}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                    <Upload />
-                    <span>作成</span>
+                        <Upload />
+                        <span>作成</span>
                     </Box>
                 </Button>
             </Box>

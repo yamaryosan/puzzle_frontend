@@ -175,6 +175,21 @@ export default function Page() {
 
     // 送信ボタン押下時の処理
     const handleSendButton = async () => {
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = quillDescriptionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("問題文を入力してください");
+            return;
+        }
+        const solution = quillSolutionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (solution?.trim() === "") {
+            alert("正答を入力してください");
+            return;
+        }
+
         const puzzle = await sendContent(title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "");
         if (puzzle) {
             router.push(`/puzzles/${puzzle.id}`);

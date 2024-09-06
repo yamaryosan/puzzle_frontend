@@ -15,6 +15,8 @@ import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useSearchParams } from 'next/navigation';
+import MessageModal from '@/lib/components/MessageModal';
 
 type PageParams = {
     id: string;
@@ -25,6 +27,8 @@ export default function Page({ params }: { params: PageParams }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const searchParams = useSearchParams();
+    const showModal = searchParams.get('newlyCreated') === 'true';
 
     // パズルを取得
     useEffect(() => {
@@ -61,6 +65,9 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
+        {showModal && (
+            <MessageModal message="パズルを作成しました" />
+        )}
         {user ? (
         <Box
         sx={{

@@ -192,7 +192,7 @@ export default function Page() {
 
         const puzzle = await sendContent(title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "");
         if (puzzle) {
-            router.push(`/puzzles/${puzzle.id}`);
+            router.push(`/puzzles/${puzzle.id}?newlyCreated=true`);
         }
     }
 

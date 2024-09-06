@@ -5,6 +5,8 @@ import { Box, Paper } from '@mui/material';
 import { ThumbUpAltOutlined } from '@mui/icons-material';
 import { useTransition, animated } from 'react-spring';
 import { config } from 'react-spring';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 type MessageModalProps = {
     message: string;
@@ -12,10 +14,21 @@ type MessageModalProps = {
 
 export default function MessageModal({ message }: MessageModalProps) {
     const [isVisible, setIsVisible] = useState(true);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const removeParams = () => {
+        const current = new URLSearchParams(searchParams);
+        current.delete("newlyCreated");
+
+        const newParams = current.toString();
+        router.push(`${window.location.pathname}?${newParams}`);
+    }
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsVisible(false);
+            removeParams();
         }, 3000);
         return () => {
             clearTimeout(timer);

@@ -10,25 +10,26 @@ import { useSearchParams } from 'next/navigation';
 
 type MessageModalProps = {
     message: string;
+    param: string;
 };
 
-export default function MessageModal({ message }: MessageModalProps) {
+export default function MessageModal({ message, param }: MessageModalProps) {
     const [isVisible, setIsVisible] = useState(true);
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const removeParams = () => {
+    const removeParam = () => {
         const current = new URLSearchParams(searchParams);
-        current.delete("newlyCreated");
+        current.delete(param);
 
-        const newParams = current.toString();
-        router.push(`${window.location.pathname}?${newParams}`);
+        const newParam = current.toString();
+        router.push(`${window.location.pathname}?${newParam}`);
     }
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsVisible(false);
-            removeParams();
+            removeParam();
         }, 3000);
         return () => {
             clearTimeout(timer);

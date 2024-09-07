@@ -66,7 +66,7 @@ export default function Page({ params }: { params: PageParams }) {
     return (
         <>
         {showModal && (
-            <MessageModal message="パズルを作成しました" />
+            <MessageModal message="パズルを作成しました" param="newlyCreated" />
         )}
         {user ? (
         <Box

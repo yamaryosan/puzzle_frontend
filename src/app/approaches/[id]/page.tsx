@@ -21,6 +21,7 @@ export default function Page({ params }: { params: PageParams }) {
 
     const router = useSearchParams();
     const showCreatedModal = router.get('created') === 'true';
+    const showEditedModal = router.get('edited') === 'true';
 
     // 定石情報を取得
     useEffect(() => {
@@ -50,6 +51,9 @@ export default function Page({ params }: { params: PageParams }) {
         <>
         {showCreatedModal && (
             <MessageModal message="定石を作成しました" param="created" />
+        )}
+        {showEditedModal && (
+            <MessageModal message="定石を編集しました" param="edited" />
         )}
         {user ? (
         <div>

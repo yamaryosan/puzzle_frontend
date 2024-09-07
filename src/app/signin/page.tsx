@@ -7,6 +7,8 @@ import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserC
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import useAuth from '@/lib/hooks/useAuth';
 import { createUserInPrisma } from '@/lib/api/userapi';
+import { useSearchParams } from 'next/navigation';
+import MessageModal from '@/lib/components/MessageModal';
 
 /**
  * メールアドレスとパスワードでログインする
@@ -68,6 +70,9 @@ export default function Page() {
     const { user, authLoading } = useAuth();
     const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
 
+    const searchParams = useSearchParams();
+    const deleted = searchParams.get('deleted') === 'true';
+
     if (authLoading) {
         return <p>ローディング中...</p>;
     }
@@ -110,6 +115,8 @@ export default function Page() {
     }
 
     return (
+        <>
+        {deleted && <MessageModal message="退会しました" param="deleted" />}
         <div className="container mx-auto mt-10 p-4">
             <h1 className="text-2xl font-bold mb-4">メールアドレスとパスワードでログイン</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -147,5 +154,6 @@ export default function Page() {
                 アカウントをお持ちでない方は <Link href="/signup" className="text-blue-500 hover:underline">こちら</Link> から登録してください。
             </p>
         </div>
+        </>
     );
 };

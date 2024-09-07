@@ -11,6 +11,7 @@ import TitleEditor from '@/lib/components/TitleEditor';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
+import { Delete, Clear } from '@mui/icons-material';
 
 type PageParams = {
     id: string;
@@ -76,6 +77,8 @@ export default function Page({ params }: { params: PageParams }) {
 
     const { user, userId } = useAuth();
 
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
     // 編集前に以前の定石を取得
     useEffect(() => {
         if (!params.id) {
@@ -117,6 +120,12 @@ export default function Page({ params }: { params: PageParams }) {
         }
     }
 
+    // 削除確認ダイアログの開閉
+    const toggleDeleteModal = () => {
+        setIsDeleteModalOpen(!isDeleteModalOpen);
+    };
+    
+
     if (!user) {
         return <RecommendSignInDialog />;
     }
@@ -127,7 +136,6 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
-        {user ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <Edit />
@@ -144,27 +152,40 @@ export default function Page({ params }: { params: PageParams }) {
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}/>
             </Box>
-            
-            <Button onClick={handleSendButton}
-                sx={{
-                    padding: '1.5rem',
-                    backgroundColor: 'secondary.light',
-                    width: '100%',
-                    ":hover": {
-                        backgroundColor: 'secondary.main',
-                    }
-                }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                        <Upload />
-                        <span>編集完了</span>
-                    </Box>                    
-                </Button>
         </Box>
-        ) : (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        )}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingY: '1rem', marginY: '1rem' }}>
+            <Button 
+            sx={{
+                padding: '1.5rem',
+                backgroundColor: 'secondary.light',
+                width: '20%',
+                ":hover": {
+                    backgroundColor: 'secondary.main',
+                }
+            }}
+            onClick={handleSendButton}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                    <Upload />
+                    <span>編集完了</span>
+                </Box>
+            </Button>
+            <Button
+            sx={{
+                padding: '1.5rem',
+                backgroundColor: 'error.light',
+                width: '20%',
+                ":hover": {
+                    backgroundColor: 'error.main',
+                },
+            }}
+            onClick={toggleDeleteModal}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.4", color: "black" }}>
+                    {isDeleteModalOpen ? <Clear /> : <Delete />}
+                </Box>
+            </Button>
+            </Box>
+
+
         </>
     );
 }

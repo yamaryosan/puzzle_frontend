@@ -100,17 +100,21 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
             <>
             {isEdit ? (
                 <>
-                <input type="text" value={categoryName} onClick={handleInputClick} onChange={handleChange} />
-                <Button onClick={handleUpdateClick}>
-                    <Update />
-                </Button>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <input type="text" value={categoryName} onClick={handleInputClick} onChange={handleChange} />
+                    <Button onClick={handleUpdateClick}>
+                        <Update />
+                    </Button>
+                </Box>
                 </>
                 ) : (
                 <>
-                <h3 style={{display: "inline-block"}}>{categoryName}</h3>
-                <Button onClick={handleEditClick}>
-                    <Edit />
-                </Button>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <h3 style={{display: "inline-block"}}>{categoryName}</h3>
+                    <Button onClick={handleEditClick}>
+                        <Edit />
+                    </Button>
+                </Box>
                 </>
                 )}
             </>

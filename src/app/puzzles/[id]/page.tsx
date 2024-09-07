@@ -30,7 +30,7 @@ export default function Page({ params }: { params: PageParams }) {
 
     // モーダルの表示
     const searchParams = useSearchParams();
-    const showNewlyCreatedModal = searchParams.get('newlyCreated') === 'true';
+    const showCreatedModal = searchParams.get('created') === 'true';
     const showEditedModal = searchParams.get('edited') === 'true';
 
     // パズルを取得
@@ -68,8 +68,8 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
-        {showNewlyCreatedModal && (
-            <MessageModal message="パズルを作成しました" param="newlyCreated" />
+        {showCreatedModal && (
+            <MessageModal message="パズルを作成しました" param="created" />
         )}
         {showEditedModal && (
             <MessageModal message="パズルを編集しました" param="edited" />

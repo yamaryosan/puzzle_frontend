@@ -191,7 +191,7 @@ export default function Page({ params }: { params: PageParams }) {
                     {isDeleteModalOpen ? <Clear /> : <Delete />}
                 </Box>
             </Button>
-            </Box>
+        </Box>
 
 
         </>

@@ -47,6 +47,14 @@ export default function Page({ params }: { params: PageParams }) {
         fetchPuzzles();
     }, [userId]);
 
+    if (!user) {
+        return <RecommendSignInDialog />;
+    }
+
+    if (!approach) {
+        return <div>定石が見つかりません</div>;
+    }
+
     return (
         <>
         {showCreatedModal && (
@@ -57,11 +65,11 @@ export default function Page({ params }: { params: PageParams }) {
         )}
         {user ? (
         <div>
-            <h1>{approach?.title}</h1>
-            <Viewer defaultValue={approach?.content ?? ''} />
-            {puzzles?.length === 0 ? <p>問題がありません</p> : ( 
+            <h2>{approach.title}</h2>
+            <Viewer defaultValue={approach.content ?? ''} />
+            {puzzles?.length === 0 ? <p>この定石に紐づいた問題がありません</p> : ( 
             <div>
-                <p>この定石に関連する問題</p>
+                <p>この定石に紐づいた問題</p>
                 <ul>
                     {puzzles?.map((puzzle) => (
                         <li key={puzzle.id}>

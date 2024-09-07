@@ -117,6 +117,14 @@ export default function Page({ params }: { params: PageParams }) {
         }
     }
 
+    if (!user) {
+        return <RecommendSignInDialog />;
+    }
+
+    if (!approach || !DeltaClass) {
+        return <div>読み込み中</div>;
+    }
+
     return (
         <>
         {user ? (

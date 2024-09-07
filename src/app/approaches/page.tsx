@@ -9,12 +9,17 @@ import { Box, Button } from '@mui/material';
 import { AddCircleOutline, QuizOutlined } from '@mui/icons-material';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useSearchParams } from 'next/navigation';
+import MessageModal from '@/lib/components/MessageModal';
 
 export default function Page() {
     const { user, userId } = useAuth();
     const [approaches, setApproaches] = useState<Approach[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
+
+    const router = useSearchParams();
+    const showDeletedModal = router.get('deleted') === 'true';
 
     useEffect(() => {
         async function fetchApproaches() {
@@ -30,10 +35,13 @@ export default function Page() {
         setActiveCardId(id === activeCardId ? null : id);
     };
 
+    if (!user) {
+        return <RecommendSignInDialog />;
+    }
+
     return (
         <>
-        {user ? (
-        <>
+        {showDeletedModal && <MessageModal message="定石を削除しました" param="deleted" />}
         <h2>
             <QuizOutlined />
             定石一覧
@@ -64,12 +72,6 @@ export default function Page() {
             ))}
         </ul>
         {approaches.length === 0 && <p>最初の定石を作成しましょう！</p>}
-        </>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     );
 }

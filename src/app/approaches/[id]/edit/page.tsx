@@ -12,6 +12,8 @@ import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
 import { Delete, Clear } from '@mui/icons-material';
+import Portal from '@/lib/components/Portal';
+import DeleteModal from '@/lib/components/DeleteModal';
 
 type PageParams = {
     id: string;
@@ -136,6 +138,12 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
+        <div id="delete_modal"></div>
+        {isDeleteModalOpen && (
+            <Portal element={document.getElementById("delete_modal")!}>
+                <DeleteModal target="approach" id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+            </Portal>
+        )}
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <Edit />

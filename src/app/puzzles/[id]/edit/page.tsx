@@ -19,6 +19,7 @@ import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useRouter } from 'next/navigation';
 
 type PageParams = {
     id: string;
@@ -179,6 +180,7 @@ async function fetchInitialHints(id: string, userId: string): Promise<Hint[] | u
 }
 
 export default function Page({ params }: { params: PageParams }) {
+    const router = useRouter();
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
@@ -195,7 +197,6 @@ export default function Page({ params }: { params: PageParams }) {
     const maxHints = 3;
     const [hints, setHints] = useState<Hint[]>([]);
     const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
-    // const [hintsDelta, setHintsDelta] = Array.from({length: maxHints}, () => useState<any>(null));
     const [hintsDelta, setHintsDelta] = useState(Array(maxHints).fill(null));
 
     // カテゴリー選択状態
@@ -304,13 +305,7 @@ export default function Page({ params }: { params: PageParams }) {
     return (
         <>
         {user ? (
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
@@ -371,13 +366,7 @@ export default function Page({ params }: { params: PageParams }) {
                 <DifficultEditor value={difficulty} onChange={setDifficulty} />
             </Box>
 
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingY: '1rem',
-                marginY: '1rem',
-            }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingY: '1rem', marginY: '1rem' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',
@@ -387,7 +376,7 @@ export default function Page({ params }: { params: PageParams }) {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
+                onClick={handleSendButton}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                         <Upload />
                         <span>編集完了</span>

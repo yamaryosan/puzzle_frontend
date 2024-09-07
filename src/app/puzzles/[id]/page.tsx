@@ -27,8 +27,11 @@ export default function Page({ params }: { params: PageParams }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    // モーダルの表示
     const searchParams = useSearchParams();
-    const showModal = searchParams.get('newlyCreated') === 'true';
+    const showNewlyCreatedModal = searchParams.get('newlyCreated') === 'true';
+    const showEditedModal = searchParams.get('edited') === 'true';
 
     // パズルを取得
     useEffect(() => {
@@ -65,8 +68,11 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
-        {showModal && (
+        {showNewlyCreatedModal && (
             <MessageModal message="パズルを作成しました" param="newlyCreated" />
+        )}
+        {showEditedModal && (
+            <MessageModal message="パズルを編集しました" param="edited" />
         )}
         {user ? (
         <Box

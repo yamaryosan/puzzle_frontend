@@ -298,7 +298,7 @@ export default function Page({ params }: { params: PageParams }) {
         }
         const puzzle = await send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty);
         if (puzzle) {
-            router.push(`/puzzles/${puzzle.id}?Edited=true`);
+            router.push(`/puzzles/${puzzle.id}?edited=true`);
         }
     }
 

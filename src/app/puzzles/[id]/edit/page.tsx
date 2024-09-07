@@ -279,6 +279,28 @@ export default function Page({ params }: { params: PageParams }) {
         setApproachIds(approachIds);
     }
 
+    // 送信ボタン押下時の処理
+    const handleSendButton = async () => {
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = quillDescriptionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("問題文を入力してください");
+            return;
+        }
+        const solution = quillSolutionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (solution?.trim() === "") {
+            alert("正答を入力してください");
+            return;
+        }
+        const puzzle = await send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty);
+        if (puzzle) {
+            router.push(`/puzzles/${puzzle.id}?Edited=true`);
+        }
+    }
+
     return (
         <>
         {user ? (

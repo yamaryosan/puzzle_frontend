@@ -13,6 +13,7 @@ import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useRouter } from 'next/navigation';
 
 type Range = {
     index: number;
@@ -109,30 +110,30 @@ async function sendContent(
     console.log("定石の追加に成功");
 
     // ヒントを追加
-    for (let i = 0; i < hintQuills.length; i++) {
-        const hintQuill = hintQuills[i].current;
-        if (!hintQuill) {
-            continue;
-        }
-        const hintHtml = hintQuill.root.innerHTML;
-        const hintResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ hintHtml }),
-        });
-        if (!hintResponse.ok) {
-            const error = await hintResponse.json();
-            console.error("ヒントの追加に失敗: ", error);
-        }
-        console.log("ヒントの追加に成功");
+    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
+    if (!hintHtmls) {
+        console.error("ヒントの取得に失敗");
+        return puzzle;
     }
+    console.log(hintHtmls);
 
+    const hintsResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hintHtmls }),
+    });
+    if (!hintsResponse.ok) {
+        const error = await hintsResponse.json();
+        console.error("ヒントの更新に失敗: ", error);
+    }
+    console.log("ヒントの更新に成功");
     return puzzle;
 }
 
 export default function Page() {
+    const router = useRouter();
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [readOnly, setReadOnly] = useState(false);
@@ -171,6 +172,29 @@ export default function Page() {
     const handleCheckboxChange = (checkedCategories: number[]) => {
         setCheckedCategories(checkedCategories);
     };
+
+    // 送信ボタン押下時の処理
+    const handleSendButton = async () => {
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = quillDescriptionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("問題文を入力してください");
+            return;
+        }
+        const solution = quillSolutionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (solution?.trim() === "") {
+            alert("正答を入力してください");
+            return;
+        }
+
+        const puzzle = await sendContent(title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "");
+        if (puzzle) {
+            router.push(`/puzzles/${puzzle.id}?created=true`);
+        }
+    }
 
     return (
         <>
@@ -232,13 +256,7 @@ export default function Page() {
                 <h3>難易度</h3>
                 <DifficultEditor value={difficulty} onChange={setDifficulty} />
             </Box>
-
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                paddingY: '1rem',
-                marginY: '1rem' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: '1rem', marginY: '1rem' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',
@@ -248,10 +266,10 @@ export default function Page() {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => sendContent( title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "" )}>
+                onClick={() => handleSendButton()}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                    <Upload />
-                    <span>作成</span>
+                        <Upload />
+                        <span>作成</span>
                     </Box>
                 </Button>
             </Box>

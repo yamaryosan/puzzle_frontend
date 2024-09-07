@@ -57,13 +57,16 @@ export async function POST(req: NextRequest, {params}: {params: {id: string}}) {
         }
 
         // ヒントを追加
-        const { hintHtml } = await req.json();
-        await prisma.hint.create({
-            data: {
-                puzzle_id: id,
-                content: hintHtml,
-            },
-        });
+        const { hintHtmls } = await req.json();
+        for (const hintHtml of hintHtmls) {
+            await prisma.hint.create({
+                data: {
+                    puzzle_id: id,
+                    content: hintHtml,
+                },
+            });
+        };
+        
         return NextResponse.json({ message: "Success" });
     } catch (error) {
         if (error instanceof Error) {

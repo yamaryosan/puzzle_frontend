@@ -19,6 +19,7 @@ import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useRouter } from 'next/navigation';
 
 type PageParams = {
     id: string;
@@ -116,12 +117,13 @@ async function send(
     console.log("定石の更新に成功");
 
     // ヒントを更新
-    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML);
+    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
 
     if (!hintHtmls) {
         console.error("ヒントの取得に失敗");
         return puzzle;
     }
+    console.log(hintHtmls);
     const hintsResponse = await fetch(`/api/puzzles/${puzzleId}/hints`, {
         method: "PUT",
         headers: {
@@ -178,6 +180,7 @@ async function fetchInitialHints(id: string, userId: string): Promise<Hint[] | u
 }
 
 export default function Page({ params }: { params: PageParams }) {
+    const router = useRouter();
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
@@ -194,7 +197,6 @@ export default function Page({ params }: { params: PageParams }) {
     const maxHints = 3;
     const [hints, setHints] = useState<Hint[]>([]);
     const hintQuills = Array.from({length: maxHints}, () => useRef<Quill | null>(null));
-    // const [hintsDelta, setHintsDelta] = Array.from({length: maxHints}, () => useState<any>(null));
     const [hintsDelta, setHintsDelta] = useState(Array(maxHints).fill(null));
 
     // カテゴリー選択状態
@@ -259,6 +261,10 @@ export default function Page({ params }: { params: PageParams }) {
         setDifficulty(puzzle?.difficulty || 1);
     }, [puzzle, quillLoaded]);
 
+    if (!descriptionDelta || !solutionDelta) {
+        return <div>Loading...</div>
+    }
+
     // 削除確認ダイアログの開閉
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -274,20 +280,36 @@ export default function Page({ params }: { params: PageParams }) {
         setApproachIds(approachIds);
     }
 
+    // 送信ボタン押下時の処理
+    const handleSendButton = async () => {
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = quillDescriptionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("問題文を入力してください");
+            return;
+        }
+        const solution = quillSolutionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (solution?.trim() === "") {
+            alert("正答を入力してください");
+            return;
+        }
+        const puzzle = await send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty);
+        if (puzzle) {
+            router.push(`/puzzles/${puzzle.id}?edited=true`);
+        }
+    }
+
     return (
         <>
         {user ? (
-        <Box 
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            padding: '1rem',
-        }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
-                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+                    <DeleteModal target="puzzle" id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
                 </Portal>
             )}
             <h2>
@@ -344,13 +366,7 @@ export default function Page({ params }: { params: PageParams }) {
                 <DifficultEditor value={difficulty} onChange={setDifficulty} />
             </Box>
 
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingY: '1rem',
-                marginY: '1rem',
-            }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingY: '1rem', marginY: '1rem' }}>
                 <Button 
                 sx={{
                     padding: '1.5rem',
@@ -360,7 +376,7 @@ export default function Page({ params }: { params: PageParams }) {
                         backgroundColor: 'secondary.main',
                     }
                 }}
-                onClick={() => send(params.id || "0", title, categoryIds, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty)}>
+                onClick={handleSendButton}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
                         <Upload />
                         <span>編集完了</span>

@@ -15,6 +15,8 @@ import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useSearchParams } from 'next/navigation';
+import MessageModal from '@/lib/components/MessageModal';
 
 type PageParams = {
     id: string;
@@ -25,6 +27,11 @@ export default function Page({ params }: { params: PageParams }) {
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    // モーダルの表示
+    const searchParams = useSearchParams();
+    const showCreatedModal = searchParams.get('created') === 'true';
+    const showEditedModal = searchParams.get('edited') === 'true';
 
     // パズルを取得
     useEffect(() => {
@@ -59,9 +66,22 @@ export default function Page({ params }: { params: PageParams }) {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
+    if (!user) {
+        return (
+            <div>
+                <RecommendSignInDialog />
+            </div>
+        );
+    }
+
     return (
         <>
-        {user ? (
+        {showCreatedModal && (
+            <MessageModal message="パズルを作成しました" param="created" />
+        )}
+        {showEditedModal && (
+            <MessageModal message="パズルを編集しました" param="edited" />
+        )}
         <Box
         sx={{
             padding: "1rem",
@@ -162,15 +182,10 @@ export default function Page({ params }: { params: PageParams }) {
             <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
-                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+                    <DeleteModal target="puzzle" id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
                 </Portal>
             )}            
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     );
 }

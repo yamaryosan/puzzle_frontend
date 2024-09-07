@@ -10,6 +10,10 @@ import { Edit, Upload } from '@mui/icons-material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useRouter } from 'next/navigation';
+import { Delete, Clear } from '@mui/icons-material';
+import Portal from '@/lib/components/Portal';
+import DeleteModal from '@/lib/components/DeleteModal';
 
 type PageParams = {
     id: string;
@@ -26,11 +30,11 @@ type Change = {
 
 /**
  * 定石を更新
+ * @param title
  * @param id
- * @param title 
  * @param quill 
  */
-async function send(id: string, title: string, quill: React.RefObject<Quill | null>) {
+async function send(title: string, id: string, quill: React.RefObject<Quill | null>) {
     try {
         if (!title) {
             title = 'Untitled';
@@ -56,12 +60,15 @@ async function send(id: string, title: string, quill: React.RefObject<Quill | nu
             console.error('定石の更新に失敗: ', error);
         }
         console.log('定石を更新しました');
+        const approach = await response.json();
+        return approach as Approach;
     } catch (error) {
         console.error('定石の更新に失敗: ', error);
     }
 }
 
-export default function Home({ params }: { params: PageParams }) {
+export default function Page({ params }: { params: PageParams }) {
+    const router = useRouter();
     const [title, setTitle] = useState<string>('');
     const [approach, setApproach] = useState<Approach>();
     const [range, setRange] = useState<Range>();
@@ -71,6 +78,8 @@ export default function Home({ params }: { params: PageParams }) {
     const quill = useRef<Quill | null>(null);
 
     const { user, userId } = useAuth();
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // 編集前に以前の定石を取得
     useEffect(() => {
@@ -96,9 +105,45 @@ export default function Home({ params }: { params: PageParams }) {
         setTitle(approach?.title || '');
     }, [approach]);
 
+    // 送信ボタン押下時の処理
+    const handleSendButton = async () => {
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = quill.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("説明文を入力してください");
+            return;
+        }
+        const approach = await send(title, params.id, quill);
+        if (approach) {
+            router.push(`/approaches/${approach.id}?edited=true`);
+        }
+    }
+
+    // 削除確認ダイアログの開閉
+    const toggleDeleteModal = () => {
+        setIsDeleteModalOpen(!isDeleteModalOpen);
+    };
+    
+
+    if (!user) {
+        return <RecommendSignInDialog />;
+    }
+
+    if (!approach || !DeltaClass) {
+        return <div>読み込み中</div>;
+    }
+
     return (
         <>
-        {user ? (
+        <div id="delete_modal"></div>
+        {isDeleteModalOpen && (
+            <Portal element={document.getElementById("delete_modal")!}>
+                <DeleteModal target="approach" id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+            </Portal>
+        )}
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <Edit />
@@ -115,27 +160,40 @@ export default function Home({ params }: { params: PageParams }) {
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}/>
             </Box>
-            
-            <Button onClick={() => send(params.id || "0", title, quill)}
-                sx={{
-                    padding: '1.5rem',
-                    backgroundColor: 'secondary.light',
-                    width: '100%',
-                    ":hover": {
-                        backgroundColor: 'secondary.main',
-                    }
-                }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                        <Upload />
-                        <span>編集完了</span>
-                    </Box>                    
-                </Button>
         </Box>
-        ) : (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        )}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingY: '1rem', marginY: '1rem' }}>
+            <Button 
+            sx={{
+                padding: '1.5rem',
+                backgroundColor: 'secondary.light',
+                width: '20%',
+                ":hover": {
+                    backgroundColor: 'secondary.main',
+                }
+            }}
+            onClick={handleSendButton}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
+                    <Upload />
+                    <span>編集完了</span>
+                </Box>
+            </Button>
+            <Button
+            sx={{
+                padding: '1.5rem',
+                backgroundColor: 'error.light',
+                width: '20%',
+                ":hover": {
+                    backgroundColor: 'error.main',
+                },
+            }}
+            onClick={toggleDeleteModal}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.4", color: "black" }}>
+                    {isDeleteModalOpen ? <Clear /> : <Delete />}
+                </Box>
+            </Button>
+        </Box>
+
+
         </>
     );
 }

@@ -19,6 +19,8 @@ type CategoryInfoProps = {
  * @param categoryName カテゴリー名
  */
 async function updateCategoryName(categoryId: string, categoryName: string) {
+    // カテゴリー名が空の場合は更新しない
+    if (categoryName === "") return;
     console.log("カテゴリー名の更新: ", categoryName, categoryId);
     try {
         await updateCategory(categoryId, categoryName);
@@ -30,6 +32,7 @@ async function updateCategoryName(categoryId: string, categoryName: string) {
 export default function CategoryInfo({ category, isActive }: CategoryInfoProps) {
     const { userId } = useAuth();
     const [categoryName, setCategoryName] = useState<string>(category.name);
+    const [originalCategoryName, setOriginalCategoryName] = useState<string>(category.name);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
@@ -63,11 +66,32 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
         setIsEdit(true);
     }
 
+    // カテゴリー名検証
+    const validateCategoryName = (name: string) => {
+        if (name === "") {
+            alert("カテゴリー名は必須です");
+            return false;
+        }
+        return true;
+    }
+
+    // カテゴリー名更新
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCategoryName(e.target.value);
+    }
+
     // 編集結果確定ボタンクリック時のイベント
     const handleUpdateClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+        // カテゴリー名が空の場合は元のカテゴリー名に戻す
+        if (!validateCategoryName(categoryName)) {
+            setCategoryName(originalCategoryName);
+            return;
+        }
         setIsEdit(false);
         updateCategoryName(category.id.toString(), categoryName);
+        // 更新後のカテゴリー名を元のカテゴリー名に設定
+        setOriginalCategoryName(categoryName);
     }
 
     return (
@@ -76,22 +100,26 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
             <>
             {isEdit ? (
                 <>
-                <input type="text" value={categoryName} onClick={handleInputClick} onChange={(e) => setCategoryName(e.target.value)} />
-                <Button onClick={handleUpdateClick}>
-                    <Update />
-                </Button>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <input type="text" value={categoryName} onClick={handleInputClick} onChange={handleChange} />
+                    <Button onClick={handleUpdateClick}>
+                        <Update />
+                    </Button>
+                </Box>
                 </>
                 ) : (
                 <>
-                <h3 style={{display: "inline-block"}}>{category.name}</h3>
-                <Button onClick={handleEditClick}>
-                    <Edit />
-                </Button>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <h3 style={{display: "inline-block"}}>{categoryName}</h3>
+                    <Button onClick={handleEditClick}>
+                        <Edit />
+                    </Button>
+                </Box>
                 </>
                 )}
             </>
         ) : (
-            <h3 style={{display: "inline-block"}}>{category.name}</h3>
+            <h3 style={{display: "inline-block"}}>{categoryName}</h3>
         )}
         <Box sx={{
             maxHeight: isActive ? '1000px' : '0px',

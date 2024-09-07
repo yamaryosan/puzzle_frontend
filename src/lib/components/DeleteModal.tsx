@@ -2,18 +2,23 @@ import { deletePuzzle } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button } from "@mui/material";
+import { deleteApproach } from "@/lib/api/approachApi";
+
+type TargetType = "puzzle" | "approach";
 
 type DeleteModalProps = {
+    target: TargetType,
     id: string,
     onButtonClick: (isDelete: boolean) => void;
 };
 
 /**
  * 削除確認モーダル
- * @param id パズルID
+ * @param target 削除対象
+ * @param id 削除対象のID
  * @param onButtonClick ボタンがクリックされたときの処理
  */
-export default function DeleteModal({ id, onButtonClick }: DeleteModalProps) {
+export default function DeleteModal({ target, id, onButtonClick }: DeleteModalProps) {
     const router = useRouter();
 
     // エスケープキーが押されたらモーダルを閉じる
@@ -30,9 +35,15 @@ export default function DeleteModal({ id, onButtonClick }: DeleteModalProps) {
     }, []);
 
     const handleDelete = async () => {
-        await deletePuzzle(id);
-        onButtonClick(true);
-        router.push("/puzzles");
+        if (target === "puzzle") {
+            await deletePuzzle(id);
+            onButtonClick(true);
+            router.push("/puzzles?deleted=true");
+        } else if (target === "approach") {
+            await deleteApproach(id);
+            onButtonClick(true);
+            router.push("/approaches?deleted=true");
+        }
     };
 
     return (

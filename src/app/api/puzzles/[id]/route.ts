@@ -154,6 +154,11 @@ export async function DELETE(req: NextRequest, { params }: {params: {id: string}
             where: { puzzle_id: id },
         });
 
+        // ヒントテーブルのデータを削除
+        await prisma.hint.deleteMany({
+            where: { puzzle_id: id },
+        });
+
         // パズルを削除
         await prisma.puzzle.delete({
             where: { id: id },

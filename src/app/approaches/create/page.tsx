@@ -8,6 +8,8 @@ import { AddCircleOutline, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
 import useAuth from "@/lib/hooks/useAuth";
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useRouter } from "next/navigation";
+import { Approach } from "@prisma/client";
 
 type Range = {
     index: number;
@@ -52,12 +54,15 @@ async function send(title: string, userId: string, quill: React.RefObject<Quill 
             console.error('定石の作成に失敗: ', error);
         }
         console.log('定石を作成しました');
+        const approach = await response.json();
+        return approach as Approach;
     } catch (error) {
         console.error('定石の作成に失敗: ', error);
     }
 }
 
 export default function Page() {
+    const router = useRouter();
     const { user, userId } = useAuth();
     const [title, setTitle] = useState<string>('');
     const [range, setRange] = useState<Range>();
@@ -76,6 +81,23 @@ export default function Page() {
 
     if (!DeltaClass) {
         return <div>Loading...</div>
+    }
+
+    // 送信ボタン押下時の処理
+    const handleSendButton = async () => {
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = quill.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("説明文を入力してください");
+            return;
+        }
+        const approach = await send(title, userId ?? '', quill);
+        if (approach) {
+            router.push(`/approaches/${approach.id}?created=true`);
+        }
     }
 
     return (
@@ -98,7 +120,7 @@ export default function Page() {
                 onTextChange={setLastChange}/>
             </Box>
 
-            <Button onClick={() => send(title, userId ?? '', quill)}
+            <Button onClick={handleSendButton}
                 sx={{
                     padding: '1.5rem',
                     backgroundColor: 'secondary.light',

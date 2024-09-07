@@ -260,6 +260,10 @@ export default function Page({ params }: { params: PageParams }) {
         setDifficulty(puzzle?.difficulty || 1);
     }, [puzzle, quillLoaded]);
 
+    if (!descriptionDelta || !solutionDelta) {
+        return <div>Loading...</div>
+    }
+
     // 削除確認ダイアログの開閉
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);

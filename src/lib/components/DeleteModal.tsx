@@ -2,6 +2,7 @@ import { deletePuzzle } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button } from "@mui/material";
+import { deleteApproach } from "@/lib/api/approachApi";
 
 type TargetType = "puzzle" | "approach";
 
@@ -36,11 +37,13 @@ export default function DeleteModal({ target, id, onButtonClick }: DeleteModalPr
     const handleDelete = async () => {
         if (target === "puzzle") {
             await deletePuzzle(id);
+            onButtonClick(true);
+            router.push("/puzzles?deleted=true");
         } else if (target === "approach") {
-            // await deleteApproach(id);
+            await deleteApproach(id);
+            onButtonClick(true);
+            router.push("/approaches?deleted=true");
         }
-        onButtonClick(true);
-        router.push(`/${target}s?deleted=true`);
     };
 
     return (

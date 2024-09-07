@@ -72,3 +72,29 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         }
     }
 }
+
+/**
+ * 定石を削除
+ * @param req リクエスト
+ */
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const id = parseInt(params.id);
+        if (isNaN(id) || id <= 0) {
+            return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+        }
+        // 定石を削除
+        await prisma.approach.delete({
+            where: {
+                id: id,
+            },
+        });
+        return NextResponse.json({ message: "Approach deleted" });
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+        }
+    }
+}

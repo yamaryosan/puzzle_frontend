@@ -101,3 +101,22 @@ export async function getApproachesByPuzzleId(id: string) {
         console.error("定石の取得に失敗: ", error);
     }
 }
+
+/**
+ * 定石を削除する
+ * @param id 定石ID
+ */
+export async function deleteApproach(id: string) {
+    try {
+        const response = await fetch(`/api/approaches/${id}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            console.error("定石の削除に失敗: ", error);
+        }
+        console.log("定石を削除しました");
+    } catch (error) {
+        console.error("定石の削除に失敗: ", error);
+    }
+}

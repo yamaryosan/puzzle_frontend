@@ -9,6 +9,8 @@ import { Sort, Shuffle, AddCircleOutline } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import { useSearchParams } from 'next/navigation';
+import MessageModal from '@/lib/components/MessageModal';
 
 export default function Page() {
     const { user, userId } = useAuth();
@@ -17,6 +19,10 @@ export default function Page() {
     
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
+
+    // メッセージモーダルの表示
+    const searchParams = useSearchParams();
+    const showDeletedModal = searchParams.get('deleted') === 'true';
 
     // パズル一覧を取得
     useEffect(() => {
@@ -63,10 +69,6 @@ export default function Page() {
         });
     };
 
-    if (!puzzles) {
-    return <div>loading...</div>;
-    }
-
     // カードのクリックイベント
     const handleCardClick = (id: number) => {
         setActiveCardId(id === activeCardId ? null : id);
@@ -74,6 +76,9 @@ export default function Page() {
     
     return (
         <>
+        {showDeletedModal && (
+            <MessageModal message="パズルを削除しました" param="deleted" />
+        )}
         { user ? (
         <div>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

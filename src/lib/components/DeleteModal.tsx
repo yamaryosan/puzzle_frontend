@@ -32,7 +32,7 @@ export default function DeleteModal({ id, onButtonClick }: DeleteModalProps) {
     const handleDelete = async () => {
         await deletePuzzle(id);
         onButtonClick(true);
-        router.push("/puzzles");
+        router.push("/puzzles?deleted=true");
     };
 
     return (

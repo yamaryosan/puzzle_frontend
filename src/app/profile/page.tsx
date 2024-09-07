@@ -57,13 +57,8 @@ export default function Page() {
     }
 
     return (
-        <Box
-        sx={{
-            padding: "1rem",
-            backgroundColor: "white",
-            borderRadius: "5px",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-        }}>
+        <>
+        <Box sx={{ padding: "1rem", backgroundColor: "white", borderRadius: "5px", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)" }}>
             <h2>
                 <AccountBoxOutlined />
                 プロフィール
@@ -72,5 +67,6 @@ export default function Page() {
                 <GoogleAuthProfileCard user={user} />
             </Box>
         </Box>
+        </>
     );
 }

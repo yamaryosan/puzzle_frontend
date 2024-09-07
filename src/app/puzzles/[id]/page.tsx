@@ -66,6 +66,14 @@ export default function Page({ params }: { params: PageParams }) {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
+    if (!user) {
+        return (
+            <div>
+                <RecommendSignInDialog />
+            </div>
+        );
+    }
+
     return (
         <>
         {showCreatedModal && (
@@ -74,7 +82,6 @@ export default function Page({ params }: { params: PageParams }) {
         {showEditedModal && (
             <MessageModal message="パズルを編集しました" param="edited" />
         )}
-        {user ? (
         <Box
         sx={{
             padding: "1rem",
@@ -175,15 +182,10 @@ export default function Page({ params }: { params: PageParams }) {
             <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
-                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+                    <DeleteModal target="puzzle" id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
                 </Portal>
             )}            
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     );
 }

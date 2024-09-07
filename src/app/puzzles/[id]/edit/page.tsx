@@ -309,7 +309,7 @@ export default function Page({ params }: { params: PageParams }) {
             <div id="delete_modal"></div>
             {isDeleteModalOpen && (
                 <Portal element={document.getElementById("delete_modal")!}>
-                    <DeleteModal id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
+                    <DeleteModal target="puzzle" id={params.id ?? 0} onButtonClick={toggleDeleteModal} />
                 </Portal>
             )}
             <h2>

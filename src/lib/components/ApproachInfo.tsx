@@ -49,6 +49,7 @@ export default function ApproachCard({ approach, isActive }: ApproachInfoProps) 
             transition: 'max-height 0.5s ease-in-out',
         }}>
             {/* 定石に紐づくパズル一覧を表示 */}
+            {puzzles.length === 0 && <p>この定石に紐づくパズルはありません</p>}
             {puzzles.map((puzzle) => (
                 <Link key={puzzle.id} href={`/puzzles/${puzzle.id}`}>
                     <Button

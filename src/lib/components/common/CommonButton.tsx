@@ -1,11 +1,11 @@
-import { Button } from "@mui/material";
+import { Button, Box } from "@mui/material";
 
 type color = "primary" | "secondary" | "error";
 
 type CommonButtonProps = {
     children: React.ReactNode;
     color: color;
-    onClick: () => void;
+    onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     disabled?: boolean;
 };
 
@@ -25,7 +25,9 @@ export default function CommonButton({ children, color, onClick, disabled }: Com
         }}
         onClick={onClick}
         disabled={disabled}>
-            {children}
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: "center", gap: '0.5rem', scale: "1.8", color: "black" }}>
+                {children}
+            </Box>
         </Button>
     );
 }

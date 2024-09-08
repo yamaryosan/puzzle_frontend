@@ -8,7 +8,7 @@ import { getAuth, User } from 'firebase/auth';
 import firebaseApp from '@/app/firebase';
 import { Box, Button } from '@mui/material';
 import UserDeleteModal from '@/lib/components/UserDeleteModal';
-import CommonButton from '@/lib/components/CommonButton';
+import CommonButton from '@/lib/components/common/CommonButton';
 
 export default function Page() {
     const [user, setUser] = useState<User | null>(null);

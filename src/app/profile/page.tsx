@@ -67,10 +67,8 @@ export default function Page() {
         </Box>
         <Box sx={{ marginTop: "10rem", width: "100%" }}>
             <CommonButton color="error" onClick={handleDeleteButton} disabled={isDeleteButtonDisabled}>
-                <Box sx={{ scale: "1.8", color: "black", display: "flex", gap: "0.5rem" }}>
-                    <AccountBoxOutlined />
-                    退会する
-                </Box>
+                <AccountBoxOutlined />
+                退会する
             </CommonButton>
         </Box>
         </>

@@ -3,16 +3,44 @@
 import Link from 'next/link';
 import { AccountBoxOutlined } from '@mui/icons-material';
 import GoogleAuthProfileCard from '@/lib/components/GoogleAuthProfileCard';
+import EmailAuthProfileCard from '@/lib/components/EmailAuthProfileCard';
 import { useState, useEffect } from 'react';
 import { getAuth, User } from 'firebase/auth';
 import firebaseApp from '@/app/firebase';
 import { Box, Button } from '@mui/material';
 import UserDeleteModal from '@/lib/components/UserDeleteModal';
 import CommonButton from '@/lib/components/common/CommonButton';
+import CommonPaper from '@/lib/components/common/CommonPaper';
+
+type provider = 'email' | 'google';
+
+/**
+ * 認証方法を判定(メールアドレスかGoogleアカウントか)
+ * @param user ユーザー
+ * @returns 認証方法
+ */
+function checkAuthProvider(user: User): provider {
+    if (!user) {
+        throw new Error('ユーザーが見つかりません');
+    }
+    if (user.providerData.length === 0) {
+        throw new Error('認証方法が見つかりません');
+    }
+    const provider = user.providerData[0].providerId;
+    switch (provider) {
+        case 'password':
+            return 'email';
+        case 'google.com':
+            return 'google';
+        default:
+            throw new Error('未対応の認証方法です');
+    }
+}
 
 export default function Page() {
     const [user, setUser] = useState<User | null>(null);
-
+    // 認証方法
+    const [authProvider, setAuthProvider] = useState<provider | null>(null);
     // 退会ボタンのクリック可能状態
     const [isDeleteButtonDisabled, setIsDeleteButtonDisabled] = useState(true);
     // 退会モーダルの表示状態
@@ -22,6 +50,13 @@ export default function Page() {
         const auth = getAuth(firebaseApp);
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
             setUser(currentUser);
+            if (currentUser) {
+                try {
+                    setAuthProvider(checkAuthProvider(currentUser));
+                } catch (error) {
+                    console.error(error);
+                }
+            }
         });
         return () => unsubscribe();
     }, [user]);
@@ -56,15 +91,20 @@ export default function Page() {
     return (
         <>
         {isDeleteModalOpen && <UserDeleteModal onButtonClick={setIsDeleteModalOpen} />}
-        <Box sx={{ padding: "1rem", backgroundColor: "white", borderRadius: "5px", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)" }}>
+        <CommonPaper>
             <h2>
                 <AccountBoxOutlined />
                 プロフィール
             </h2>
             <Box sx={{ marginTop: "1rem" }}>
-                <GoogleAuthProfileCard user={user} />
+                {authProvider === 'email' && (
+                    <EmailAuthProfileCard user={user} />
+                )}
+                {authProvider === 'google' && (
+                    <GoogleAuthProfileCard user={user} />
+                )}
             </Box>
-        </Box>
+        </CommonPaper>
         <Box sx={{ marginTop: "10rem", width: "100%" }}>
             <CommonButton color="error" onClick={handleDeleteButton} disabled={isDeleteButtonDisabled}>
                 <AccountBoxOutlined />

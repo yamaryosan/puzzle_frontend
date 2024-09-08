@@ -6,12 +6,13 @@ type Props = {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     elementId?: string;
+    name? : string;
     elementType?: elementTypes;
     placeholder?: string;
     disabled?: boolean;
 };
 
-export default function CommonInputText({ value, onChange, elementId, elementType, placeholder, disabled }: Props) {
+export default function CommonInputText({ value, onChange, elementId, name, elementType, placeholder, disabled }: Props) {
     return (
         <Box
         sx={{
@@ -27,7 +28,7 @@ export default function CommonInputText({ value, onChange, elementId, elementTyp
             },
         }}
         >
-            <input type={elementType} id={elementId} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled}/>
+            <input type={elementType} id={elementId} name={name} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled}/>
         </Box>
     )
 }

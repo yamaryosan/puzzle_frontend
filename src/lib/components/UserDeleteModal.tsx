@@ -42,16 +42,14 @@ const handleDeleteAccount = async (user: User) => {
 };
 
 type DeleteModalProps = {
-    id: string,
     onButtonClick: (isDelete: boolean) => void;
 };
 
 /**
  * 退会確認モーダル
- * @param id 削除対象のID
  * @param onButtonClick ボタンがクリックされたときの処理
  */
-export default function UserDeleteModal({ id, onButtonClick }: DeleteModalProps) {
+export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
     const router = useRouter();
 
     // 退会確認ステップ

@@ -55,7 +55,7 @@ export default function Page() {
 
     return (
         <>
-        {isDeleteModalOpen && <UserDeleteModal id={user.uid} onButtonClick={setIsDeleteModalOpen} />}
+        {isDeleteModalOpen && <UserDeleteModal onButtonClick={setIsDeleteModalOpen} />}
         <Box sx={{ padding: "1rem", backgroundColor: "white", borderRadius: "5px", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)" }}>
             <h2>
                 <AccountBoxOutlined />

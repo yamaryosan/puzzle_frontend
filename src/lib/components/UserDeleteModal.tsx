@@ -4,6 +4,7 @@ import { Box, Button } from "@mui/material";
 import { GoogleAuthProvider, User } from 'firebase/auth';
 import { reauthenticateWithPopup } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
+import { useState } from "react";
 
 /**
  * 認証方法を判定
@@ -53,11 +54,17 @@ type DeleteModalProps = {
 export default function UserDeleteModal({ id, onButtonClick }: DeleteModalProps) {
     const router = useRouter();
 
+    // 退会確認ステップ
+    const [deletionConfirmStep, setDeletionConfirmStep] = useState(0);
+    // 最終段階削除ボタンのクリック可能状態
+    const [isDeleteButtonDisabled, setIsDeleteButtonDisabled] = useState(true);
+
     // エスケープキーが押されたらモーダルを閉じる
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 onButtonClick(false);
+                setDeletionConfirmStep(0);
             }
         };
         window.addEventListener("keydown", handleKeyDown);
@@ -66,7 +73,28 @@ export default function UserDeleteModal({ id, onButtonClick }: DeleteModalProps)
         };
     }, []);
 
+    // 5秒後に退会ボタンを有効化
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsDeleteButtonDisabled(false);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // 退会処理(1段階目)
     const handleDelete = async () => {
+        if (deletionConfirmStep === 0) {
+            setDeletionConfirmStep(1);
+            return;
+        }
+        if (deletionConfirmStep === 1) {
+            await deleteUser();
+            return;
+        }
+    };
+
+    // 退会処理(最終段階)
+    const deleteUser = async () => {
         const auth = getAuth();
         const user = auth.currentUser;
         if (!user) {
@@ -107,30 +135,69 @@ export default function UserDeleteModal({ id, onButtonClick }: DeleteModalProps)
                 textAlign: "center",
             }}
             >
-                <Box sx={{ marginBottom: "1rem" }}>
-                    <p>本当に退会しますか？</p>
-                </Box>
-                <Box sx={{scale: "1.5"}}>
-                    <Button
-                    sx={{
-                        marginRight: "1rem",
-                        backgroundColor: "success.light",
-                        color: "white",
-                        ":hover": {
-                            backgroundColor: "success.dark",
-                        },
-                    }}
-                    onClick={() => onButtonClick(false)}>いいえ</Button>
-                    <Button
-                    sx={{
-                        backgroundColor: "error.light",
-                        color: "white",
-                        ":hover": {
-                            backgroundColor: "error.dark",
-                        },
-                    }}
-                    onClick={() => handleDelete()}>はい</Button>
-                </Box>
+                {deletionConfirmStep === 0 && (
+                    <>
+                    <Box sx={{ marginBottom: "1rem" }}>
+                        <p>退会しますか？</p>
+                    </Box>
+                    <Box sx={{scale: "1.5"}}>
+                        <Button
+                        sx={{
+                            marginRight: "1rem",
+                            backgroundColor: "success.light",
+                            color: "white",
+                            ":hover": {
+                                backgroundColor: "success.dark",
+                            },
+                        }}
+                        onClick={() => onButtonClick(false)}>いいえ</Button>
+                        <Button
+                        sx={{
+                            backgroundColor: "error.light",
+                            color: "white",
+                            ":hover": {
+                                backgroundColor: "error.main",
+                            },
+                        }}
+                        onClick={() => handleDelete()}>はい</Button>
+                    </Box>
+                    </>
+                )}
+
+                {deletionConfirmStep === 1 && (
+                    <>
+                    <Box sx={{ marginBottom: "1rem" }}>
+                        <p>本当に退会しますか？(この操作は取り消せません)</p>
+                    </Box>
+                    <Box sx={{scale: "1.5"}}>
+                        <Button
+                        sx={{
+                            marginRight: "1rem",
+                            backgroundColor: "success.light",
+                            color: "white",
+                            ":hover": {
+                                backgroundColor: "success.dark",
+                            },
+                        }}
+                        onClick={() => onButtonClick(false)}>いいえ</Button>
+                        <Button
+                        sx={{
+                            backgroundColor: "error.light",
+                            color: "white",
+                            ":hover": {
+                                backgroundColor: "error.main",
+                            },
+                            ":disabled": {
+                                backgroundColor: "error.dark",
+                            }
+                        }}
+                        onClick={() => handleDelete()}
+                        disabled={isDeleteButtonDisabled}>はい</Button>
+                    </Box>
+                    </>
+                )}                
+
+
             </Box>
         </Box>
         </>

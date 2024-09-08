@@ -20,9 +20,21 @@ async function signIn(auth: Auth, email: string, password: string) {
     try {
         await signInWithEmailAndPassword(auth, email, password);
         console.log('ログインに成功しました');
-    } catch (error) {
-        console.error(error);
-        throw new Error('ログインに失敗しました');
+    } catch (error: unknown) {
+        if (error instanceof FirebaseError) {
+            // メールアドレスが未入力や形式が正しくない場合
+            if (error.code === 'auth/invalid-email') {
+                throw new Error('メールアドレスを正しく入力してください');
+            }
+            // パスワードが未入力の場合
+            if (error.code === 'auth/missing-password') {
+                throw new Error('パスワードを入力してください');
+            }
+            // メールアドレスが未登録の場合
+            if (error.code === 'auth/user-not-found') {
+                throw new Error('メールアドレスかパスワードが間違っています');
+            }
+        }
     }
 }
 

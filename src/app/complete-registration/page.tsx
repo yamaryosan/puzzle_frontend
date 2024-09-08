@@ -9,7 +9,9 @@ import CommonPaper from "@/lib/components/common/CommonPaper";
 import CommonInputText from "@/lib/components/common/CommonInputText";
 import CommonButton from "@/lib/components/common/CommonButton";
 import { Box } from "@mui/material";
-import { HowToRegOutlined } from "@mui/icons-material";
+import { HowToRegOutlined, ErrorOutline } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import { FirebaseError } from "firebase/app";
 
 /**
  * メールアドレスリンクからの登録完了ページ
@@ -20,7 +22,9 @@ export default function Page() {
     const [email, setEmail] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
+    const [error, setError] = useState<string>("");
+
+    const router = useRouter();
 
     // メールアドレスをローカルストレージから取得
     useEffect(() => {
@@ -53,14 +57,19 @@ export default function Page() {
                 await createUserInPrisma(firebaseUser);
 
                 window.localStorage.removeItem("emailForSignIn");
-                setMessage("登録が完了しました");
+                router.push("/?created=true");
             } catch (error) {
-                console.error(error);
+                if (error instanceof FirebaseError) {
+                    if (error.code === "auth/invalid-action-code") {
+                        setError("メールアドレスが無効です");
+                    }
+                }
             }
         }
     }
 
     return (
+        <>
         <CommonPaper>
             <Box component="form">
                 <p>{email}でユーザ登録します</p>
@@ -83,8 +92,13 @@ export default function Page() {
                         登録完了
                     </CommonButton>
                 </Box>
-                {message && <p>{message}</p>}
             </Box>
+            {error && 
+            <Box component="span" sx={{ color: "error.main", display: "flex", gap: "0.5rem" }}>
+                <ErrorOutline />
+                {error}
+            </Box>}
         </CommonPaper>
+        </>
     );
 };

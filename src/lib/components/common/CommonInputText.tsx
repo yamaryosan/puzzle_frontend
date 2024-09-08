@@ -1,12 +1,16 @@
 import { Box } from "@mui/material";
 
+type elementTypes = "text" | "password" | "email";
+
 type Props = {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    elementId?: string;
+    elementType?: elementTypes;
     placeholder?: string;
 };
 
-export default function CommonInputText({ value, onChange, placeholder }: Props) {
+export default function CommonInputText({ value, onChange, elementId, elementType, placeholder }: Props) {
     return (
         <Box
         sx={{
@@ -19,7 +23,7 @@ export default function CommonInputText({ value, onChange, placeholder }: Props)
             },
         }}
         >
-            <input type="text" placeholder={placeholder} value={value} onChange={onChange} required/>
+            <input type={elementType} id={elementId} placeholder={placeholder} value={value} onChange={onChange} required/>
         </Box>
     )
 }

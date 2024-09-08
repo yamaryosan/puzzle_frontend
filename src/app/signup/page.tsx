@@ -6,6 +6,10 @@ import firebaseApp from "@/app/firebase";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { createUserInPrisma } from "@/lib/api/userapi";
+import CommonInputText from '@/lib/components/common/CommonInputText';
+import CommonButton from "@/lib/components/common/CommonButton";
+import { Box } from "@mui/material";
+import { EmailOutlined, LoginOutlined } from "@mui/icons-material";
 
 type actionCodeSettings = {
     url: string;
@@ -81,15 +85,26 @@ export default function App() {
     return (
         <div>
             <form>
-                <h1>新規ユーザ登録</h1>
+                <h2>ユーザ登録</h2>
                 {isMailSent ? (
                     <p>メールを送信しました。リンクをクリックして登録を完了してください</p>
                 ) : (
                     <p>メールアドレスを入力してください</p>
                 )}
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <button type="submit" onClick={handleSubmit}>登録</button>
-                <hr />
+                <CommonInputText value={email} onChange={(e) => setEmail(e.target.value)} placeholder="メールアドレス" />
+
+                <Box sx={{ paddingY: '0.5rem' }}>
+                    <CommonButton color="primary" onClick={handleSubmit} disabled={isLoading}>
+                        <EmailOutlined />
+                        登録リンクを送信
+                    </CommonButton>
+                </Box>
+                <Box sx={{ paddingY: '0.5rem' }}>
+                    <CommonButton color="secondary" onClick={() => router.push("/signin")} disabled={isLoading}>
+                        <LoginOutlined />
+                        ログイン画面へ
+                    </CommonButton>
+                </Box>
                 <button onClick={handleGoogleSignUp} disabled={isLoading}>
                     {isLoading ? "処理中..." : "Googleアカウントで登録"}
                 </button>

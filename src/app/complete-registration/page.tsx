@@ -5,8 +5,17 @@ import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase";
 import { isSignInWithEmailLink, signInWithEmailLink, updatePassword, updateProfile } from "firebase/auth";
 import { createUserInPrisma } from "@/lib/api/userapi";
+import CommonPaper from "@/lib/components/common/CommonPaper";
+import CommonInputText from "@/lib/components/common/CommonInputText";
+import CommonButton from "@/lib/components/common/CommonButton";
+import { Box } from "@mui/material";
+import { HowToRegOutlined } from "@mui/icons-material";
 
-export default function App() {
+/**
+ * メールアドレスリンクからの登録完了ページ
+ * @returns 
+ */
+export default function Page() {
     const auth = getAuth(firebaseApp);
     const [email, setEmail] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
@@ -52,30 +61,30 @@ export default function App() {
     }
 
     return (
-        <form>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="メールアドレス"
-                required
-            />
-            <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="ユーザー名"
-                required
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="パスワード"
-                required
-            />
-            <button type="submit" onClick={handleSubmit}>登録を完了する</button>
-            {message && <p>{message}</p>}
-        </form>
+        <CommonPaper>
+            <Box component="form">
+                <p>{email}でユーザ登録します</p>
+                <Box sx={{ marginTop: "1rem" }}>
+                    <CommonInputText
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="ユーザ名"/>
+                </Box>
+                <Box sx={{ marginTop: "0.5rem" }}>
+                    <CommonInputText
+                        elementType="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="パスワード"/>
+                </Box>
+                <Box sx={{ marginTop: "1rem" }}>
+                    <CommonButton onClick={handleSubmit} color="primary">
+                        <HowToRegOutlined />
+                        登録完了
+                    </CommonButton>
+                </Box>
+                {message && <p>{message}</p>}
+            </Box>
+        </CommonPaper>
     );
 };

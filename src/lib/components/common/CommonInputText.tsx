@@ -8,9 +8,10 @@ type Props = {
     elementId?: string;
     elementType?: elementTypes;
     placeholder?: string;
+    disabled?: boolean;
 };
 
-export default function CommonInputText({ value, onChange, elementId, elementType, placeholder }: Props) {
+export default function CommonInputText({ value, onChange, elementId, elementType, placeholder, disabled }: Props) {
     return (
         <Box
         sx={{
@@ -20,10 +21,13 @@ export default function CommonInputText({ value, onChange, elementId, elementTyp
                 fontSize: '1rem',
                 border: '1px solid #ccc',
                 borderRadius: '0.25rem',
+                ":disabled": {
+                    backgroundColor: '#f0f0f0',
+                },
             },
         }}
         >
-            <input type={elementType} id={elementId} placeholder={placeholder} value={value} onChange={onChange} required/>
+            <input type={elementType} id={elementId} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled}/>
         </Box>
     )
 }

@@ -1,10 +1,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button } from "@mui/material";
-import { GoogleAuthProvider, User } from 'firebase/auth';
-import { reauthenticateWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, User, EmailAuthProvider, sendEmailVerification } from 'firebase/auth';
+import { reauthenticateWithPopup, reauthenticateWithCredential } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
 import { useState } from "react";
+
+const isEmulator = process.env.NODE_ENV === 'development';
 
 /**
  * 認証方法を判定
@@ -29,15 +31,34 @@ function checkAuthProvider(user: User) {
     }
 }
 
-// 退会処理
-const handleDeleteAccount = async (user: User) => {
+/** ユーザーアカウントを削除
+ * @param user ユーザー
+ */
+const deleteAccount = async (user: User) => {
+    // Firebase Authからユーザーを削除
     const provider = checkAuthProvider(user);
     if (provider === 'email') {
-        await user.delete();
+        if (!user.email) {
+            throw new Error('メールアドレスが見つかりません');
+        }
+        // const credential = EmailAuthProvider.credential(user.email, 'password');
+        // await reauthenticateWithCredential(user, credential);
+        // ローカル環境の場合はユーザーを削除、本番環境の場合はメールアドレス認証を送信
+        if (isEmulator) {
+            await user.delete();
+        } else {
+            const actionCodeSettings = {
+                url: "http://localhost:3000/reauthenticate-for-delete",
+                handleCodeInApp: true,
+            }
+            await sendEmailVerification(user, actionCodeSettings);
+        }
     } else if (provider === 'google') {
         const googleProvider = new GoogleAuthProvider();
         await reauthenticateWithPopup(user, googleProvider);
         await user.delete();
+    } else {
+        throw new Error('未対応の認証方法です');
     }
 };
 
@@ -100,7 +121,7 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
             return;
         }
         try {
-            await handleDeleteAccount(user);
+            await deleteAccount(user);
             router.push('/signin?deleted=true');
         } catch (error) {
             console.error('退会処理に失敗: ', error);

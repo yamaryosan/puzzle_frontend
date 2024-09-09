@@ -99,7 +99,7 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsDeleteButtonDisabled(false);
-        }, 2000);
+        }, 5000);
         return () => clearTimeout(timer);
     }, []);
 

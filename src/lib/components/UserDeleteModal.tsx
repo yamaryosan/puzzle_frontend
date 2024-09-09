@@ -1,10 +1,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button } from "@mui/material";
-import { GoogleAuthProvider, User, EmailAuthProvider, sendEmailVerification } from 'firebase/auth';
-import { reauthenticateWithPopup, reauthenticateWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, User, sendEmailVerification } from 'firebase/auth';
+import { reauthenticateWithPopup } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
 import { useState } from "react";
+import { deleteUserInPrisma } from "@/lib/api/userapi";
 
 const isEmulator = process.env.NODE_ENV === 'development';
 
@@ -46,6 +47,7 @@ const deleteAccount = async (user: User) => {
         // ローカル環境の場合はユーザーを削除、本番環境の場合はメールアドレス認証を送信
         if (isEmulator) {
             await user.delete();
+            await deleteUserInPrisma(user.uid);
         } else {
             const actionCodeSettings = {
                 url: "http://localhost:3000/reauthenticate-for-delete",
@@ -57,6 +59,7 @@ const deleteAccount = async (user: User) => {
         const googleProvider = new GoogleAuthProvider();
         await reauthenticateWithPopup(user, googleProvider);
         await user.delete();
+        await deleteUserInPrisma(user.uid);
     } else {
         throw new Error('未対応の認証方法です');
     }
@@ -96,7 +99,7 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsDeleteButtonDisabled(false);
-        }, 5000);
+        }, 2000);
         return () => clearTimeout(timer);
     }, []);
 

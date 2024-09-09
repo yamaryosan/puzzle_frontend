@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase";
 import { isSignInWithEmailLink, signInWithEmailLink, updatePassword, updateProfile } from "firebase/auth";
-import { createUserInPrisma } from "@/lib/api/userapi";
+import { createUserInPrisma, checkPasswordStrength } from "@/lib/api/userapi";
 import CommonPaper from "@/lib/components/common/CommonPaper";
 import CommonInputText from "@/lib/components/common/CommonInputText";
 import CommonButton from "@/lib/components/common/CommonButton";
@@ -12,6 +12,7 @@ import { Box } from "@mui/material";
 import { HowToRegOutlined, ErrorOutline } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { FirebaseError } from "firebase/app";
+
 
 /**
  * メールアドレスリンクからの登録完了ページ
@@ -22,7 +23,10 @@ export default function Page() {
     const [email, setEmail] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [error, setError] = useState<string>("");
+    const [generalError, setGeneralError] = useState<string>("");
+
+    const [passwordError, setPasswordError] = useState<string>("");
+    const [isVerified, setIsVerified] = useState<boolean>(false);
 
     const router = useRouter();
 
@@ -34,9 +38,32 @@ export default function Page() {
         }
     }, []);
 
+    // パスワードのバリデーション
+    const validatePassword = async () => {
+        const { message, isVerified } = await checkPasswordStrength(password);
+        setPasswordError(message);
+        setIsVerified(isVerified);
+    };
+    
+    useEffect(() => {
+        validatePassword();
+    }, [password]);
+
     // フォームを送信
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
+        if (!isVerified) {
+            setGeneralError("パスワードに誤りがあります");
+            return;
+        }
+        if (displayName.trim() === "") {
+            setGeneralError("ユーザ名を入力してください");
+            return;
+        }
+        if (!email) {
+            setGeneralError("メールアドレスが取得できませんでした");
+            return;
+        }
         // メールリンクからのログインか確認
         if (isSignInWithEmailLink(auth, window.location.href)) {
             try {
@@ -61,7 +88,7 @@ export default function Page() {
             } catch (error) {
                 if (error instanceof FirebaseError) {
                     if (error.code === "auth/invalid-action-code") {
-                        setError("メールアドレスが無効です");
+                        setGeneralError("メールアドレスが無効です");
                     }
                 }
             }
@@ -86,6 +113,7 @@ export default function Page() {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="パスワード"/>
                 </Box>
+                {passwordError && <Box sx={{ color: "error.main" }}>{passwordError}</Box>}
                 <Box sx={{ marginTop: "1rem" }}>
                     <CommonButton onClick={handleSubmit} color="primary">
                         <HowToRegOutlined />
@@ -93,10 +121,10 @@ export default function Page() {
                     </CommonButton>
                 </Box>
             </Box>
-            {error && 
+            {generalError && 
             <Box component="span" sx={{ color: "error.main", display: "flex", gap: "0.5rem" }}>
                 <ErrorOutline />
-                {error}
+                {generalError}
             </Box>}
         </CommonPaper>
         </>

@@ -1,10 +1,9 @@
-import { getAuth, User, Auth, reauthenticateWithCredential, AuthCredential, EmailAuthProvider } from 'firebase/auth';
+import { getAuth, User, reauthenticateWithCredential, AuthCredential, EmailAuthProvider } from 'firebase/auth';
 import firebaseApp from '@/app/firebase';
 import { useState, useEffect, useCallback } from 'react';
 import { updateProfile, updateEmail, updatePassword, verifyBeforeUpdateEmail } from 'firebase/auth';
-import { updateUserInPrisma } from '@/lib/api/userapi';
-import { Box, Button } from '@mui/material';
-import { Edit } from '@mui/icons-material';
+import { updateUserInPrisma, checkPasswordStrength } from '@/lib/api/userapi';
+import { Box } from '@mui/material';
 import { Email, BadgeOutlined, PasswordOutlined } from '@mui/icons-material';
 import CommonInputText from '@/lib/components/common/CommonInputText';
 import CommonButton from '@/lib/components/common/CommonButton';
@@ -46,7 +45,20 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
         confirmPassword: ""
     });
     const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [generalError, setGeneralError] = useState<string | null>(null);
+
+    const [passwordError, setPasswordError] = useState<string>("");
+    const [isVerified, setIsVerified] = useState<boolean>(false);
+
+    // パスワードのバリデーション
+    const validatePassword = async () => {
+        const { message, isVerified } = await checkPasswordStrength(form.newPassword);
+        setPasswordError(message);
+        setIsVerified(isVerified);
+    };
+    useEffect(() => {
+        validatePassword();
+    }, [form.newPassword]);
 
     // ユーザー情報の取得
     useEffect(() => {
@@ -78,7 +90,23 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
         setMessage(null);
 
         if (!user || !user.email) {
-            setError('ユーザーが見つかりません');
+            setGeneralError('ユーザーが見つかりません');
+            return;
+        }
+        if (form.email === "") {
+            setGeneralError('メールアドレスを入力してください');
+            return;
+        }
+        if (form.currentPassword === "") {
+            setGeneralError('現在のパスワードを入力してください');
+            return;
+        }
+        if (form.newPassword && !isVerified) {
+            setGeneralError('新パスワードに誤りがあります');
+            return;
+        }
+        if (form.newPassword && form.newPassword !== form.confirmPassword) {
+            setGeneralError('新しいパスワードと確認用パスワードが一致しません');
             return;
         }
 
@@ -89,7 +117,7 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
             // 何も更新しない場合
             if (form.username === user.displayName && form.email === user.email && !form.newPassword) {
                 setMessage('変更はありません');
-                setError(null);
+                setGeneralError(null);
                 return;
             }
             // ユーザ名の更新
@@ -135,20 +163,20 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
             if (error instanceof FirebaseError) {
                 switch (error.code) {
                     case 'auth/wrong-password':
-                        setError('パスワードが間違っています');
+                        setGeneralError('パスワードが間違っています');
                         break;
                     case 'auth/missing-password':
-                        setError('パスワードを入力してください');
+                        setGeneralError('パスワードを入力してください');
                         break;
                     case 'auth/invalid-email':
-                        setError('メールアドレスの形式が正しくありません');
+                        setGeneralError('メールアドレスの形式が正しくありません');
                         break;
                     default:
-                        setError(error.message);
+                        setGeneralError(error.message);
                         break;
                 }
             } else {
-                setError('更新に失敗しました');
+                setGeneralError('更新に失敗しました');
             }
         }
     }
@@ -169,9 +197,10 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
             <span>新しいパスワード</span>
             <CommonInputText name="newPassword" elementType="password" value={form.newPassword} onChange={handleInputChange} />
             <PasswordOutlined />
+            {passwordError && <Box sx={{ color: 'red' }}>{passwordError}</Box>}
             <span>新しいパスワード（確認）</span>
             <CommonInputText name="confirmPassword" elementType="password" value={form.confirmPassword} onChange={handleInputChange} />
-            <Box sx={{ color: 'red' }}>{error}</Box>
+            <Box sx={{ color: 'red' }}>{generalError}</Box>
             {message && <Box sx={{ color: 'green' }}>{message}</Box>}
             <CommonButton color="primary" onClick={handleUpdate}>編集結果を確定</CommonButton>
         </Box>

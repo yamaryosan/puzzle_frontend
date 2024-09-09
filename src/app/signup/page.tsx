@@ -6,6 +6,13 @@ import firebaseApp from "@/app/firebase";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { createUserInPrisma } from "@/lib/api/userapi";
+import CommonInputText from '@/lib/components/common/CommonInputText';
+import CommonButton from "@/lib/components/common/CommonButton";
+import { Box } from "@mui/material";
+import { EmailOutlined, Google } from "@mui/icons-material";
+import { FirebaseError } from "firebase/app";
+import Link from "next/link";
+import CommonPaper from "@/lib/components/common/CommonPaper";
 
 type actionCodeSettings = {
     url: string;
@@ -19,11 +26,16 @@ type actionCodeSettings = {
  * @param actionCodeSettings 送信設定
  */
 async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: actionCodeSettings) {
-    try{
+    try {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
-        console.error(error);
+        if (error instanceof FirebaseError) {
+            // メールアドレスが未入力の場合
+            if (error.code === 'auth/missing-email') {
+                throw new Error('メールアドレスを入力してください');
+            }
+        }
     }
 }
 
@@ -43,7 +55,7 @@ async function signUpWithGoogle(auth: Auth) {
     }
 }
 
-export default function App() {
+export default function Page() {
     const auth = getAuth(firebaseApp);
     const actionCodeSettings = {
         url: "http://localhost:3000/complete-registration",
@@ -55,14 +67,18 @@ export default function App() {
 
     const router = useRouter();
 
-    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        sendSignInLink(auth, email, actionCodeSettings);
-        setIsMailSent(true);
+    // メールを送信
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        try {
+            await sendSignInLink(auth, email, actionCodeSettings);
+            setIsMailSent(true);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
+    // Googleアカウントでサインアップ
     const handleGoogleSignUp = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
         setIsLoading(true);
         const success = await signUpWithGoogle(auth);
         setIsLoading(false);
@@ -79,21 +95,42 @@ export default function App() {
     }
 
     return (
-        <div>
-            <form>
-                <h1>新規ユーザ登録</h1>
-                {isMailSent ? (
-                    <p>メールを送信しました。リンクをクリックして登録を完了してください</p>
-                ) : (
-                    <p>メールアドレスを入力してください</p>
-                )}
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <button type="submit" onClick={handleSubmit}>登録</button>
-                <hr />
-                <button onClick={handleGoogleSignUp} disabled={isLoading}>
-                    {isLoading ? "処理中..." : "Googleアカウントで登録"}
-                </button>
-            </form>
-        </div>
+        <>
+            <CommonPaper>
+                <Box component="form">
+                    <h2>ユーザ登録</h2>
+                    {isMailSent ? (
+                        <p>{email}にメールを送信しました。リンクをクリックして登録を完了してください</p>
+                    ) : (
+                        <p>メールアドレスを入力してください</p>
+                    )}
+                    {isMailSent ? (
+                        <CommonInputText value={email} elementType="email" onChange={(e) => setEmail(e.target.value)} disabled/>
+                    ) : (
+                        <CommonInputText value={email} elementType="email" onChange={(e) => setEmail(e.target.value)}/>
+                    )}
+                    <Box sx={{ paddingY: '0.5rem' }}>
+                        <CommonButton color="primary" onClick={handleSubmit} disabled={isLoading}>
+                            <EmailOutlined />
+                            登録リンクを送信
+                        </CommonButton>
+                    </Box>
+                    <Box sx={{ paddingY: '0.5rem' }}>
+                        <CommonButton color="secondary" onClick={handleGoogleSignUp} disabled={isLoading}>
+                            {isLoading ? "処理中..." : (
+                                <>
+                                <Google />
+                                <span>Googleアカウントで登録</span>
+                                </>
+                                )}
+                        </CommonButton>
+                    </Box>
+                </Box>
+            </CommonPaper>
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <span>アカウントをお持ちの場合は</span>
+                <Link href="/signin" className="text-blue-500 hover:underline">こちらからログイン</Link>
+            </Box>
+        </>
     );
 };

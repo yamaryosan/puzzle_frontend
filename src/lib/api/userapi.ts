@@ -59,3 +59,26 @@ export async function updateUserInPrisma(firebaseUser: FirebaseUser) {
         throw error;
     }
 }
+
+/**
+ * ユーザを削除(API)
+ * @param firebaseUid FirebaseユーザID
+ * @returns 削除したユーザ
+ */
+export async function deleteUserInPrisma(firebaseUid: string) {
+    try {
+        const response = await fetch(`/api/users/${firebaseUid}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            console.error("Prismaでのユーザ削除に失敗: ", error);
+        }
+        const deletedUser = await response.json();
+        console.log("Prismaでのユーザ削除に成功: ", deletedUser);
+        return deletedUser as Promise<User>;
+    } catch (error) {
+        console.error("Prismaでのユーザ削除に失敗: ", error);
+        throw error;
+    }
+}

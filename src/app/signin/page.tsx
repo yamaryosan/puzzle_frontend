@@ -2,11 +2,18 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import useAuth from '@/lib/hooks/useAuth';
 import { createUserInPrisma } from '@/lib/api/userapi';
+import { useSearchParams } from 'next/navigation';
+import MessageModal from '@/lib/components/MessageModal';
+import CommonButton from '@/lib/components/common/CommonButton';
+import CommonInputText from '@/lib/components/common/CommonInputText';
+import CommonPaper from '@/lib/components/common/CommonPaper';
+import { Box } from '@mui/material';
+import { LoginOutlined, Google, ErrorOutline } from '@mui/icons-material';
+import { FirebaseError } from 'firebase/app';
 
 /**
  * メールアドレスとパスワードでログインする
@@ -18,9 +25,21 @@ async function signIn(auth: Auth, email: string, password: string) {
     try {
         await signInWithEmailAndPassword(auth, email, password);
         console.log('ログインに成功しました');
-    } catch (error) {
-        console.error(error);
-        throw new Error('ログインに失敗しました');
+    } catch (error: unknown) {
+        if (error instanceof FirebaseError) {
+            // メールアドレスが未入力や形式が正しくない場合
+            if (error.code === 'auth/invalid-email') {
+                throw new Error('メールアドレスを正しく入力してください');
+            }
+            // パスワードが未入力の場合
+            if (error.code === 'auth/missing-password') {
+                throw new Error('パスワードを入力してください');
+            }
+            // メールアドレスが未登録の場合
+            if (error.code === 'auth/user-not-found') {
+                throw new Error('メールアドレスかパスワードが間違っています');
+            }
+        }
     }
 }
 
@@ -68,6 +87,9 @@ export default function Page() {
     const { user, authLoading } = useAuth();
     const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
 
+    const searchParams = useSearchParams();
+    const deleted = searchParams.get('deleted') === 'true';
+
     if (authLoading) {
         return <p>ローディング中...</p>;
     }
@@ -83,7 +105,7 @@ export default function Page() {
     }
 
     // ログインフォームの送信処理
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         const auth = getAuth();
         try {
@@ -110,42 +132,47 @@ export default function Page() {
     }
 
     return (
-        <div className="container mx-auto mt-10 p-4">
-            <h1 className="text-2xl font-bold mb-4">メールアドレスとパスワードでログイン</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="email" className="block mb-1">メールアドレス</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="w-full px-3 py-2 border rounded"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password" className="block mb-1">パスワード</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="w-full px-3 py-2 border rounded"
-                    />
-                </div>
-                {error && <p className="text-red-500">{error}</p>}
-                <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-                    ログイン
-                </button>
-                <button onClick={handleGoogleSignIn} disabled={GoogleSignInLoading}>
-                    {GoogleSignInLoading ? "処理中..." : "Googleアカウントで登録"}
-                </button>
-            </form>
-            <p className="mt-4">
-                アカウントをお持ちでない方は <Link href="/signup" className="text-blue-500 hover:underline">こちら</Link> から登録してください。
-            </p>
-        </div>
+        <>
+        {deleted && <MessageModal message="退会しました" param="deleted" />}
+        <CommonPaper>
+            <Box component="form">
+                <h2>メールアドレスでログイン</h2>
+                <label htmlFor="email">メールアドレス</label>
+                <CommonInputText elementType='email' elementId='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                <label htmlFor="password">パスワード</label>
+                <CommonInputText elementType='password' elementId='password' value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Box sx={{ paddingY: '0.5rem' }}>
+                    <CommonButton color="primary" onClick={handleSubmit} disabled={GoogleSignInLoading}>
+                        <LoginOutlined />
+                        ログイン
+                    </CommonButton>
+                </Box>
+            </Box>
+            {error && 
+            <Box component="span" sx={{ color: "error.main", display: "flex", gap: "0.5rem" }}>
+                <ErrorOutline />
+                {error}
+            </Box>}
+        </CommonPaper>
+
+        <Box sx={{ paddingY: '2rem' }}>
+            <CommonButton color="secondary" onClick={handleGoogleSignIn} disabled={GoogleSignInLoading}>
+                {GoogleSignInLoading ? (
+                    <>
+                    <LoginOutlined />
+                    <span>処理中...</span>
+                    </>) : (
+                    <>
+                    <Google />
+                    <span>Googleアカウントでログイン</span>
+                    </>)}
+            </CommonButton>
+        </Box>
+
+        <Box sx={{ paddingY: '0.5rem' }}>
+            <span>アカウントをお持ちでない場合は</span>
+            <Link href="/signup" className="text-blue-500 hover:underline">こちらから登録</Link>
+        </Box>
+        </>
     );
 };

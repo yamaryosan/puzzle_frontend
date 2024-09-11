@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+const isEmulator = process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === "true";
+
 export default function Page() {
     const router = useRouter();
 
     useEffect(() => {
+        if (isEmulator) {
+            router.push("/?passwordReset=true");
+        }
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get("mode");
         const oobCode = urlParams.get("oobCode");

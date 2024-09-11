@@ -1,7 +1,6 @@
 'use client';
 
 import CommonPaper from "@/lib/components/common/CommonPaper";
-import useAuth from "@/lib/hooks/useAuth";
 import { useState } from "react";
 import { sendPasswordResetEmail, getAuth } from "firebase/auth";
 import CommonButton from "@/lib/components/common/CommonButton";

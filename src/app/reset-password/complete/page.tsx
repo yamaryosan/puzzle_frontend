@@ -6,6 +6,7 @@ import CommonButton from "@/lib/components/common/CommonButton";
 import CommonInputText from "@/lib/components/common/CommonInputText";
 import CommonPaper from "@/lib/components/common/CommonPaper";
 import { useSearchParams } from "next/navigation";
+import { checkPasswordStrength } from "@/lib/api/userapi";
 
 /**
  * パスワードの再設定完了ページ

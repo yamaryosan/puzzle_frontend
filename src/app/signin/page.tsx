@@ -153,6 +153,9 @@ export default function Page() {
                 <ErrorOutline />
                 {error}
             </Box>}
+            <Box sx={{ paddingY: '0.5rem' }}>
+                <span>パスワードをお忘れの場合は<Link href="/reset-password" className="text-blue-500 hover:underline">こちら</Link></span>
+            </Box>
         </CommonPaper>
 
         <Box sx={{ paddingY: '2rem' }}>

@@ -6,14 +6,13 @@ import { Puzzle } from "@prisma/client";
 import { getPuzzles } from "@/lib/api/puzzleapi";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
 import MessageModal from "@/lib/components/MessageModal";
 import useAuth from "@/lib/hooks/useAuth";
 
 type Puzzles = Puzzle[];
 
 export default function Page() {
-    const { user, userId} = useAuth();
+    const { user, userId } = useAuth();
 
     const searchParams = useSearchParams();
     const passwordReset = searchParams.get("passwordReset") === "true";

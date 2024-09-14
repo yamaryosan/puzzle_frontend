@@ -3,17 +3,18 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getPuzzles } from '@/lib/api/puzzleapi';
-import { Puzzle, Category } from '@prisma/client';
+import { Puzzle } from '@prisma/client';
 import PuzzleCard from '@/lib/components/PuzzleCard';
 import { Sort, Shuffle, AddCircleOutline } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 export default function Page() {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     const [desc, setDesc] = useState(false);
     
@@ -27,9 +28,9 @@ export default function Page() {
     // パズル一覧を取得
     useEffect(() => {
         async function fetchPuzzles() {
-            if (userId == null) return;
+            if (!user) return;
             try {
-                const puzzles = await getPuzzles(userId || "");
+                const puzzles = await getPuzzles(user.uid || "");
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
@@ -39,7 +40,7 @@ export default function Page() {
         return () => {
             setPuzzles([]);
         }
-    }, [userId]);
+    }, [user]);
 
     // 難易度でソート
     const handleSort = () => {

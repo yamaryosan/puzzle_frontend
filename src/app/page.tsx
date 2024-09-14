@@ -7,12 +7,13 @@ import { getPuzzles } from "@/lib/api/puzzleapi";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
-import useAuth from "@/lib/hooks/useAuth";
+import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type Puzzles = Puzzle[];
 
 export default function Page() {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     const searchParams = useSearchParams();
     const passwordReset = searchParams.get("passwordReset") === "true";
@@ -21,9 +22,9 @@ export default function Page() {
     // パズル一覧を取得
     useEffect(() => {
         async function fetchPuzzles() {
-            if (userId == null) return;
+            if (!user) return;
             try {
-                const puzzles = await getPuzzles(userId);
+                const puzzles = await getPuzzles(user.uid) 
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);

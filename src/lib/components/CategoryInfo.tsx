@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 import { updateCategory } from "@/lib/api/categoryapi";
 import { fetchPuzzlesByCategoryId } from "@/lib/api/categoryapi";
 import { Update } from "@mui/icons-material";
-import useAuth from "@/lib/hooks/useAuth";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type CategoryInfoProps = {
     category: Category;
@@ -30,7 +31,7 @@ async function updateCategoryName(categoryId: string, categoryName: string) {
 }
 
 export default function CategoryInfo({ category, isActive }: CategoryInfoProps) {
-    const { userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [categoryName, setCategoryName] = useState<string>(category.name);
     const [originalCategoryName, setOriginalCategoryName] = useState<string>(category.name);
     const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -45,15 +46,15 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
     useEffect(() => {
         const fetchPuzzles = async () => {
             try {
-                if (!userId) return;
-                const data = await fetchPuzzlesByCategoryId(category.id.toString(), userId ?? '') as Puzzle[];
+                if (!user) return;
+                const data = await fetchPuzzlesByCategoryId(category.id.toString(), user.uid ?? '') as Puzzle[];
                 setPuzzles(data);
             } catch (error) {
                 console.error("カテゴリーに紐づくパズル一覧の取得に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [category.id, userId]);
+    }, [category.id, user]);
 
     // 入力欄クリック時のイベント
     const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {

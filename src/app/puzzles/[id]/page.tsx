@@ -13,17 +13,18 @@ import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
 import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react'; 
 
 type PageParams = {
     id: string;
 };
 
 export default function Page({ params }: { params: PageParams }) {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -37,22 +38,22 @@ export default function Page({ params }: { params: PageParams }) {
     useEffect(() => {
         async function fetchPuzzle() {
             try {
-                if (!userId) return;
-                const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
+                if (!user) return;
+                const puzzle = await getPuzzleById(params.id, user.uid ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
             }
         }
         fetchPuzzle();
-    }, [params.id, userId]);
+    }, [params.id, user]);
 
     // パズルのカテゴリーを取得
     useEffect(() => {
         async function fetchCategories() {
             try {
-                if (!userId) return;
-                const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
+                if (!user) return;
+                const categories = await getCategoriesByPuzzleId(params.id, user.uid ?? '') as Category[];
                 setCategories(categories ?? []);
             } catch (error) {
                 console.error("カテゴリーの取得に失敗: ", error);

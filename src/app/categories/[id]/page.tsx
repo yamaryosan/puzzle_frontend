@@ -5,15 +5,16 @@ import { getCategoryById, fetchPuzzlesByCategoryId, updateCategory, deleteCatego
 import { Puzzle, Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 type PageParams = {
     id: string;
 };
 
 export default function Page({ params }: { params: PageParams}) {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [category, setCategory] = useState<Category | null>(null);
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +25,8 @@ export default function Page({ params }: { params: PageParams}) {
     // カテゴリー情報を取得
     useEffect(() => {
         async function fetchCategory() {
-            const category = await getCategoryById(params.id, userId ?? '') as Category;
+            if (!user) return;
+            const category = await getCategoryById(params.id, user.uid ?? '') as Category;
             if (!category) return;
             setCategory(category);
             setEditedName(category.name);
@@ -35,7 +37,8 @@ export default function Page({ params }: { params: PageParams}) {
     // カテゴリーに紐づくパズル一覧を取得
     useEffect(() => {
         async function fetchPuzzles() {
-            const puzzles = await fetchPuzzlesByCategoryId(params.id, userId ?? '');
+            if (!user) return;
+            const puzzles = await fetchPuzzlesByCategoryId(params.id, user.uid ?? '');
             if (!puzzles) return;
             setPuzzles(puzzles);
         }

@@ -4,7 +4,8 @@ import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
 import getHintsByPuzzleId from "@/lib/api/hintapi";
 import { Hint } from "@prisma/client";
-import useAuth from "@/lib/hooks/useAuth";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type HintsViewerProps = {
     puzzleId: string;
@@ -21,17 +22,17 @@ export default function HintsViewer({ puzzleId }: HintsViewerProps) {
     const [value, setValue] = useState(0);
     const [show, setShow] = useState(false);
 
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     // ヒントを取得
     useEffect(() => {
         async function fetchHints() {
-            if (!userId) return;
-            const hints = await getHintsByPuzzleId(puzzleId, userId ?? '') as Hint[];
+            if (!user) return;
+            const hints = await getHintsByPuzzleId(puzzleId, user.uid) as Hint[];
             setHints(hints);
         }
         fetchHints();
-    }, [userId, puzzleId]);
+    }, [user, puzzleId]);
 
     // タブの変更
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {

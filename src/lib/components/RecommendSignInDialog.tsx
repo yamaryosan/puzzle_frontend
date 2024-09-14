@@ -1,14 +1,15 @@
 import { Box, Card } from "@mui/material";
-import useAuth from "@/lib/hooks/useAuth";
 import { useState } from "react";
 import { Help } from "@mui/icons-material";
 import Link from "next/link";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 export default function RecommendSignInDialog() {
-    const { user, authLoading } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [isClosed, setIsClosed] = useState(false);
 
-    if (user || authLoading) {
+    if (user) {
         return null;
     }
 

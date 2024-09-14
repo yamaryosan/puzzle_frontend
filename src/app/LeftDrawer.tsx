@@ -2,11 +2,10 @@
 
 import {IconButton, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box} from '@mui/material';
 import { Extension, Quiz, AddCircleOutline, AccountCircle, Logout, Login, ArrowRight } from '@mui/icons-material';
-import AddPuzzleIcon from '@/lib/icons/AddPuzzleIcon';
 import { useState } from 'react';
-import useAuth from '@/lib/hooks/useAuth';
 import Link from 'next/link';
-import { title } from 'process';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 const baseMenu = [
     {title: 'パズル一覧', icon: Extension, href: '/puzzles'},
@@ -26,7 +25,7 @@ const guestMenu = [
 
 export default function LeftDrawer() {
     const [open, setOpen] = useState(false);
-    const { user, authLoading } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     const menu = baseMenu.concat(user ? authMenu : guestMenu);
 

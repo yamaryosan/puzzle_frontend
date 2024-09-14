@@ -3,7 +3,8 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import useAuth from '@/lib/hooks/useAuth';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 interface AuthLinkProps {
   href: string;
@@ -19,13 +20,11 @@ interface AuthLinkProps {
  * @param fallbackHref ログインしていない場合のリンク先のURL
  */
 export default function AuthLink({ href, children, fallbackHref }: AuthLinkProps) {
-  const { user, authLoading } = useAuth();
+  const user = useContext(FirebaseUserContext);
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-    if (authLoading) return;
-    
     if (user) {
       router.push(href);
     } else {

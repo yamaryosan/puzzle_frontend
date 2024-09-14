@@ -3,7 +3,8 @@ import { getApproaches } from "../api/approachApi";
 import { Approach } from "@prisma/client";
 import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
 import { Box } from "@mui/material";
-import useAuth from '@/lib/hooks/useAuth';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from "react";
 
 interface ApproachCheckboxProps {
     onChange: (approachIds: number[]) => void;
@@ -12,7 +13,7 @@ interface ApproachCheckboxProps {
 }
 
 export default function ApproachCheckbox({ onChange, puzzle_id, value }: ApproachCheckboxProps) {
-    const { userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [approaches, setApproaches] = useState<Approach[] | null>(null);
     const [checkedApproachIds, setCheckedApproachIds] = useState<number[]>(value);
 
@@ -34,8 +35,8 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     // 定石一覧を取得
     async function fetchApproaches() {
         try {
-            if (!userId) return;
-            const approaches = await getApproaches(userId ?? '');
+            if (!user) return;
+            const approaches = await getApproaches(user.uid ?? '');
             setApproaches(approaches || []);
             return approaches;
         } catch (error) {
@@ -46,7 +47,7 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
 
     useEffect(() => {
         fetchApproaches();
-    }, [userId]);
+    }, [user]);
 
     // チェックされた定石のIDを親コンポーネントに渡す
     useEffect(() => {

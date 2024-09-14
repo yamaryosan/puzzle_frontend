@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import useAuth from '@/lib/hooks/useAuth';
 import { createUserInPrisma } from '@/lib/api/userapi';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
@@ -14,6 +13,8 @@ import CommonPaper from '@/lib/components/common/CommonPaper';
 import { Box } from '@mui/material';
 import { LoginOutlined, Google, ErrorOutline } from '@mui/icons-material';
 import { FirebaseError } from 'firebase/app';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 /**
  * メールアドレスとパスワードでログインする
@@ -84,17 +85,14 @@ export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { user, authLoading } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
 
     const searchParams = useSearchParams();
     const deleted = searchParams.get('deleted') === 'true';
 
-    if (authLoading) {
-        return <p>ローディング中...</p>;
-    }
     // ログインしている場合はホーム画面にリダイレクト
-    if (!authLoading && user) {
+    if (!user) {
         redirectToDashboard();
         return (
             <div>

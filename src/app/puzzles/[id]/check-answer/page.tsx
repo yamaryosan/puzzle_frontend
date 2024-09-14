@@ -7,8 +7,9 @@ import { getPuzzleById } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Rule, Check, Clear } from "@mui/icons-material";
-import useAuth from "@/lib/hooks/useAuth";
 import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 /**
  * 正解かどうかを送信
@@ -45,22 +46,22 @@ async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | und
 
 export default function Page({ params }: { params: { id: string } }) {
     const router = useRouter();
-    const { user, userId } = useAuth();
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
+    const user = useContext(FirebaseUserContext);
 
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
             try {
-                if (!userId) return;
-                const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
+                if (!user) return;
+                const puzzle = await getPuzzleById(params.id, user.uid ?? '') as Puzzle;
                 setPuzzle(puzzle);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
             }
         }
         fetchPuzzle();
-    }, [params.id, userId]);
+    }, [params.id, user]);
 
     // 正解時の処理
     const correct = () => {

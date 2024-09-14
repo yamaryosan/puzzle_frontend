@@ -8,12 +8,13 @@ import { Approach } from '@prisma/client';
 import { Box, Button } from '@mui/material';
 import { Edit, Upload } from '@mui/icons-material';
 import TitleEditor from '@/lib/components/TitleEditor';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
 import { Delete, Clear } from '@mui/icons-material';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 type PageParams = {
     id: string;
@@ -77,7 +78,7 @@ export default function Page({ params }: { params: PageParams }) {
 
     const quill = useRef<Quill | null>(null);
 
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -87,11 +88,12 @@ export default function Page({ params }: { params: PageParams }) {
             return;
         }
         async function fetchApproach() {
-            const approach = await getApproach(params.id, userId ?? '') as Approach;
+            if (!user) return;
+            const approach = await getApproach(params.id, user.uid ?? '') as Approach;
             setApproach(approach);
         }
         fetchApproach();
-    }, [params.id, userId]);
+    }, [params.id, user]);
 
     // 編集前に以前の定石を取得
     useEffect(() => {

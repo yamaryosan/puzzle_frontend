@@ -31,7 +31,7 @@ export async function getPuzzleById(id: string, userId: string) {
         console.error("ユーザIDが取得できません");
         return;
     }
-    const response = await fetch(`/api/puzzles/${id}`);
+    const response = await fetch(`/api/puzzles/${id}?userId=${userId}`);
     if (!response.ok) {
         const error = await response.json();
         console.error("パズルの取得に失敗: ", error);

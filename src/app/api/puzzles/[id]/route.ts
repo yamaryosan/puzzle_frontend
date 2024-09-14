@@ -1,7 +1,6 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
 import { Puzzle } from "@prisma/client";
-import { parse } from "path";
 
 type puzzleRequest = {
     title: string;
@@ -38,15 +37,21 @@ type PuzzleWithCategories = {
 export async function GET(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get("userId");
 
         // IDが数字でない場合はエラー
         if (isNaN(id)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
+        // ユーザIDが指定されていない場合はエラー
+        if (!userId) {
+            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+        }
 
         // パズルとそのカテゴリーを取得
         const puzzleWithCategories = await prisma.puzzle.findUnique({
-            where: { id: id },
+            where: { id: id, user_id: userId },
             include: {
                 PuzzleCategory: {
                     include: {

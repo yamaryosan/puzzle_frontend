@@ -4,11 +4,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import ApproachCard from '@/lib/components/ApproachCard';
 import { Approach } from '@prisma/client';
 
-type ApproachInfoProps = {
-    approach: Approach;
-    isActive: boolean;
-};
-
 // ApproachInfoコンポーネントのモック
 jest.mock('@/lib/components/ApproachInfo', () => {
     return function MockApproachInfo({ approach, isActive }: { approach: Approach; isActive: boolean }) {

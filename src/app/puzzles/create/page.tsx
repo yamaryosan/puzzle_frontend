@@ -216,7 +216,6 @@ export default function Page() {
                 <h3>問題文</h3>
                 <Editor
                 ref={quillDescriptionRef}
-                readOnly={readOnly}
                 defaultValue={new DeltaClass([{  }])}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange} />
@@ -226,7 +225,6 @@ export default function Page() {
                 <h3>正答</h3>
                 <Editor
                 ref={quillSolutionRef}
-                readOnly={readOnly}
                 defaultValue={new DeltaClass([{ }])}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange} />

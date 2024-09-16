@@ -327,7 +327,6 @@ export default function Page({ params }: { params: PageParams }) {
                 <h3>問題文</h3>
                 <Editor
                     ref={quillDescriptionRef}
-                    readOnly={false}
                     defaultValue={descriptionDelta}
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}/>
@@ -336,7 +335,6 @@ export default function Page({ params }: { params: PageParams }) {
                 <h3>正答</h3>
                 <Editor
                     ref={quillSolutionRef}
-                    readOnly={false}
                     defaultValue={solutionDelta}
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}/>

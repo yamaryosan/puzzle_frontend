@@ -124,7 +124,6 @@ export default function Page() {
                 <h3>本文</h3>
                 <Editor
                 ref={quill}
-                readOnly={false}
                 defaultValue={new DeltaClass([{  }])}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}/>

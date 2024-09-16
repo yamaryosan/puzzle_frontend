@@ -6,7 +6,6 @@ import Delta from 'quill-delta';
 import 'quill/dist/quill.snow.css';
 
 interface EditorProps {
-    readOnly: boolean;
     defaultValue: any;
     onTextChange: (delta: any, oldDelta: any, source: string) => void;
     onSelectionChange: (range: any, oldRange: any, source: string) => void;
@@ -114,7 +113,6 @@ const dropImageHandler = async (event: DragEvent, quill: Quill) => {
 };
 
 /** エディタのコンポーネント
- * @param {boolean} readOnly - 読み取り専用かどうか
  * @param {Delta} defaultValue - 初期値
  * @param {Function} onTextChange - テキストが変更されたときのコールバック
  * @param {Function} onSelectionChange - 選択範囲が変更されたときのコールバック
@@ -122,7 +120,7 @@ const dropImageHandler = async (event: DragEvent, quill: Quill) => {
  * @returns {React.ReactElement} エディタのコンポーネント
  */
 export const Editor = forwardRef<Quill, EditorProps>(
-    ({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
+    ({ defaultValue, onTextChange, onSelectionChange }, ref) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
     const defaultValueRef = useRef<Delta>(defaultValue);
@@ -139,9 +137,9 @@ export const Editor = forwardRef<Quill, EditorProps>(
     // Quillのインスタンスを取得 (読み取り専用の設定)
     useEffect(() => {
         if (ref && typeof ref !== 'function' && ref.current) {
-            ref.current.enable(!readOnly);
+            ref.current.enable(false);
         }
-    }, [ref, readOnly]);
+    }, [ref]);
 
     useEffect(() => {
         // エディタのDOM要素を取得

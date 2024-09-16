@@ -145,7 +145,6 @@ export default function Page({ params }: { params: { id: string } }) {
                 <h3>回答を入力</h3>
                 <Editor
                 ref={answerRef}
-                readOnly={false}
                 defaultValue={answer}
                 onTextChange={setLastChange}
                 onSelectionChange={setRange}/>

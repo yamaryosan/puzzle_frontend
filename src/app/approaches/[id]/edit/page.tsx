@@ -157,7 +157,6 @@ export default function Page({ params }: { params: PageParams }) {
                 <h3>説明文</h3>
                 <Editor
                 ref={quill}
-                readOnly={false}
                 defaultValue={DeltaClass}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}/>

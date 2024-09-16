@@ -12,11 +12,12 @@ import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 
 export default function SearchBox() {
-    const user = useContext(FirebaseUserContext);
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState<Puzzle[]>([]);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const searchBoxRef = useRef<HTMLInputElement>(null);
+
+    const user = useContext(FirebaseUserContext);
 
     useEffect(() => {
         async function fetchPuzzles() {

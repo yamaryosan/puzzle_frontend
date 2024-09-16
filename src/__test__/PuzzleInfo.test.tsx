@@ -3,7 +3,6 @@ import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
 import { Puzzle } from '@prisma/client';
 import PuzzleInfo from '@/lib/components/PuzzleInfo';
-import { forwardRef } from 'react';
 
 // モックデータ
 const mockPuzzle = {

@@ -23,8 +23,7 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
             </Box>
             <Box>
                 <p>問題文: </p>
-                <Viewer 
-                defaultValue={puzzle.description}/>
+                <Viewer defaultValue={puzzle.description}/>
             </Box>
 
             <Link href={`/puzzles/${puzzle.id}/solve`}>

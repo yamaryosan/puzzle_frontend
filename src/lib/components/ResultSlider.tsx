@@ -2,6 +2,8 @@ import { Puzzle } from "@prisma/client";
 import { useState, useEffect } from 'react';
 import { Box, Grow, List, ListItem, ListItemText, Paper } from "@mui/material";
 import Link from "next/link";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type ResultSliderProps = {
     result: Puzzle[];
@@ -10,9 +12,11 @@ type ResultSliderProps = {
 export default function ResultSlider({ result }: ResultSliderProps) {
     const [show, setShow] = useState(false);
     const [length, setLength] = useState(0);
+    const user = useContext(FirebaseUserContext);
 
     // 検索結果がある場合は表示
     useEffect(() => {
+        if (!user) return;
         if (result?.length > 0) {
             setShow(true);
             setLength(result.length);

@@ -95,6 +95,8 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
         setOriginalCategoryName(categoryName);
     }
 
+    if (!user) return null;
+
     return (
         <>
         {isActive ? (
@@ -103,7 +105,7 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
                 <>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <input type="text" value={categoryName} onClick={handleInputClick} onChange={handleChange} />
-                    <Button onClick={handleUpdateClick}>
+                    <Button onClick={handleUpdateClick} aria-label="edit">
                         <Update />
                     </Button>
                 </Box>
@@ -127,7 +129,7 @@ export default function CategoryInfo({ category, isActive }: CategoryInfoProps) 
             overflow: 'hidden',
             transition: 'max-height 0.5s ease-in-out',
         }}>
-            {/* カテゴリーに紐づくパズル一覧を表示 */}
+            {puzzles.length === 0 && <p>このカテゴリーに紐づくパズルはありません</p>}
             {puzzles.map((puzzle) => (
                 <Link key={puzzle.id} href={`/puzzles/${puzzle.id}`}>
                     <Button

@@ -42,13 +42,23 @@ describe('CategoryInfo', () => {
     });
 
     test('初期状態', async() => {
-        render(<CategoryInfo category={mockCategory} isActive={false} />);
+        await act(async () => {
+            render(
+            <FirebaseUserContext.Provider value={mockUser}>
+                <CategoryInfo category={mockCategory} isActive={true} />
+            </FirebaseUserContext.Provider>);
+        });
         const categoryName = screen.getByText('カテゴリー1');
         expect(categoryName).toBeInTheDocument();
     })
 
     test('編集ボタンをクリックしてカテゴリー名を変更', async() => {
-        render(<CategoryInfo category={mockCategory} isActive={true} />);
+        await act(async () => {
+            render(
+            <FirebaseUserContext.Provider value={mockUser}>
+                <CategoryInfo category={mockCategory} isActive={true} />
+            </FirebaseUserContext.Provider>);
+        });
         const editButton = screen.getByTestId('EditIcon');
         fireEvent.click(editButton);
         const input = screen.getByRole('textbox');
@@ -62,7 +72,12 @@ describe('CategoryInfo', () => {
     });
 
     test('カテゴリーに紐づくパズルがない場合', async() => {
-        render(<CategoryInfo category={mockCategory} isActive={true} />);
+        await act(async () => {
+            render(
+            <FirebaseUserContext.Provider value={mockUser}>
+                <CategoryInfo category={mockCategory} isActive={true} />
+            </FirebaseUserContext.Provider>);
+        });
         const message = screen.queryByText('このカテゴリーに紐づくパズルはありません');
         expect(message).toBeInTheDocument();
     });

@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { Box, Card } from "@mui/material";
-import { useState } from "react";
 import PuzzleInfo from "@/lib/components/PuzzleInfo";
 import { Puzzle } from "@prisma/client";
 import FavoriteButton from "@/lib/components/FavoriteButton";

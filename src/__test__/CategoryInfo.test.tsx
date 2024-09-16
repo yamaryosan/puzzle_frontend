@@ -26,9 +26,14 @@ const mockCategory = {
     updatedAt: new Date(),
 } as Category;
 
+// モックユーザー
 const mockUser = {
     uid: '1',
 } as User;
+
+// アラートのモック
+const mockAlert = jest.fn();
+global.alert = mockAlert;
 
 describe('CategoryInfo', () => {
     test('ユーザーがログインしていない場合', async() => {
@@ -68,6 +73,27 @@ describe('CategoryInfo', () => {
         fireEvent.click(updateButton);
         await waitFor(() => {
             expect(updateCategory).toHaveBeenCalledWith('1', 'カテゴリー2');
+        });
+    });
+
+    test('カテゴリー名が空のまま更新ボタンが押された場合', async() => {
+        await act(async () => {
+            render(
+            <FirebaseUserContext.Provider value={mockUser}>
+                <CategoryInfo category={mockCategory} isActive={true} />
+            </FirebaseUserContext.Provider>);
+        });
+        const editButton = screen.getByTestId('EditIcon');
+        fireEvent.click(editButton);
+        const input = screen.getByRole('textbox');
+        expect(input).toBeInTheDocument();
+        fireEvent.change(input, { target: { value: '' } });
+        const updateButton = screen.getByTestId('UpdateIcon');
+        fireEvent.click(updateButton);
+        // アラートが表示された後、カテゴリー名が更新されないことを確認
+        await waitFor(() => {
+            expect(mockAlert).toHaveBeenCalledWith('カテゴリー名は必須です');
+            expect(updateCategory).not.toHaveBeenCalled;
         });
     });
 

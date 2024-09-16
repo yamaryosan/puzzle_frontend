@@ -61,10 +61,6 @@ describe('ApproachInfo', () => {
     });
 
     test('定石に紐づくパズルがある場合', async () => {
-        render(<ApproachInfo approach={mockApproach} isActive={true} />);
-    });
-
-    test('定石に紐づくパズルがある場合', async () => {
         const mockPuzzles = [
             {
                 id: 1,

@@ -1,8 +1,6 @@
 import { Box, Button } from "@mui/material"
 import { Puzzle } from "@prisma/client";
 import Viewer from "@/lib/components/Viewer";
-import Quill from "quill";
-import { useRef, useState, useEffect } from "react";
 import { EmojiObjects, Edit } from "@mui/icons-material";
 import Link from "next/link";
 import DifficultViewer from "@/lib/components/DifficultyViewer";
@@ -16,8 +14,6 @@ type PuzzleInfoProps = {
  * カードをクリックすることで表示される
  */
 export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
-    const quillRef = useRef<Quill | null>(null);
-
     return (
         <>
         <Box sx={{ padding: "1rem" }}>
@@ -28,8 +24,7 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
             <Box>
                 <p>問題文: </p>
                 <Viewer 
-                defaultValue={puzzle.description}
-                ref={quillRef}/>
+                defaultValue={puzzle.description}/>
             </Box>
 
             <Link href={`/puzzles/${puzzle.id}/solve`}>

@@ -92,7 +92,7 @@ export default function Page() {
     const deleted = searchParams.get('deleted') === 'true';
 
     // ログインしている場合はホーム画面にリダイレクト
-    if (!user) {
+    if (user) {
         redirectToDashboard();
         return (
             <div>

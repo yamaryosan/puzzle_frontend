@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import { Home, Category, Favorite, Search } from '@mui/icons-material';
 import SearchBox from '@/lib/components/SearchBox';
 import FirebaseUserProvider from "@/lib/components/FirebaseUserProvider";
-import { useContext } from 'react';
 
 export default function Header() {
     return (

@@ -21,12 +21,12 @@ export default function SearchBox() {
 
     useEffect(() => {
         async function fetchPuzzles() {
+            if (!user) return;
             if (searchText.trim().length === 0) {
                 setSearchResults([]);
                 return;
             }
             try {
-                if (!user) return;
                 const puzzles = await searchPuzzles(searchText, user.uid) as Puzzle[];
                 setSearchResults(puzzles);
             } catch (error) {

@@ -6,10 +6,11 @@ import Quill from 'quill';
 import { Box, Button } from "@mui/material";
 import { AddCircleOutline, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
-import useAuth from "@/lib/hooks/useAuth";
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from "next/navigation";
 import { Approach } from "@prisma/client";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type Range = {
     index: number;
@@ -63,13 +64,14 @@ async function send(title: string, userId: string, quill: React.RefObject<Quill 
 
 export default function Page() {
     const router = useRouter();
-    const { user, userId } = useAuth();
     const [title, setTitle] = useState<string>('');
     const [range, setRange] = useState<Range>();
     const [lastChange, setLastChange] = useState<Change>();
     const [DeltaClass, setDeltaClass] = useState<any>();
 
     const quill = useRef<Quill | null>(null);
+
+    const user = useContext(FirebaseUserContext);
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -83,6 +85,14 @@ export default function Page() {
         return <div>Loading...</div>
     }
 
+    if (!user) {
+        return (
+            <div>
+                <RecommendSignInDialog />
+            </div>
+        );
+    }
+
     // 送信ボタン押下時の処理
     const handleSendButton = async () => {
         if (!title) {
@@ -94,7 +104,7 @@ export default function Page() {
             alert("説明文を入力してください");
             return;
         }
-        const approach = await send(title, userId ?? '', quill);
+        const approach = await send(title, user.uid ?? '', quill);
         if (approach) {
             router.push(`/approaches/${approach.id}?created=true`);
         }
@@ -114,7 +124,6 @@ export default function Page() {
                 <h3>本文</h3>
                 <Editor
                 ref={quill}
-                readOnly={false}
                 defaultValue={new DeltaClass([{  }])}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}/>

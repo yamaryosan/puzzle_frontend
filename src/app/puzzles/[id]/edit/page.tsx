@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Editor from '@/lib/components/Editor';
 import { useEffect, useState, useRef } from 'react';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
@@ -17,9 +16,10 @@ import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 type PageParams = {
     id: string;
@@ -206,21 +206,27 @@ export default function Page({ params }: { params: PageParams }) {
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
     // ユーザ情報
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     // 編集前にパズルを取得
     useEffect(() => {
-        fetchInitialPuzzle(params.id, userId ?? '').then((puzzle) => {
+        if (!params.id || !user) {
+            return;
+        }
+        fetchInitialPuzzle(params.id, user.uid).then((puzzle) => {
             if (!puzzle) {
                 return;
             }
             setPuzzle(puzzle);
         });
-    }, [params.id, userId]);
+    }, [params.id, user]);
 
     // 編集前にヒントを取得
     useEffect(() => {
-        fetchInitialHints(params.id, userId ?? '').then((hints) => {
+        if (!user) {
+            return;
+        }
+        fetchInitialHints(params.id, user.uid ?? '').then((hints) => {
             if (!hints) {
                 return;
             }
@@ -228,7 +234,7 @@ export default function Page({ params }: { params: PageParams }) {
             const initialHintHtmls = hints.map((hint) => hint.content);
             console.log("ヒントを取得しました: ", initialHintHtmls);
         });
-    }, [params.id, userId]);
+    }, [params.id, user]);
 
     // 編集前に以前のヒント内容を取得
     useEffect(() => {
@@ -262,6 +268,10 @@ export default function Page({ params }: { params: PageParams }) {
     }, [puzzle, quillLoaded]);
 
     if (!descriptionDelta || !solutionDelta) {
+        return <div>Loading...</div>
+    }
+
+    if (!user) {
         return <div>Loading...</div>
     }
 
@@ -323,7 +333,6 @@ export default function Page({ params }: { params: PageParams }) {
                 <h3>問題文</h3>
                 <Editor
                     ref={quillDescriptionRef}
-                    readOnly={false}
                     defaultValue={descriptionDelta}
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}/>
@@ -332,7 +341,6 @@ export default function Page({ params }: { params: PageParams }) {
                 <h3>正答</h3>
                 <Editor
                     ref={quillSolutionRef}
-                    readOnly={false}
                     defaultValue={solutionDelta}
                     onSelectionChange={setRange}
                     onTextChange={setLastChange}/>
@@ -347,7 +355,7 @@ export default function Page({ params }: { params: PageParams }) {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox
-                userId={userId || ""}
+                userId={user.uid || ""}
                 onChange={handleCategoriesChange}
                 puzzle_id={params.id || "0"}
                 value={categoryIds}/>

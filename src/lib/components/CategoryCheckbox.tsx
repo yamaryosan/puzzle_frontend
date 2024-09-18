@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCategories, createCategory, getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { Category } from "@prisma/client";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Input } from "@mui/material";
 import { CreateNewFolderOutlined } from "@mui/icons-material";
 
 /**
@@ -118,8 +118,8 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
                 <div key={category.id}>
                     <input
                         type="checkbox"
-                        id={category.id.toString()}
                         checked={checkedCategoryIds.includes(category.id)}
+                        id={category.id.toString()}
                         onChange={() => handleCheckboxChange(category.id)}
                     />
                     <label htmlFor={category.id.toString()} className="cursor-pointer">{category.name}</label>
@@ -135,11 +135,13 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
                 gap: "1rem",
             }}
             >
-            <input
+            <Input
                 type="text"
+                role="textbox"
+                placeholder="新規カテゴリー"
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full border border-gray-300 rounded-md"
+                sx={{ padding: "0.5rem", fontSize: "1rem", width: "100%" }}
             />
             <Button
             sx={{
@@ -152,6 +154,7 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
                     transition: "background-color 0.3s",
                 }
             }}
+            aria-label="create"
             onClick={handleNewCategory}>
                 <CreateNewFolderOutlined />
             </Button>

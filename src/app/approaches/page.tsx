@@ -7,13 +7,14 @@ import { Approach } from '@prisma/client';
 import ApproachCard from '@/lib/components/ApproachCard';
 import { Box, Button } from '@mui/material';
 import { AddCircleOutline, QuizOutlined } from '@mui/icons-material';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 export default function Page() {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [approaches, setApproaches] = useState<Approach[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
@@ -23,12 +24,12 @@ export default function Page() {
 
     useEffect(() => {
         async function fetchApproaches() {
-            if (!userId) return;
-            const approaches = await getApproaches(userId ?? '');
+            if (!user) return;
+            const approaches = await getApproaches(user.uid ?? '');
             setApproaches(approaches || []);
         }
         fetchApproaches();
-    }, [userId]);
+    }, [user]);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {

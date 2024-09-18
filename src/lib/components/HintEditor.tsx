@@ -50,7 +50,6 @@ export default function HintEditor({ quill, defaultValue, number, canToggle, sho
             </Button>
             {show && (
                 <Editor
-                readOnly={false}
                 defaultValue={defaultValue}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}

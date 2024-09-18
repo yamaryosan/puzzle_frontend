@@ -5,7 +5,6 @@ import { getApproach, getPuzzlesByApproachId } from '@/lib/api/approachApi';
 import { useEffect, useState } from 'react';
 import { Approach, Puzzle } from '@prisma/client';
 import Viewer from '@/lib/components/Viewer';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
@@ -13,13 +12,15 @@ import { Button, Box } from '@mui/material';
 import { Edit, Delete, Clear } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import DeleteModal from '@/lib/components/DeleteModal';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 type PageParams = {
     id: string;
 };
 
 export default function Page({ params }: { params: PageParams }) {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [approach, setApproach] = useState<Approach | null>(null);
     const [puzzles, setPuzzles] = useState<Puzzle[] | null>(null);
 
@@ -33,26 +34,28 @@ export default function Page({ params }: { params: PageParams }) {
     // 定石情報を取得
     useEffect(() => {
         async function fetchApproach() {
-            const approach = await getApproach(params.id, userId ?? '');
+            if (!user) return;
+            const approach = await getApproach(params.id, user.uid ?? '');
             if (!approach) {
                 return;
             }
             setApproach(approach);
         }
         fetchApproach();
-    }, [userId]);
+    }, [user]);
 
     // 定石に紐づく問題情報を取得
     useEffect(() => {
         async function fetchPuzzles() {
-            const puzzles = await getPuzzlesByApproachId(params.id, userId ?? '');
+            if (!user) return;
+            const puzzles = await getPuzzlesByApproachId(params.id, user.uid ?? '');
             if (!puzzles) {
                 return;
             }
             setPuzzles(puzzles);
         }
         fetchPuzzles();
-    }, [userId]);
+    }, [user]);
 
     // 定石編集画面へ遷移
     const handleSendButton = () => {

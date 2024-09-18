@@ -4,31 +4,31 @@ import { getPuzzlesByApproachId } from "@/lib/api/approachApi";
 import { Button, Box } from "@mui/material";
 import { Update } from "@mui/icons-material";
 import Link from "next/link";
-import useAuth from "@/lib/hooks/useAuth";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type ApproachInfoProps = {
     approach: Approach;
     isActive: boolean;
 };
 
-export default function ApproachCard({ approach, isActive }: ApproachInfoProps) {
-    const [approachTitle, setApproachTitle] = useState<string>(approach.title);
+export default function ApproachInfo({ approach, isActive }: ApproachInfoProps) {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
-    const { userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     // 定石に紐づくパズル一覧を取得
     useEffect(() => {
         const fetchPuzzles = async () => {
             try {
-                if (!userId) return;
-                const data = await getPuzzlesByApproachId(approach.id.toString(), userId ?? '') as Puzzle[];
+                if (!user) return;
+                const data = await getPuzzlesByApproachId(approach.id.toString(), user.uid ?? '') as Puzzle[];
                 setPuzzles(data);
             } catch (error) {
                 console.error("定石に紐づくパズル一覧の取得に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [approach.id, userId]);
+    }, [approach.id, user]);
 
     return (
         <>

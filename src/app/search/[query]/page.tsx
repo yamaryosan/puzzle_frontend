@@ -5,11 +5,12 @@ import { useState, useEffect } from "react";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
 import PuzzleCard from "@/lib/components/PuzzleCard";
-import useAuth from "@/lib/hooks/useAuth";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 export default function Page({ params }: { params: { query: string } }) {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     const decodedQuery = decodeURIComponent(params.query).replace(/\+/g, " ");
    
@@ -19,14 +20,15 @@ export default function Page({ params }: { params: { query: string } }) {
     useEffect(() => {
         async function fetchPuzzles() {
             try {
-                const puzzles = await searchPuzzles(decodedQuery, userId ?? '') as Puzzle[];
+                if (!user) return;
+                const puzzles = await searchPuzzles(decodedQuery, user.uid ?? '') as Puzzle[];
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [params.query, userId, activeCardId]);
+    }, [params.query, user, activeCardId]);
 
     if (!puzzles) {
         return <div>loading...</div>;

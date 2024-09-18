@@ -8,31 +8,33 @@ import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
 import ResultSlider from "@/lib/components/ResultSlider";
 import Link from "next/link";
-import useAuth from "@/lib/hooks/useAuth";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 export default function SearchBox() {
-    const { user, userId } = useAuth();
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState<Puzzle[]>([]);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const searchBoxRef = useRef<HTMLInputElement>(null);
 
+    const user = useContext(FirebaseUserContext);
+
     useEffect(() => {
         async function fetchPuzzles() {
+            if (!user) return;
             if (searchText.trim().length === 0) {
                 setSearchResults([]);
                 return;
             }
             try {
-                if (!userId) return;
-                const puzzles = await searchPuzzles(searchText, userId) as Puzzle[];
+                const puzzles = await searchPuzzles(searchText, user.uid) as Puzzle[];
                 setSearchResults(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);
             }
         }
         fetchPuzzles();
-    }, [searchText, userId]);
+    }, [searchText, user]);
 
     // フォーカスが外れたら0.2秒後に検索結果を非表示(検索結果をクリックできるようにするため)
     useEffect(() => {

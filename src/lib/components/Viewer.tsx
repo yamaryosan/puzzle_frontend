@@ -4,9 +4,9 @@ import React, { forwardRef, useEffect, useRef, useImperativeHandle } from 'react
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
-interface ViewerProps {
-  defaultValue: string;
-}
+type ViewerProps = {
+    defaultValue: string;
+};
 
 const Viewer = forwardRef<Quill, ViewerProps>(
     ({ defaultValue }, ref) => {

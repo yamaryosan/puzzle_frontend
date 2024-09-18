@@ -13,8 +13,9 @@ import { Box, Button } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import HintsViewer from "@/lib/components/HintsViewer";
 import ApproachesViewer from "@/lib/components/ApproachesViewer";
-import useAuth from "@/lib/hooks/useAuth";
 import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type Change = {
     ops: any[];
@@ -74,27 +75,27 @@ export default function Page({ params }: { params: { id: string } }) {
     const answerRef = useRef<Quill | null>(null);
 
     const [categories, setCategories] = useState<Category[] | null>(null);
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
-            if (!userId) return;
-            const puzzle = await getPuzzleById(params.id, userId ?? '') as Puzzle;
+            if (!user) return;
+            const puzzle = await getPuzzleById(params.id, user.uid ?? '') as Puzzle;
             setPuzzle(puzzle);
         }
         fetchPuzzle();
-    }, [userId]);
+    }, [user]);
 
     // カテゴリーを取得
     useEffect(() => {
         async function fetchCategories() {
-            if (!userId) return;
-            const categories = await getCategoriesByPuzzleId(params.id, userId ?? '') as Category[];
+            if (!user) return;
+            const categories = await getCategoriesByPuzzleId(params.id, user.uid ?? '') as Category[];
             setCategories(categories);
         }
         fetchCategories();
-    }, [userId]);
+    }, [user]);
 
     // 送信
     const handleSend = async () => {
@@ -144,7 +145,6 @@ export default function Page({ params }: { params: { id: string } }) {
                 <h3>回答を入力</h3>
                 <Editor
                 ref={answerRef}
-                readOnly={false}
                 defaultValue={answer}
                 onTextChange={setLastChange}
                 onSelectionChange={setRange}/>

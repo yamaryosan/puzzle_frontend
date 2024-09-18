@@ -4,6 +4,8 @@ import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
 import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
 import { Approach } from "@prisma/client";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
 
 type ApproachesViewerProps = {
     puzzleId: string;
@@ -18,9 +20,12 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
     const [approaches, setApproaches] = useState<Approach[] | null>(null);
     const [value, setValue] = useState(0);
 
+    const user = useContext(FirebaseUserContext);
+
     // 定石を取得
     useEffect(() => {
         async function fetchapproaches() {
+            if (!user) return;
             const approaches = await getApproachesByPuzzleId(puzzleId) as Approach[];
             setApproaches(approaches);
         }

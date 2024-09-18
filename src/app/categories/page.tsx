@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { Category } from '@prisma/client';
 import CategoryCard from '@/lib/components/CategoryCard';
 import { getCategories } from '@/lib/api/categoryapi';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import { useContext } from 'react';
 
 export default function Page() {
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
     const [categories, setCategories] = useState<Category[]>([]);
 
     // アクティブなカードのID
@@ -17,12 +18,12 @@ export default function Page() {
     // カテゴリー一覧を取得
     useEffect(() => {
         async function fetchCategories() {
-            if (!userId) return;
-            const categories = await getCategories(userId ?? '');
+            if (!user) return;
+            const categories = await getCategories(user.uid ?? '');
             setCategories(categories || []);
         }
         fetchCategories();
-    }, [userId, activeCardId]);
+    }, [user, activeCardId]);
 
     // カードのクリックイベント
     const handleCardClick = (id: number) => {

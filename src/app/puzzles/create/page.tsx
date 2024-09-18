@@ -11,9 +11,10 @@ import { AddCircleOutline, Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
-import useAuth from '@/lib/hooks/useAuth';
 import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
+import { useContext } from 'react';
+import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 
 type Range = {
     index: number;
@@ -154,7 +155,7 @@ export default function Page() {
     // 難易度
     const [difficulty, setDifficulty] = useState<number>(1);
     // ユーザ情報
-    const { user, userId } = useAuth();
+    const user = useContext(FirebaseUserContext);
 
     useEffect(() => {
         // Deltaクラスを取得
@@ -165,6 +166,10 @@ export default function Page() {
     });
 
     if (!DeltaClass) {
+        return <div>Loading...</div>
+    }
+
+    if (!user) {
         return <div>Loading...</div>
     }
 
@@ -190,7 +195,7 @@ export default function Page() {
             return;
         }
 
-        const puzzle = await sendContent(title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, userId || "");
+        const puzzle = await sendContent(title, checkedCategories, approachIds, quillDescriptionRef, quillSolutionRef, hintQuills, difficulty, user.uid || "");
         if (puzzle) {
             router.push(`/puzzles/${puzzle.id}?created=true`);
         }
@@ -211,7 +216,6 @@ export default function Page() {
                 <h3>問題文</h3>
                 <Editor
                 ref={quillDescriptionRef}
-                readOnly={readOnly}
                 defaultValue={new DeltaClass([{  }])}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange} />
@@ -221,7 +225,6 @@ export default function Page() {
                 <h3>正答</h3>
                 <Editor
                 ref={quillSolutionRef}
-                readOnly={readOnly}
                 defaultValue={new DeltaClass([{ }])}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange} />
@@ -238,7 +241,7 @@ export default function Page() {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>カテゴリー</h3>
                 <CategoryCheckbox 
-                userId={userId || ""}
+                userId={user.uid || ""}
                 onChange={handleCheckboxChange}
                 puzzle_id="0"
                 value={checkedCategories} />

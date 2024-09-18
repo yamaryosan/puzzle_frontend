@@ -208,13 +208,12 @@ export default function Page({ params }: { params: PageParams }) {
     // ユーザ情報
     const user = useContext(FirebaseUserContext);
 
-    if (!user) {
-        return <div>Loading...</div>
-    }
-
     // 編集前にパズルを取得
     useEffect(() => {
-        fetchInitialPuzzle(params.id, user.uid ?? '').then((puzzle) => {
+        if (!params.id || !user) {
+            return;
+        }
+        fetchInitialPuzzle(params.id, user.uid).then((puzzle) => {
             if (!puzzle) {
                 return;
             }
@@ -224,6 +223,9 @@ export default function Page({ params }: { params: PageParams }) {
 
     // 編集前にヒントを取得
     useEffect(() => {
+        if (!user) {
+            return;
+        }
         fetchInitialHints(params.id, user.uid ?? '').then((hints) => {
             if (!hints) {
                 return;
@@ -266,6 +268,10 @@ export default function Page({ params }: { params: PageParams }) {
     }, [puzzle, quillLoaded]);
 
     if (!descriptionDelta || !solutionDelta) {
+        return <div>Loading...</div>
+    }
+
+    if (!user) {
         return <div>Loading...</div>
     }
 

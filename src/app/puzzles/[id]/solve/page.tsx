@@ -13,7 +13,6 @@ import { Box, Button } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import HintsViewer from "@/lib/components/HintsViewer";
 import ApproachesViewer from "@/lib/components/ApproachesViewer";
-import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 
@@ -107,7 +106,6 @@ export default function Page({ params }: { params: { id: string } }) {
 
     return (
         <>
-        {user ? (
         <Box
         sx={{
             padding: "1rem",
@@ -167,11 +165,6 @@ export default function Page({ params }: { params: { id: string } }) {
                 </Button>
             </Box>
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     )
 }

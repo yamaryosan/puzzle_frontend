@@ -5,7 +5,6 @@ import { getApproach, getPuzzlesByApproachId } from '@/lib/api/approachApi';
 import { useEffect, useState } from 'react';
 import { Approach, Puzzle } from '@prisma/client';
 import Viewer from '@/lib/components/Viewer';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
 import { Button, Box } from '@mui/material';
@@ -66,10 +65,6 @@ export default function Page({ params }: { params: PageParams }) {
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
-
-    if (!user) {
-        return <RecommendSignInDialog />;
-    }
 
     if (!approach) {
         return <div>定石が見つかりません</div>;

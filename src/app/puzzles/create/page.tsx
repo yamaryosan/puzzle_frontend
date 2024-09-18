@@ -11,7 +11,6 @@ import { AddCircleOutline, Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
@@ -203,7 +202,6 @@ export default function Page() {
 
     return (
         <>
-        {user ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <AddCircleOutline />
@@ -277,11 +275,6 @@ export default function Page() {
                 </Button>
             </Box>
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     );
 }

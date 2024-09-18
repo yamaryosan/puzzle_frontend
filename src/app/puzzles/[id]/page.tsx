@@ -13,7 +13,6 @@ import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
 import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
@@ -66,15 +65,7 @@ export default function Page({ params }: { params: PageParams }) {
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
-
-    if (!user) {
-        return (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        );
-    }
-
+    
     return (
         <>
         {showCreatedModal && (

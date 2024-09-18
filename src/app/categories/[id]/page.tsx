@@ -5,7 +5,6 @@ import { getCategoryById, fetchPuzzlesByCategoryId, updateCategory, deleteCatego
 import { Puzzle, Category } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 
@@ -72,7 +71,6 @@ export default function Page({ params }: { params: PageParams}) {
 
     return (
         <>
-        {user ? (
         <div>
             {isEditing ? (
                 <div>
@@ -98,11 +96,6 @@ export default function Page({ params }: { params: PageParams}) {
             </ul>
             <Link href="/categories">カテゴリー一覧に戻る</Link>
         </div>
-        ) : (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        )}
         </>
     );
 }

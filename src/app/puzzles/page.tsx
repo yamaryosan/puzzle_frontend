@@ -7,7 +7,6 @@ import { Puzzle } from '@prisma/client';
 import PuzzleCard from '@/lib/components/PuzzleCard';
 import { Sort, Shuffle, AddCircleOutline } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
@@ -80,7 +79,6 @@ export default function Page() {
         {showDeletedModal && (
             <MessageModal message="パズルを削除しました" param="deleted" />
         )}
-        { user ? (
         <div>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Link href="/puzzles/create" className="flex items-center w-full bg-secondary-light hover:bg-secondary-dark">
@@ -131,11 +129,6 @@ export default function Page() {
                 ))}
             </ul>
         </div>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
     </>
     );
 }

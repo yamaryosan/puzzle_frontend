@@ -8,7 +8,6 @@ import { Approach } from '@prisma/client';
 import { Box, Button } from '@mui/material';
 import { Edit, Upload } from '@mui/icons-material';
 import TitleEditor from '@/lib/components/TitleEditor';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
 import { Delete, Clear } from '@mui/icons-material';
 import Portal from '@/lib/components/Portal';
@@ -129,11 +128,6 @@ export default function Page({ params }: { params: PageParams }) {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
     
-
-    if (!user) {
-        return <RecommendSignInDialog />;
-    }
-
     if (!approach || !DeltaClass) {
         return <div>読み込み中</div>;
     }

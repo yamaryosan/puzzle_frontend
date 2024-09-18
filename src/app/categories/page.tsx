@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Category } from '@prisma/client';
 import CategoryCard from '@/lib/components/CategoryCard';
 import { getCategories } from '@/lib/api/categoryapi';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 
@@ -30,20 +29,17 @@ export default function Page() {
         setActiveCardId(id === activeCardId ? null : id);
     };
 
+    // カテゴリーがない場合
+    if (categories.length === 0) {
+        return <p>カテゴリーがありません</p>;
+    }
+
     return (
         <>
-        {!user ? (
-            <div>
-                <RecommendSignInDialog />
+        {categories.map((category) => (
+            <div key={category.id}>
+                <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
             </div>
-        ) : (
-            categories.length === 0 ? (<p>カテゴリーがありません</p>
-            ) : (
-            categories.map((category) => (
-                <div key={category.id}>
-                    <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
-                </div>
-            ))
         ))}
         </>
     );

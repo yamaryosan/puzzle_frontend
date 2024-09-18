@@ -7,7 +7,6 @@ import { getPuzzleById } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
 import { Box, Button } from "@mui/material";
 import { Rule, Check, Clear } from "@mui/icons-material";
-import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 
@@ -81,7 +80,6 @@ export default function Page({ params }: { params: { id: string } }) {
 
     return (
         <>
-        {user ? (
         <Box sx={{  display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <Rule />
@@ -140,11 +138,6 @@ export default function Page({ params }: { params: { id: string } }) {
                 </Button>
             </Box>
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     )
 }

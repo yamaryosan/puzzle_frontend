@@ -6,7 +6,6 @@ import Quill from 'quill';
 import { Box, Button } from "@mui/material";
 import { AddCircleOutline, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from "next/navigation";
 import { Approach } from "@prisma/client";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
@@ -85,14 +84,6 @@ export default function Page() {
         return <div>Loading...</div>
     }
 
-    if (!user) {
-        return (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        );
-    }
-
     // 送信ボタン押下時の処理
     const handleSendButton = async () => {
         if (!title) {
@@ -104,7 +95,7 @@ export default function Page() {
             alert("説明文を入力してください");
             return;
         }
-        const approach = await send(title, user.uid ?? '', quill);
+        const approach = await send(title, user?.uid ?? '', quill);
         if (approach) {
             router.push(`/approaches/${approach.id}?created=true`);
         }
@@ -112,7 +103,6 @@ export default function Page() {
 
     return (
         <>
-        {user ? (
         <Box  sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <h2>
                 <AddCircleOutline />
@@ -144,11 +134,6 @@ export default function Page() {
                 </Box>
             </Button>
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     );
 }

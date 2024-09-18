@@ -7,7 +7,6 @@ import { Approach } from '@prisma/client';
 import ApproachCard from '@/lib/components/ApproachCard';
 import { Box, Button } from '@mui/material';
 import { AddCircleOutline, QuizOutlined } from '@mui/icons-material';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
@@ -35,10 +34,6 @@ export default function Page() {
     const handleCardClick = (id: number) => {
         setActiveCardId(id === activeCardId ? null : id);
     };
-
-    if (!user) {
-        return <RecommendSignInDialog />;
-    }
 
     return (
         <>

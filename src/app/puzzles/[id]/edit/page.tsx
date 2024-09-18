@@ -16,7 +16,6 @@ import TitleEditor from '@/lib/components/TitleEditor';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Edit, Upload, Delete, Clear } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import { useRouter } from 'next/navigation';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
@@ -314,7 +313,6 @@ export default function Page({ params }: { params: PageParams }) {
 
     return (
         <>
-        {user ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
             <div id="delete_modal"></div>
             {isDeleteModalOpen && (
@@ -406,11 +404,6 @@ export default function Page({ params }: { params: PageParams }) {
                 </Button>
             </Box>
         </Box>
-        ) : (
-        <div>
-            <RecommendSignInDialog />
-        </div>
-        )}
         </>
     );
 }

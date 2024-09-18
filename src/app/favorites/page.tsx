@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Puzzle } from '@prisma/client';
 import { getFavoritePuzzles } from '@/lib/api/puzzleapi';
 import PuzzleCard from '@/lib/components/PuzzleCard';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 
@@ -35,7 +34,6 @@ export default function Home() {
         
     return (
         <>
-        {user ? (
         <div>
             <ul>
                 {puzzles.length === 0 ?
@@ -49,11 +47,6 @@ export default function Home() {
                 )}
             </ul>
         </div>
-        ) : (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        )}
         </>
     );
 }

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import RecommendSignInDialog from "@/lib/components/RecommendSignInDialog";
 
 export default function AuthGuardLayout({ children }: Readonly<{ children: ReactNode; }>) {
     const pathname = usePathname();
@@ -28,11 +29,7 @@ export default function AuthGuardLayout({ children }: Readonly<{ children: React
 
     // サインインしていない場合はサインインページにリダイレクト
     if (!isUserSignedIn && !isPublicPage()) {
-        return (
-            <div>
-                サインインしてください。
-            </div>
-        );
+        return (<RecommendSignInDialog />);
     }
 
     // サインインしている場合は子コンポーネントを表示

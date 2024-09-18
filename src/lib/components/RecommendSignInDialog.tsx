@@ -15,7 +15,7 @@ export default function RecommendSignInDialog() {
 
     return (
         <>
-        <Box onClick={() => setIsClosed(true)} sx={{
+        <Box sx={{
             position: 'absolute',
             top: '0',
             left: '0',
@@ -24,7 +24,7 @@ export default function RecommendSignInDialog() {
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
             zIndex: 1,
             cursor: 'pointer',
-            display: isClosed ? 'none' : 'block',
+            display: 'block',
         }} />
         <Card sx={{
             position: 'absolute',
@@ -34,14 +34,11 @@ export default function RecommendSignInDialog() {
             zIndex: 2,
             padding: '1rem',
             width: '40%',
-            display: isClosed ? 'none' : 'block',
+            display: 'block',
         }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <ErrorOutline sx={{ fontSize: '1.5rem' }} />
                 <h3>お知らせ</h3>
-                <Button variant="outlined" sx={{ marginLeft: 'auto', color: "error.main" }} onClick={() => setIsClosed(true)}>
-                    <CancelOutlined />
-                </Button>
             </Box>
             <p>ユーザ登録して、パズルを楽しもう！</p>
             <Button variant="contained" color="primary" sx={{ marginTop: '1rem', width: '100%' }}>

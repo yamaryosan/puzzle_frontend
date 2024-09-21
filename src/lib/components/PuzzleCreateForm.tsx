@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useContext } from 'react';
+import { useRouter } from 'next/navigation';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { Puzzle } from '@prisma/client';
 import Quill from 'quill';
@@ -20,9 +21,9 @@ import { Box, Button } from '@mui/material';
  * @param title タイトル
  * @param categoryIds カテゴリーID
  * @param approachIds 定石ID
- * @param quillDescriptionRef 本文のQuillの参照
- * @param quillSolutionRef 正答のQuillの参照
- * @param hintQuills ヒントのQuillの参照
+ * @param descriptionRef 本文のQuillの参照
+ * @param solutionRef 正答のQuillの参照
+ * @param hintRefs ヒントのQuillの参照
  * @param difficulty 難易度
  * @param uId FirebaseユーザーID
  */
@@ -30,9 +31,9 @@ async function sendContent(
     title: string,
     categoryIds: number[],
     approachIds: number[],
-    quillDescriptionRef: React.RefObject<Quill | null>,
-    quillSolutionRef: React.RefObject<Quill | null>,
-    hintQuills: React.RefObject<Quill | null>[],
+    descriptionRef: React.RefObject<Quill | null>,
+    solutionRef: React.RefObject<Quill | null>,
+    hintRefs: React.RefObject<Quill | null>[],
     difficulty: number,
     userId: string
 ): Promise<Puzzle | undefined> 
@@ -42,7 +43,7 @@ async function sendContent(
         title = "Untitled";
     }
     // Quillの参照が取得できない場合はエラー
-    if (!quillDescriptionRef.current || !quillSolutionRef.current) {
+    if (!descriptionRef.current || !solutionRef.current) {
         console.error("Quillの参照が取得できません");
         return;
     }
@@ -52,8 +53,8 @@ async function sendContent(
         return;
     }
     
-    const descriptionHtml = quillDescriptionRef.current.root.innerHTML;
-    const solutionHtml = quillSolutionRef.current.root.innerHTML;
+    const descriptionHtml = descriptionRef.current.root.innerHTML;
+    const solutionHtml = solutionRef.current.root.innerHTML;
     const is_favorite = false;
 
     // 内容を送信
@@ -101,7 +102,7 @@ async function sendContent(
     console.log("定石の追加に成功");
 
     // ヒントを追加
-    const hintHtmls = hintQuills.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
+    const hintHtmls = hintRefs.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
     if (!hintHtmls) {
         console.error("ヒントの取得に失敗");
         return puzzle;
@@ -131,19 +132,20 @@ type Range = {
 
 export default function PuzzleCreateForm() {
     const user = useContext(FirebaseUserContext);
+    const router = useRouter();
 
     const [title, setTitle] = useState<string>('');
 
     const [, setRange] = useState<Range | null>(null);
     const [, setLastChange] = useState<Delta | null>(null);
+    const descriptionRef = useRef<Quill | null>(null);
+    const solutionRef = useRef<Quill | null>(null);
+    const hintQuills = Array.from({ length: 3 }, () => useRef<Quill | null>(null));
 
     const maxHints = 3;
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
     const [approachIds, setApproachIds] = useState<number[]>([]);
     const [difficulty, setDifficulty] = useState<number>(0);
-    
-    // エディタの参照を取得
-    const editorRef = useRef<Quill | null>(null);
     
     useEffect(() => {
         // Deltaクラスを取得
@@ -165,7 +167,25 @@ export default function PuzzleCreateForm() {
 
     // 送信ボタン押下時の処理
     const handleSendButton = async () => {
-        console.log(editorRef.current?.getContents());
+        if (!title) {
+            alert("タイトルを入力してください");
+            return;
+        }
+        const description = descriptionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (description?.trim() === "") {
+            alert("問題文を入力してください");
+            return;
+        }
+        const solution = solutionRef.current?.editor.delta.ops.map((op: any) => op.insert).join("");
+        if (solution?.trim() === "") {
+            alert("正答を入力してください");
+            return;
+        }
+
+        const puzzle = await sendContent(title, checkedCategories, approachIds, descriptionRef, solutionRef, hintQuills, difficulty, user?.uid || "");
+        if (puzzle) {
+            router.push(`/puzzles/${puzzle.id}?created=true`);
+        }
     }
 
     return (
@@ -175,7 +195,7 @@ export default function PuzzleCreateForm() {
         <Box sx={{ paddingY: '0.5rem' }}>
             <h3>問題文</h3>
             <Editor
-            ref={editorRef}
+            ref={descriptionRef}
             defaultValue={new Delta()}
             onSelectionChange={setRange}
             onTextChange={setLastChange} />
@@ -184,7 +204,7 @@ export default function PuzzleCreateForm() {
         <Box sx={{ paddingY: '0.5rem' }}>
             <h3>正答</h3>
             <Editor
-            ref={editorRef}
+            ref={solutionRef}
             defaultValue={new Delta()}
             onSelectionChange={setRange}
             onTextChange={setLastChange} />

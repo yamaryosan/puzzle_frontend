@@ -14,6 +14,7 @@ export default function CommonButton({ children, color, onClick, disabled }: Com
         <Button 
         sx={{
             padding: '1.5rem',
+            marginBottom: '0.5rem',
             backgroundColor: `${color}.light`,
             width: '100%',
             ":hover": {

@@ -16,6 +16,17 @@ type EditorProps = {
     onTextChange: (delta: Delta | null, oldDelta: Delta | null, source: string) => void;
 }
 
+const options = {
+    modules: {
+        toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline'],
+        ['image', 'code-block'],
+        ],
+    },
+    theme: 'snow',
+};
+
 // Quillのツールバーモジュールの型定義
 type QuillToolbarModule = {
     addHandler: (format: string, handler: () => void) => void;
@@ -29,24 +40,17 @@ type ExtendedQuill = Quill & {
 // 画像アップロードのためのハンドラ
 type ImageHandler = (quill: ExtendedQuill) => void;
 
-// 画像アップロード処理の設定
-function setupImageUpload(quill: ExtendedQuill, imageHandler: ImageHandler) {
+/**
+ * ツールバーの画像ボタンがクリックされたときの処理
+ * @param quill Quillインスタンス
+ * @param imageHandler 画像アップロードのハンドラ
+ */
+function setupToolbarImageUploader(quill: ExtendedQuill, imageHandler: ImageHandler) {
     const toolbar = quill.getModule('toolbar');
     toolbar.addHandler('image', () => {
         imageHandler(quill);
     });
 }
-
-const options = {
-    modules: {
-        toolbar: [
-        [{ header: [1, 2, false] }],
-        ['bold', 'italic', 'underline'],
-        ['image', 'code-block'],
-        ],
-    },
-    theme: 'snow',
-};
 
 /**
  * 画像アップロード処理
@@ -73,10 +77,11 @@ const insertImage = async(quill: Quill, file: File) => {
     quill.insertEmbed(range?.index || 0, 'image', imageUrl);
 };
 
-/** 画像ハンドラ (ツールバー用)
- * @param {Quill} quill - Quillインスタンス
+
+/** ツールバー画像ボタンがクリックされたときの処理
+ * @param {Quill} quill Quillインスタンス
  */
-const imageHandler = async(quill: Quill) => {
+const toolbarImageHandler = async(quill: Quill) => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
@@ -85,34 +90,10 @@ const imageHandler = async(quill: Quill) => {
     input.onchange = async () => {
         const file = input.files?.[0];
         if (file) {
-        console.log("画像がアップロードされます");
+        console.log("画像がアップロードされます(imageHandler)");
         await insertImage(quill, file);
         }
     };
-};
-
-/**
- * 画像ペースト時の処理
- * @param {ClipboardEvent} event クリップボードイベント
- * @param {Quill} quill Quillインスタンス
- */
-const pasteImageHandler = async (event: ClipboardEvent, quill: Quill) => {
-    const file = event.clipboardData?.items;
-    if (!file) { return; }
-    // 画像ファイルごとに処理を行う
-    for (let i = 0; i < file.length; i++) {
-        // 画像以外はスキップ
-        if (file[i].type.indexOf('image') === -1) {
-            continue;
-        }
-        event.preventDefault();
-        const imageFile = file[i].getAsFile();
-        if (imageFile) {
-            console.log("画像がペーストされます")
-            await insertImage(quill, imageFile);
-        }
-        return; // 画像が見つかったら終了
-    }
 };
 
 /**
@@ -136,12 +117,35 @@ const dropImageHandler = async (event: DragEvent, quill: Quill) => {
     }
 };
 
+/**
+ * 画像ペースト時の処理
+ * @param {ClipboardEvent} event クリップボードイベント
+ * @param {Quill} quill Quillインスタンス
+ */
+const pasteImageHandler = async (event: ClipboardEvent, quill: Quill) => {
+    const file = event.clipboardData?.items;
+    if (!file) { return; }
+    // 画像ファイルごとに処理を行う
+    for (let i = 0; i < file.length; i++) {
+        // 画像以外はスキップ
+        if (file[i].type.indexOf('image') === -1) {
+            continue;
+        }
+        event.preventDefault();
+        const imageFile = file[i].getAsFile();
+        if (imageFile) {
+            console.log("画像がペーストされます(pasteImageHandler)");
+            await insertImage(quill, imageFile);
+        }
+        return; // 画像が見つかったら終了
+    }
+};
+
 /** エディタのコンポーネント
- * @param {Delta} defaultValue - 初期値
+ * @param {string} defaultValue - 初期値の文字列
  * @param {Function} onSelectionChange - 選択範囲が変更されたときのコールバック
  * @param {Function} onTextChange - テキストが変更されたときのコールバック
- * @param {Ref} ref - エディタのrefオブジェクト
- * @returns {React.ReactElement} エディタのコンポーネント
+ * @param {Ref} ref - エディタのRefオブジェクト
  */
 export const Editor = forwardRef<Quill, EditorProps>(
     ({ defaultValue, onSelectionChange, onTextChange }, ref) => {
@@ -152,7 +156,7 @@ export const Editor = forwardRef<Quill, EditorProps>(
     const onTextChangeRef = useRef<typeof onTextChange>(onTextChange);
 
     useEffect(() => {
-        async function init() {
+        async function initializeQuillEditor() {
             // エディタのDOM要素を取得
             const container = containerRef.current;
             if (!container) { return; }
@@ -165,17 +169,17 @@ export const Editor = forwardRef<Quill, EditorProps>(
                 const module = await import('quill');
                 const Quill = module.default;
                 const quillInstance = new Quill(editorContainer, options) as ExtendedQuill;
+                // ツールバーの画像ボタンのクリックイベントを設定
+                setupToolbarImageUploader(quillInstance, toolbarImageHandler);
 
-                // 画像のアップロード処理を設定
-                setupImageUpload(quillInstance, imageHandler);
-                // 画像ドラッグアンドドロップ時の処理
-                editorContainer.addEventListener('drop', async (event: DragEvent) => {
-                    await dropImageHandler(event, quillInstance);
-                });
-                // 画像ペースト時の処理
-                editorContainer.addEventListener('paste', async (event: ClipboardEvent) => {
-                    await pasteImageHandler(event, quillInstance);
-                });
+                // ドラッグアンドドロップのイベントを設定
+                editorContainer.addEventListener('drop', (event) => {
+                    dropImageHandler(event, quillInstance);
+                }, true);
+                // ペーストイベントを設定
+                editorContainer.addEventListener('paste', (event) => {
+                    pasteImageHandler(event, quillInstance);
+                }, true);
 
                 // Quillのインスタンスをrefに設定
                 if (ref) {
@@ -200,19 +204,16 @@ export const Editor = forwardRef<Quill, EditorProps>(
                 console.error("エディタの初期化に失敗しました: ", error);
             }
         }
-        init();
+        initializeQuillEditor();
         // クリーンアップ
         return () => {
             const container = containerRef.current;
             if (!container) { return; }
             container.innerHTML = '';
         };
-    }, [ref]);
+    }, []);
     
     return <div ref={containerRef}></div>;
     },
 );
-
-Editor.displayName = 'Editor';
-
 export default Editor;

@@ -3,18 +3,14 @@ import Editor from '@/lib/components/Editor';
 import Quill from 'quill';
 import DeltaClass from 'quill-delta';
 import { Box, Button } from '@mui/material';
+import Delta from 'quill-delta';
 
 type Range = {
     index: number;
     length: number;
 };
 
-type Change = {
-    ops: any[];
-};
-
 type HintEditorProps = {
-    quill: MutableRefObject<Quill | null>;
     defaultValue: DeltaClass;
     number: number;
     canToggle: boolean;
@@ -22,9 +18,9 @@ type HintEditorProps = {
     toggleShow: () => void;
 };
 
-export default function HintEditor({ quill, defaultValue, number, canToggle, show, toggleShow }: HintEditorProps) {
-    const [range, setRange] = useState<Range | undefined>(undefined);
-    const [lastChange, setLastChange] = useState<Change | undefined>(undefined);
+export default function HintEditor({ defaultValue, number, canToggle, show, toggleShow }: HintEditorProps) {
+    const [, setRange] = useState<Range | null>(null);
+    const [, setLastChange] = useState<Delta | null>(null);
 
     return (
         <Box>
@@ -52,8 +48,7 @@ export default function HintEditor({ quill, defaultValue, number, canToggle, sho
                 <Editor
                 defaultValue={defaultValue}
                 onSelectionChange={setRange}
-                onTextChange={setLastChange}
-                ref={quill}/>
+                onTextChange={setLastChange}/>
             )}
         </Box>
     )

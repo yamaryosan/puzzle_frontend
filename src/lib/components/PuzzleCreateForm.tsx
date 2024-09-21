@@ -5,15 +5,17 @@ import { useRouter } from 'next/navigation';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { Puzzle } from '@prisma/client';
 import Quill from 'quill';
-import Editor from '@/lib/components/Editor';
 import Delta from 'quill-delta';
 import TitleEditor from '@/lib/components/TitleEditor';
+import DescriptionEditor from '@/lib/components/DescriptionEditor';
+import SolutionEditor from '@/lib/components/SolutionEditor';
 import HintsEditor from '@/lib/components/HintsEditor';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
+import CommonButton from '@/lib/components/common/CommonButton';
 
 
 /**
@@ -197,70 +199,38 @@ export default function PuzzleCreateForm() {
         <>
         <TitleEditor title={title} setTitle={setTitle} />
 
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>問題文</h3>
-            <Editor
-            ref={descriptionRef}
-            defaultValue={new Delta()}
-            onSelectionChange={setRange}
-            onTextChange={setLastChange} />
-        </Box>
+        <DescriptionEditor
+        containerRef={descriptionRef}
+        onSelectionChange={setRange}
+        onTextChange={setLastChange} />
 
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>正答</h3>
-            <Editor
-            ref={solutionRef}
-            defaultValue={new Delta()}
-            onSelectionChange={setRange}
-            onTextChange={setLastChange} />
-        </Box>
+        <SolutionEditor
+        containerRef={solutionRef}
+        onSelectionChange={setRange}
+        onTextChange={setLastChange} />
 
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>ヒント</h3>
-            <HintsEditor
-            refs={hintRefs}
-            maxHints={maxHints}
-            defaultValues={Array.from({ length: maxHints }, () => new Delta())} />
-        </Box>
+        <HintsEditor
+        refs={hintRefs}
+        maxHints={maxHints}
+        defaultValues={Array.from({ length: maxHints }, () => new Delta())} />
 
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>カテゴリー</h3>
-            <CategoryCheckbox 
-            userId={user?.uid || ""}
-            onChange={handleCheckboxChange}
-            puzzle_id="0"
-            value={checkedCategories} />
-        </Box>
+        <CategoryCheckbox 
+        userId={user?.uid || ""}
+        onChange={handleCheckboxChange}
+        puzzle_id="0"
+        value={checkedCategories} />
 
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>定石</h3>
-            <ApproachCheckbox
-            onChange={setApproachIds}
-            puzzle_id="0"
-            value={approachIds} />
-        </Box>
+        <ApproachCheckbox
+        onChange={setApproachIds}
+        puzzle_id="0"
+        value={approachIds} />
+        
+        <DifficultEditor value={difficulty} onChange={setDifficulty} />
 
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>難易度</h3>
-            <DifficultEditor value={difficulty} onChange={setDifficulty} />
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: '1rem', marginY: '1rem' }}>
-            <Button 
-            sx={{
-                padding: '1.5rem',
-                backgroundColor: 'secondary.light',
-                width: '100%',
-                ":hover": {
-                    backgroundColor: 'secondary.main',
-                }
-            }}
-            onClick={() => handleSendButton()}>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                    <Upload />
-                    <span>作成</span>
-                </Box>
-            </Button>
-        </Box>
+        <CommonButton color="secondary" onClick={() => handleSendButton()}>
+            <Upload />
+            作成
+        </CommonButton>
         </>
     )
 }

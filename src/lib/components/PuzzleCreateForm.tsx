@@ -14,15 +14,22 @@ import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
+import Delta from 'quill-delta';
 
 type Range = {
     index: number;
     length: number;
 };
 
-type Change = {
-    ops: any[];
+// Delta 操作の型定義
+type DeltaOperation = {
+    insert?: string | object;
+    delete?: number;
+    retain?: number;
+    attributes?: object;
 };
+
+type DeltaConstructor = new (ops: DeltaOperation[]) => Delta;
 
 /**
  * 内容を送信
@@ -134,10 +141,9 @@ async function sendContent(
 
 export default function PuzzleCreateForm() {
     const router = useRouter();
-    const [range, setRange] = useState<Range>();
-    const [lastChange, setLastChange] = useState<Change>();
-    const [readOnly, setReadOnly] = useState(false);
-    const [DeltaClass, setDeltaClass] = useState<any>();
+    const [, setRange] = useState<Range | null>(null);
+    const [, setLastChange] = useState<Delta | null>(null);
+    const [DeltaClass, setDeltaClass] = useState<DeltaConstructor | null>(null);
 
     // タイトル
     const [title, setTitle] = useState<string>("");
@@ -158,10 +164,12 @@ export default function PuzzleCreateForm() {
 
     useEffect(() => {
         // Deltaクラスを取得
-        import('quill').then((module) => {
-            const DeltaClass = module.default.import('delta');
+        async function loadQuill() {
+            const module = await import('quill');
+            const DeltaClass = module.default.import('delta') as DeltaConstructor;
             setDeltaClass(() => DeltaClass);
-        });
+        }
+        loadQuill();
     });
 
     if (!DeltaClass) {

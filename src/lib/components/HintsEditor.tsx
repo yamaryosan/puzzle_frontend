@@ -60,27 +60,30 @@ export default function HintsEditor({ maxHints, defaultValues, refs }: HintsEdit
     };
 
     return (
-        <Box sx={{display: "flex", flexDirection: "row", width: "100%" }}>
-            {Array.from({ length: maxHints }, (_, i) => (
-                <Box key={i}
-                sx={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    marginY: "0.5rem",
-                    marginX: "0.25rem",
-                    border: "1px solid #ccc",
-                    borderRadius: "0.25rem",
-                }}>
-                    <h4>ヒント{`${i + 1}`}:</h4>
-                    <HintEditor
-                        hintRef={refs[i]}
-                        defaultValue={defaultValues[i]}
-                        number={i}
-                        canToggle={canToggle[i]}
-                        show={show[i]}
-                        toggleShow={() => toggleShow(i)} />
-                </Box>
-            ))}
+        <Box sx={{ paddingY: '0.5rem' }}>
+            <h3>ヒント</h3>
+            <Box sx={{display: "flex", flexDirection: "row", width: "100%" }}>
+                {Array.from({ length: maxHints }, (_, i) => (
+                    <Box key={i}
+                    sx={{
+                        width: "100%",
+                        padding: "0.5rem",
+                        marginY: "0.5rem",
+                        marginX: "0.25rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "0.25rem",
+                    }}>
+                        <h4>ヒント{`${i + 1}`}:</h4>
+                        <HintEditor
+                            hintRef={refs[i]}
+                            defaultValue={defaultValues[i]}
+                            number={i}
+                            canToggle={canToggle[i]}
+                            show={show[i]}
+                            toggleShow={() => toggleShow(i)} />
+                    </Box>
+                ))}
+            </Box>
         </Box>
     )
 }

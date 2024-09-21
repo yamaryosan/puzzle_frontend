@@ -64,26 +64,23 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     }
 
     return (
-        <Box
-        sx={{
-            padding: "1rem",
-            border: "1px solid #ccc",
-            borderRadius: "0.25rem",
-            fontSize: "1.5rem",
-        }}>
-            {approaches?.length === 0 && <p>定石がありません</p>}
-            <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: "2fr 2fr" }}>
-            {approaches?.map((approach) => (
-                <div key={approach.id}>
-                    <input
-                        type="checkbox"
-                        id={`approach_${approach.id.toString()}`}
-                        checked={checkedApproachIds.includes(approach.id)}
-                        onChange={() => handleCheckboxChange(approach.id)}
-                    />
-                    <label htmlFor={`approach_${approach.id.toString()}`}>{approach.title}</label>
-                </div>
-            ))}
+        <Box sx={{ paddingY: '0.5rem' }}>
+            <h3>定石</h3>
+            <Box sx={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "0.25rem", fontSize: "1.5rem" }}>
+                {approaches?.length === 0 && <p>定石がありません</p>}
+                <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: "2fr 2fr" }}>
+                {approaches?.map((approach) => (
+                    <div key={approach.id}>
+                        <input
+                            type="checkbox"
+                            id={`approach_${approach.id.toString()}`}
+                            checked={checkedApproachIds.includes(approach.id)}
+                            onChange={() => handleCheckboxChange(approach.id)}
+                        />
+                        <label htmlFor={`approach_${approach.id.toString()}`}>{approach.title}</label>
+                    </div>
+                ))}
+                </Box>
             </Box>
         </Box>
     );

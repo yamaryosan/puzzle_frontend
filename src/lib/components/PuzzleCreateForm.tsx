@@ -102,7 +102,12 @@ async function sendContent(
     console.log("定石の追加に成功");
 
     // ヒントを追加
-    const hintHtmls = hintRefs.map((hintQuill) => hintQuill.current?.root.innerHTML ?? "");
+    const hintHtmls = hintRefs.map((hintRef) => {
+        if (!hintRef.current) {
+            return "";
+        }
+        return hintRef.current.root.innerHTML;
+    });
     if (!hintHtmls) {
         console.error("ヒントの取得に失敗");
         return puzzle;
@@ -140,13 +145,13 @@ export default function PuzzleCreateForm() {
     const [, setLastChange] = useState<Delta | null>(null);
     const descriptionRef = useRef<Quill | null>(null);
     const solutionRef = useRef<Quill | null>(null);
-    const hintQuills = Array.from({ length: 3 }, () => useRef<Quill | null>(null));
+    const hintRefs = Array.from({ length: 3 }, () => useRef<Quill | null>(null));
 
     const maxHints = 3;
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
     const [approachIds, setApproachIds] = useState<number[]>([]);
     const [difficulty, setDifficulty] = useState<number>(0);
-    
+
     useEffect(() => {
         // Deltaクラスを取得
         async function loadQuill() {
@@ -182,7 +187,7 @@ export default function PuzzleCreateForm() {
             return;
         }
 
-        const puzzle = await sendContent(title, checkedCategories, approachIds, descriptionRef, solutionRef, hintQuills, difficulty, user?.uid || "");
+        const puzzle = await sendContent(title, checkedCategories, approachIds, descriptionRef, solutionRef, hintRefs, difficulty, user?.uid || "");
         if (puzzle) {
             router.push(`/puzzles/${puzzle.id}?created=true`);
         }
@@ -213,7 +218,7 @@ export default function PuzzleCreateForm() {
         <Box sx={{ paddingY: '0.5rem' }}>
             <h3>ヒント</h3>
             <HintsEditor
-            refs={Array.from({ length: maxHints }, () => useRef<Quill | null>(null))}
+            refs={hintRefs}
             maxHints={maxHints}
             defaultValues={Array.from({ length: maxHints }, () => new Delta())} />
         </Box>

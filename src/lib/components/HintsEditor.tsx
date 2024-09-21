@@ -8,13 +8,14 @@ import { Box } from "@mui/material";
 type HintsEditorProps = {
     maxHints: number;
     defaultValues: DeltaClass[];
+    refs: MutableRefObject<Quill | null>[];
 }
 
 /**
  * 複数ヒントの編集用エディタ
  * @returns 
  */
-export default function HintsEditor({ maxHints, defaultValues }: HintsEditorProps) {
+export default function HintsEditor({ maxHints, defaultValues, refs }: HintsEditorProps) {
     // 各ヒントをトグルできるかどうか(できない場合はdisabled)
     const [canToggle, setCanToggle] = useState(() => Array(maxHints).fill(false));
     // 各ヒントの表示/非表示状態
@@ -72,6 +73,7 @@ export default function HintsEditor({ maxHints, defaultValues }: HintsEditorProp
                 }}>
                     <h4>ヒント{`${i + 1}`}:</h4>
                     <HintEditor
+                        hintRef={refs[i]}
                         defaultValue={defaultValues[i]}
                         number={i}
                         canToggle={canToggle[i]}

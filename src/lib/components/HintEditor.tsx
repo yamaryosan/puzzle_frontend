@@ -11,6 +11,7 @@ type Range = {
 };
 
 type HintEditorProps = {
+    hintRef: MutableRefObject<Quill | null>;
     defaultValue: DeltaClass;
     number: number;
     canToggle: boolean;
@@ -18,7 +19,7 @@ type HintEditorProps = {
     toggleShow: () => void;
 };
 
-export default function HintEditor({ defaultValue, number, canToggle, show, toggleShow }: HintEditorProps) {
+export default function HintEditor({ hintRef, defaultValue, number, canToggle, show, toggleShow }: HintEditorProps) {
     const [, setRange] = useState<Range | null>(null);
     const [, setLastChange] = useState<Delta | null>(null);
 
@@ -46,6 +47,7 @@ export default function HintEditor({ defaultValue, number, canToggle, show, togg
             </Button>
             {show && (
                 <Editor
+                ref={hintRef}
                 defaultValue={defaultValue}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}/>

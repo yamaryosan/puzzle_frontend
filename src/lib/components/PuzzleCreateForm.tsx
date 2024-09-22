@@ -14,7 +14,6 @@ import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import ApproachCheckbox from '@/lib/components/ApproachCheckbox';
 import DifficultEditor from '@/lib/components/DifficultyEditor';
 import { Upload } from '@mui/icons-material';
-import { Box, Button } from '@mui/material';
 import CommonButton from '@/lib/components/common/CommonButton';
 
 

@@ -5,15 +5,8 @@ import Quill from 'quill';
 import Delta from 'quill-delta';
 import 'quill/dist/quill.snow.css';
 
-type Range = {
-    index: number;
-    length: number;
-};
-
 type ViewerProps = {
     defaultValue: Delta;
-    onSelectionChange: (range: Range | null, oldRange: Range | null, source: string) => void;
-    onTextChange: (delta: Delta | null, oldDelta: Delta | null, source: string) => void;
 }
 
 const options = {
@@ -26,17 +19,13 @@ const options = {
 
 /** 閲覧用ビューワーのコンポーネント
  * @param {string} defaultValue - 初期値の文字列
- * @param {Function} onSelectionChange - 選択範囲が変更されたときのコールバック
- * @param {Function} onTextChange - テキストが変更されたときのコールバック
  * @param {Ref} ref - エディタのRefオブジェクト
  */
 export const Viewer = forwardRef<Quill, ViewerProps>(
-    ({ defaultValue, onSelectionChange, onTextChange }, ref) => {
+    ({ defaultValue }, ref) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
     const defaultValueRef = useRef<Delta>(defaultValue);
-    const onSelectionChangeRef = useRef<typeof onSelectionChange>(onSelectionChange);
-    const onTextChangeRef = useRef<typeof onTextChange>(onTextChange);
 
     useEffect(() => {
         async function initializeQuillEditor() {
@@ -62,14 +51,6 @@ export const Viewer = forwardRef<Quill, ViewerProps>(
                     console.log("初期値を設定します: ", defaultValueRef.current);
                     quillInstance.setContents(defaultValueRef.current);
                 }
-
-                quillInstance.on('text-change', (delta, oldDelta, source) => {
-                    onTextChangeRef.current?.(delta, oldDelta, source);
-                });
-
-                quillInstance.on('selection-change', (range, oldRange, source) => {
-                    onSelectionChangeRef.current?.(range, oldRange, source);
-                });
             } catch(error) {
                 console.error("エディタの初期化に失敗しました: ", error);
             }

@@ -16,7 +16,8 @@ import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
 import { useSearchParams } from 'next/navigation';
 import MessageModal from '@/lib/components/MessageModal';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
-import { useContext } from 'react'; 
+import { useContext } from 'react';
+import Delta from 'quill-delta';
 
 type PageParams = {
     id: string;
@@ -25,6 +26,7 @@ type PageParams = {
 export default function Page({ params }: { params: PageParams }) {
     const user = useContext(FirebaseUserContext);
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+    const [descriptionDelta, setDescriptionDelta] = useState<Delta>();
     const [categories, setCategories] = useState<Category[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -33,6 +35,8 @@ export default function Page({ params }: { params: PageParams }) {
     const showCreatedModal = searchParams.get('created') === 'true';
     const showEditedModal = searchParams.get('edited') === 'true';
 
+    const [isLoading, setIsLoading] = useState(true);
+
     // パズルを取得
     useEffect(() => {
         async function fetchPuzzle() {
@@ -40,12 +44,18 @@ export default function Page({ params }: { params: PageParams }) {
                 if (!user) return;
                 const puzzle = await getPuzzleById(params.id, user.uid ?? '') as Puzzle;
                 setPuzzle(puzzle);
+                const module = await import('quill');
+                const Delta = module.default.import('delta');
+                const quill = new module.default(document.createElement('div'));
+                const descriptionDelta = quill.clipboard.convert({ html: puzzle.description });
+                setDescriptionDelta(new Delta(descriptionDelta.ops));
+                setIsLoading(false);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
             }
         }
         fetchPuzzle();
-    }, [params.id, user]);
+    }, [params.id, isLoading]);
 
     // パズルのカテゴリーを取得
     useEffect(() => {
@@ -65,6 +75,10 @@ export default function Page({ params }: { params: PageParams }) {
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
     
     return (
         <>
@@ -112,7 +126,7 @@ export default function Page({ params }: { params: PageParams }) {
 
             <Box sx={{ paddingY: '0.5rem' }}>
                     <h3>問題文</h3>
-                    <Viewer defaultValue={puzzle?.description ?? ''} />
+                    <Viewer defaultValue={descriptionDelta ?? new Delta()} />
             </Box>
 
             <Box

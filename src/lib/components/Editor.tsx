@@ -142,10 +142,10 @@ const pasteImageHandler = async (event: ClipboardEvent, quill: Quill) => {
 };
 
 /** エディタのコンポーネント
- * @param {string} defaultValue - 初期値の文字列
- * @param {Function} onSelectionChange - 選択範囲が変更されたときのコールバック
- * @param {Function} onTextChange - テキストが変更されたときのコールバック
- * @param {Ref} ref - エディタのRefオブジェクト
+ * @param {Delta} defaultValue 初期値
+ * @param {Function} onSelectionChange 選択範囲が変更されたときのコールバック
+ * @param {Function} onTextChange テキストが変更されたときのコールバック
+ * @param {Ref} ref エディタのRefオブジェクト
  */
 export const Editor = forwardRef<Quill, EditorProps>(
     ({ defaultValue, onSelectionChange, onTextChange }, ref) => {
@@ -187,10 +187,9 @@ export const Editor = forwardRef<Quill, EditorProps>(
                 }
 
                 // 初期値を設定
-                if (defaultValueRef.current) {
-                    console.log("初期値を設定します: ", defaultValueRef.current);
-                    quillInstance.setContents(defaultValueRef.current);
-                }
+                console.log(defaultValueRef.current);
+                console.log("初期値を設定します: ", defaultValueRef.current);
+                quillInstance.setContents(defaultValueRef.current);
 
                 // テキストが変更されたときのコールバック
                 quillInstance?.on(Quill.events.TEXT_CHANGE, (delta, oldDelta, source) => {
@@ -211,7 +210,7 @@ export const Editor = forwardRef<Quill, EditorProps>(
             if (!container) { return; }
             container.innerHTML = '';
         };
-    }, []);
+    }, [ref]);
     
     return <div ref={containerRef}></div>;
     },

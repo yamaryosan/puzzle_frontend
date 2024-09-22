@@ -21,26 +21,6 @@ import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 
 /**
- * 編集前のヒントを取得
- * @param id パズルID
- * @param userId ユーザID
- * @returns Promise<Hint[] | undefined> ヒント
- */
-async function fetchInitialHints(id: string, userId: string): Promise<Hint[] | undefined> {
-    try {
-        const hints = await getHintsByPuzzleId(id, userId);
-        if (!hints) {
-            console.error("ヒントが見つかりません");
-            return;
-        }
-        console.log("ヒントを取得しました: ", hints);
-        return hints;
-    } catch (error) {
-        console.error("ヒントの取得に失敗: ", error);
-    }
-}
-
-/**
  * 内容を送信
  * @param id パズルID
  * @param title タイトル

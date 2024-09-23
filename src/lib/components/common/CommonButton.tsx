@@ -1,6 +1,6 @@
 import { Button, Box } from "@mui/material";
 
-type color = "primary" | "secondary" | "error";
+type color = "primary" | "secondary" | "error" | "success";
 
 type CommonButtonProps = {
     children: React.ReactNode;

@@ -11,8 +11,6 @@ type HintsViewerProps = {
     puzzleId: string;
 };
 
-const maxHints = 3;
-
 /**
  * 複数ヒントのビューワー
  * @returns 

@@ -3,14 +3,13 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import HintsViewer from '@/lib/components/HintsViewer';
 import { Hint } from '@prisma/client';
-import { fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import getHintsByPuzzleId from '@/lib/api/hintapi';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { User } from 'firebase/auth';
 
 // モックの設定
 jest.mock('@/lib/api/hintapi');
-jest.mock('@/lib/components/Viewer');
 
 // モックデータ
 const mockHints: Hint[] = [
@@ -37,8 +36,8 @@ const mockUser = {
 } as User;
 
 jest.mock('@/lib/components/Viewer', () => {
-    return function Viewer({ defaultValue }: { defaultValue: string }) {
-        return <div>{defaultValue}</div>;
+    return function Viewer({ defaultHtml }: { defaultHtml: string }) {
+        return <div>{defaultHtml}</div>;
     }
 });
 
@@ -81,7 +80,8 @@ describe('HintsViewer', () => {
         });
 
         const toggleButton = screen.getByText('表示');
-        fireEvent.click(toggleButton);
+        const ev = userEvent.setup();
+        ev.click(toggleButton);
 
         await waitFor(async () => {
             expect(getHintsByPuzzleId).toHaveBeenCalled();
@@ -97,8 +97,9 @@ describe('HintsViewer', () => {
             );
         });
 
+        const ev = userEvent.setup();
         const toggleButton = screen.getByText('表示');
-        fireEvent.click(toggleButton);
+        ev.click(toggleButton);
 
         await waitFor(() => {
             expect(screen.getByText('非表示')).toBeInTheDocument();
@@ -106,7 +107,7 @@ describe('HintsViewer', () => {
         });
 
         // 非表示にする
-        fireEvent.click(screen.getByText('非表示'));
+        ev.click(screen.getByText('非表示'));
 
         // 非表示になっていることを確認
         await waitFor(() => {
@@ -125,10 +126,17 @@ describe('HintsViewer', () => {
         });
 
         const toggleButton = screen.getByText('表示');
-        fireEvent.click(toggleButton);
+        const ev = userEvent.setup();
+        ev.click(toggleButton);
+
+        await waitFor(async () => {
+            expect(screen.getByText('非表示')).toBeInTheDocument();
+            expect(screen.getByText('ヒント1')).toBeInTheDocument();
+        });
 
         const tab = screen.getByText('ヒント1');
-        fireEvent.click(tab);
+        expect(tab).toBeInTheDocument();
+        ev.click(tab);
 
         await waitFor(() => {
             expect(screen.getByText('ヒント本文1')).toBeInTheDocument();
@@ -137,7 +145,7 @@ describe('HintsViewer', () => {
 
         // タブの切り替え
         const tab2 = screen.getByText('ヒント2');
-        fireEvent.click(tab2);
+        ev.click(tab2);
 
         await waitFor(() => {
             expect(screen.getByText('ヒント本文2')).toBeInTheDocument();

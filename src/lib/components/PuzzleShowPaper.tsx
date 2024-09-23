@@ -15,7 +15,6 @@ import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
-import Delta from 'quill-delta';
 import MessageModal from '@/lib/components/MessageModal';
 import CommonButton from '@/lib/components/common/CommonButton';
 import CategoryShowPart from '@/lib/components/CategoryShowPart';
@@ -26,7 +25,6 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
     const user = useContext(FirebaseUserContext);
 
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [descriptionDelta, setDescriptionDelta] = useState<Delta>();
     const [categories, setCategories] = useState<Category[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -50,11 +48,6 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                 if (!user) return;
                 const puzzle = await getPuzzleById(id, user.uid ?? '') as Puzzle;
                 setPuzzle(puzzle);
-                const module = await import('quill');
-                const Delta = module.default.import('delta');
-                const quill = new module.default(document.createElement('div'));
-                const descriptionDelta = quill.clipboard.convert({ html: puzzle.description });
-                setDescriptionDelta(new Delta(descriptionDelta.ops));
                 setIsLoading(false);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
@@ -111,7 +104,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                 <DifficultViewer value={puzzle?.difficulty ?? 0} />
             </Box>
 
-            <DescriptionViewer descriptionDelta={descriptionDelta ?? new Delta()} />
+            <DescriptionViewer descriptionHtml={puzzle?.description ?? ""} />
 
             <Box sx={{ display: "flex", gap: "1rem", marginTop: "1rem", justifyContent: "space-between" }}>
                 <Link href="/puzzles/[id]/solve" as={`/puzzles/${id}/solve`} style={{display: "block", width: "30%"}}>

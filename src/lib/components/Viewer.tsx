@@ -18,8 +18,8 @@ const options = {
 };
 
 /** 閲覧用ビューワーのコンポーネント
- * @param {string} defaultValue - 初期値の文字列
- * @param {Ref} ref - エディタのRefオブジェクト
+ * @param {Delta} defaultValue 初期値
+ * @param {Ref} ref エディタのRefオブジェクト
  */
 export const Viewer = forwardRef<Quill, ViewerProps>(
     ({ defaultValue }, ref) => {

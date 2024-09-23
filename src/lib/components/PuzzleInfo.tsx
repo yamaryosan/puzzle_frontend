@@ -4,6 +4,8 @@ import Viewer from "@/lib/components/Viewer";
 import { EmojiObjects, Edit } from "@mui/icons-material";
 import Link from "next/link";
 import DifficultViewer from "@/lib/components/DifficultyViewer";
+import Delta from "quill-delta";
+import { useEffect, useState } from "react";
 
 type PuzzleInfoProps = {
     puzzle: Puzzle;
@@ -14,6 +16,30 @@ type PuzzleInfoProps = {
  * カードをクリックすることで表示される
  */
 export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
+
+    const [desciptionDelta, setDescriptionDelta] = useState<Delta>();
+    const [isLoading, setIsLoading] = useState(true);
+    // パズルを取得
+    useEffect(() => {
+        async function setDesciptionDelta() {
+            try {
+                const module = await import('quill');
+                const Delta = module.default.import('delta');
+                const quill = new module.default(document.createElement('div'));
+                const descriptionDelta = quill.clipboard.convert({ html: puzzle.description });
+                setDescriptionDelta(new Delta(descriptionDelta.ops));
+                setIsLoading(false);
+            } catch (error) {
+                console.error("パズルの取得に失敗: ", error);
+            }
+        }
+        setDesciptionDelta();
+    }, [puzzle]);
+
+    if (isLoading) {
+        return <Viewer defaultValue={new Delta()} />
+    }
+
     return (
         <>
         <Box sx={{ padding: "1rem" }}>
@@ -23,7 +49,7 @@ export default function PuzzleInfo({ puzzle }: PuzzleInfoProps) {
             </Box>
             <Box>
                 <p>問題文: </p>
-                <Viewer defaultValue={puzzle.description}/>
+                <Viewer defaultValue={desciptionDelta ?? new Delta()} />
             </Box>
 
             <Link href={`/puzzles/${puzzle.id}/solve`}>

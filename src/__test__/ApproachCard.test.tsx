@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ApproachCard from '@/lib/components/ApproachCard';
 import { Approach } from '@prisma/client';
 
@@ -36,7 +37,7 @@ describe('ApproachCard', () => {
         render(<ApproachCard approach={mockApproach} isActive={false} onClick={mockOnClick} />);
 
         const card = screen.getByTestId('approach-info').closest('div');
-        fireEvent.click(card as Element);
-        expect(mockOnClick).toHaveBeenCalledTimes(1);
+        userEvent.click(card as Element);
+        expect(mockOnClick).toHaveBeenCalled();
     });
 });

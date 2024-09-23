@@ -7,10 +7,9 @@ import Link from 'next/link';
 import DeleteModal from '@/lib/components/DeleteModal';
 import { getPuzzleById } from '@/lib/api/puzzleapi';
 import { getCategoriesByPuzzleId } from '@/lib/api/categoryapi';
-import { Box, Button, Paper } from '@mui/material';
-import Viewer from '@/lib/components/Viewer';
+import { Box, Paper } from '@mui/material';
 import Portal from '@/lib/components/Portal';
-import { Clear, Delete, Edit, EmojiObjects } from '@mui/icons-material';
+import { Delete, Edit, EmojiObjects } from '@mui/icons-material';
 import FavoriteButton from '@/lib/components/FavoriteButton';
 import DifficultViewer from '@/lib/components/DifficultyViewer';
 import CompletionStatusIcon from '@/lib/components/CompletionStatusIcon';
@@ -20,6 +19,7 @@ import Delta from 'quill-delta';
 import MessageModal from '@/lib/components/MessageModal';
 import CommonButton from '@/lib/components/common/CommonButton';
 import CategoryShowPart from '@/lib/components/CategoryShowPart';
+import DescriptionViewer from '@/lib/components/DescriptionViewer';
 
 
 export default function PuzzleShowPaper({ id }: { id: string }) {
@@ -89,6 +89,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
         {showEditedModal && (
             <MessageModal message="パズルを編集しました" param="edited" />
         )}
+
         <Paper sx={{ padding: "1rem" }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h2 style={{display: "inline-block"}}>{puzzle?.title}</h2>
@@ -110,10 +111,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                 <DifficultViewer value={puzzle?.difficulty ?? 0} />
             </Box>
 
-            <Box sx={{ paddingY: '0.5rem' }}>
-                    <h3>問題文</h3>
-                    <Viewer defaultValue={descriptionDelta ?? new Delta()} />
-            </Box>
+            <DescriptionViewer descriptionDelta={descriptionDelta ?? new Delta()} />
 
             <Box sx={{ display: "flex", gap: "1rem", marginTop: "1rem", justifyContent: "space-between" }}>
                 <Link href="/puzzles/[id]/solve" as={`/puzzles/${id}/solve`} style={{display: "block", width: "30%"}}>

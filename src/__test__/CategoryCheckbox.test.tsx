@@ -92,6 +92,7 @@ describe('CategoryCheckbox', () => {
     });
 
     test('新規カテゴリーを作成', async () => {
+        const ev = userEvent.setup();
         const newCategory = {
             id: 3,
             name: 'カテゴリー3',
@@ -109,7 +110,7 @@ describe('CategoryCheckbox', () => {
 
         // 新規カテゴリーを入力
         const newCategoryInput = screen.getByPlaceholderText('新規カテゴリー');
-        const ev = userEvent.setup();
+        
         await ev.type(newCategoryInput, 'カテゴリー3');
         const createButton = screen.getByLabelText('create');
         await ev.click(createButton);

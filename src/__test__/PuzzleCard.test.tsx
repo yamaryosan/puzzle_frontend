@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import PuzzleCard from '@/lib/components/PuzzleCard';
 import { Puzzle } from '@prisma/client';
 
@@ -35,10 +36,11 @@ describe('PuzzleCard', () => {
     });
 
     test('クリック時にonClick関数が呼ばれる', async () => {
+        const ev = userEvent.setup();
         render(<PuzzleCard puzzle={mockPuzzle} isActive={false} onClick={mockOnClick} />);
 
         const card = screen.getByTestId('puzzle-info').closest('div');
-        fireEvent.click(card as Element);
+        await ev.click(card as HTMLElement);
         expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 });

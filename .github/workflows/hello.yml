@@ -1,8 +1,25 @@
-name: Hello # ワークフロー名
-on: push # イベント(プッシュ時に実行)
-jobs: # ジョブの定義
-    hello: # ジョブID
-        runs-on: ubuntu-latest # 実行環境
-        steps: # ステップの定義
-            - run: echo "Hello, World!" # コマンドの実行
-            - uses: actions/checkout@v4 # GitHubリポジトリのチェックアウト
+name: Next.js CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test

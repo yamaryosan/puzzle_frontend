@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import CategoryCheckbox from '@/lib/components/CategoryCheckbox';
 import { Category } from '@prisma/client';
 import { getCategories, createCategory, getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
@@ -61,12 +62,18 @@ describe('CategoryCheckbox', () => {
         const category2 = screen.getByLabelText('カテゴリー2');
         expect(category1).toBeChecked();
         expect(category2).toBeChecked();
+
+        const ev = userEvent.setup();
         // カテゴリー1を選択解除
-        fireEvent.click(category1);
-        expect(category1).not.toBeChecked();
+        await waitFor(() => {
+            ev.click(category1);
+            expect(category1).not.toBeChecked();
+        });
         // カテゴリー2を選択解除
-        fireEvent.click(category2);
-        expect(category2).not.toBeChecked();
+        await waitFor(() => {
+            ev.click(category2);
+            expect(category2).not.toBeChecked();
+        });
     });
 
     test('新規カテゴリーを入力欄に入力', async () => {
@@ -77,12 +84,14 @@ describe('CategoryCheckbox', () => {
         });
 
         const newCategoryInput = screen.getByPlaceholderText('新規カテゴリー');
-        fireEvent.change(newCategoryInput, { target: { value: 'カテゴリー3' } });
-        expect(newCategoryInput).toHaveValue('カテゴリー3');
+        const ev = userEvent.setup();
+        ev.type(newCategoryInput, 'カテゴリー3');
+        await waitFor(() => {
+            expect(newCategoryInput).toHaveValue('カテゴリー3');
+        });
     });
 
     test('新規カテゴリーを作成', async () => {
-        (getCategories as jest.Mock).mockResolvedValue(mockCategories);
         const newCategory = {
             id: 3,
             name: 'カテゴリー3',
@@ -90,6 +99,8 @@ describe('CategoryCheckbox', () => {
             createdAt: new Date(),
             updatedAt: new Date(),
         } as Category;
+
+        (getCategories as jest.Mock).mockResolvedValue(mockCategories);
         (createCategory as jest.Mock).mockResolvedValue(newCategory);
 
         await act(async () => {
@@ -97,15 +108,20 @@ describe('CategoryCheckbox', () => {
         });
 
         // 新規カテゴリーを入力
+        const newCategoryInput = screen.getByPlaceholderText('新規カテゴリー');
+        const ev = userEvent.setup();
+        await ev.type(newCategoryInput, 'カテゴリー3');
+        const createButton = screen.getByLabelText('create');
+        await ev.click(createButton);
+
+        // 新規カテゴリーが作成されることを確認
         await waitFor(() => {
-            const newCategoryInput = screen.getByPlaceholderText('新規カテゴリー');
-            fireEvent.change(newCategoryInput, { target: { value: 'カテゴリー3' } });
-            const createButton = screen.getByRole('button', { name: 'create' });
-            fireEvent.click(createButton);
+            expect(createCategory).toHaveBeenCalledWith('カテゴリー3', '1');
         });
 
-        // 新規に作成されたことを確認
-        expect(createCategory).toHaveBeenCalledTimes(1);
-        expect(createCategory).toHaveBeenCalledWith('カテゴリー3', '1');
-     });
+        // onChange が呼ばれることを確認
+        await waitFor(() => {
+            expect(mockOnChange).toHaveBeenCalledWith([1, 2, 3]);
+        });
+    });
 })

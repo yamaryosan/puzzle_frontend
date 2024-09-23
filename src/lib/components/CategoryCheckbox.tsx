@@ -13,7 +13,7 @@ import { CreateNewFolderOutlined } from "@mui/icons-material";
 async function create(name: string, userId: string) {
     // カテゴリー名が空の場合は作成しない
     if (name === "") {
-        return
+        return;
     }
     const newCategory = await createCategory(name, userId);
     return newCategory as Category;

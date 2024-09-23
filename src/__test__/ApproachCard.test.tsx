@@ -34,10 +34,11 @@ describe('ApproachCard', () => {
     });
 
     test('クリック時にonClick関数が呼ばれる', async () => {
+        const ev = userEvent.setup();
         render(<ApproachCard approach={mockApproach} isActive={false} onClick={mockOnClick} />);
 
         const card = screen.getByTestId('approach-info').closest('div');
-        userEvent.click(card as Element);
+        await ev.click(card as HTMLElement);
         expect(mockOnClick).toHaveBeenCalled();
     });
 });

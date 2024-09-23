@@ -10,10 +10,10 @@ type props = {
     onTextChange: (delta: Delta | null, oldDelta: Delta | null, source: string) => void,
 }
 
-export default function DescriptionEditor({ defaultValue, containerRef, onSelectionChange, onTextChange  }: props) {
+export default function DescriptionEditor({ defaultValue, containerRef, onSelectionChange, onTextChange }: props) {
     return (
         <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>問題文</h3>
+            <h3>本文</h3>
             <Editor
             defaultValue={defaultValue || new Delta()}            
             ref={containerRef}

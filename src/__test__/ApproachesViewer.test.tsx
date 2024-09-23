@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import ApproachesViewer from '@/lib/components/ApproachesViewer';
 import { Approach } from '@prisma/client';
-import { fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as approachApi from '@/lib/api/approachApi';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { User } from 'firebase/auth';
@@ -39,8 +39,8 @@ const mockUser = {
 } as User;
 
 jest.mock('@/lib/components/Viewer', () => {
-    return function Viewer({ defaultValue }: { defaultValue: string }) {
-        return <div>{defaultValue}</div>;
+    return function Viewer({ defaultHtml }: { defaultHtml: string }) {
+        return <div>{defaultHtml}</div>;
     }
 });
 
@@ -91,7 +91,8 @@ describe('ApproachesViewer', () => {
         });
 
         const toggleButton = screen.getByText('表示');
-        fireEvent.click(toggleButton);
+        const ev = userEvent.setup();
+        ev.click(toggleButton);
 
         await waitFor(() => {
             expect(screen.getByText('非表示')).toBeInTheDocument();
@@ -109,8 +110,9 @@ describe('ApproachesViewer', () => {
             );
         });
 
+        const ev = userEvent.setup();
         const toggleButton = screen.getByText('表示');
-        fireEvent.click(toggleButton);
+        ev.click(toggleButton);
 
         await waitFor(() => {
             expect(screen.getByText('非表示')).toBeInTheDocument();
@@ -119,7 +121,7 @@ describe('ApproachesViewer', () => {
         });
 
         // 非表示にする
-        fireEvent.click(screen.getByText('非表示'));
+        ev.click(screen.getByText('非表示'));
 
         // 非表示になっていることを確認
         await waitFor(() => {
@@ -142,8 +144,9 @@ describe('ApproachesViewer', () => {
             expect(approachApi.getApproachesByPuzzleId).toHaveBeenCalledWith('1');
         });
 
+        const ev = userEvent.setup();
         const toggleButton = screen.getByText('表示');
-        fireEvent.click(toggleButton);
+        ev.click(toggleButton);
 
         await waitFor(() => {
             expect(screen.getByText('非表示')).toBeInTheDocument();
@@ -152,7 +155,7 @@ describe('ApproachesViewer', () => {
         });
 
         const tab = screen.getByText('定石1 定石のタイトル1');
-        fireEvent.click(tab);
+        ev.click(tab);
 
         await waitFor(() => {
             expect(screen.getByText('定石の説明1')).toBeInTheDocument();
@@ -161,7 +164,7 @@ describe('ApproachesViewer', () => {
 
         // タブの切り替え
         const tab2 = screen.getByText('定石2 定石のタイトル2');
-        fireEvent.click(tab2);
+        ev.click(tab2);
 
         await waitFor(() => {
             expect(screen.getByText('定石の説明2')).toBeInTheDocument();

@@ -1,6 +1,5 @@
 'use client';
 
-import Editor from '@/lib/components/Editor';
 import { useState, useEffect, useRef } from 'react';
 import { getApproach } from '@/lib/api/approachApi';
 import Quill from 'quill';

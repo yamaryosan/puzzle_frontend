@@ -6,7 +6,7 @@ import Delta from 'quill-delta';
 import 'quill/dist/quill.snow.css';
 
 type ViewerProps = {
-    defaultValue: Delta;
+    defaultHtml: string;
 }
 
 const options = {
@@ -18,14 +18,14 @@ const options = {
 };
 
 /** 閲覧用ビューワーのコンポーネント
- * @param {Delta} defaultValue 初期値
+ * @param {string} defaultHtml 初期値のHTML文字列
  * @param {Ref} ref エディタのRefオブジェクト
  */
 export const Viewer = forwardRef<Quill, ViewerProps>(
-    ({ defaultValue }, ref) => {
+    ({ defaultHtml }, ref) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
-    const defaultValueRef = useRef<Delta>(defaultValue);
+    const defaultValueRef = useRef<Delta>();
 
     useEffect(() => {
         async function initializeQuillEditor() {
@@ -39,6 +39,11 @@ export const Viewer = forwardRef<Quill, ViewerProps>(
                 const module = await import('quill');
                 const Quill = module.default;
                 const quillInstance = new Quill(editorContainer, options);
+                // デフォルトのHTMLをDeltaに変換
+                const Delta = module.default.import('delta');
+                const quill = new module.default(document.createElement('div'));
+                const delta = quill.clipboard.convert({ html: defaultHtml });
+                defaultValueRef.current = new Delta(delta.ops);
 
                 // 読み取り専用に設定
                 quillInstance.enable(false);

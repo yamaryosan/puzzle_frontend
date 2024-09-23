@@ -7,16 +7,17 @@ type CommonButtonProps = {
     color: color;
     onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     disabled?: boolean;
+    width?: string;
 };
 
-export default function CommonButton({ children, color, onClick, disabled }: CommonButtonProps) {
+export default function CommonButton({ children, color, onClick, disabled, width }: CommonButtonProps) {
     return (
         <Button 
         sx={{
             padding: '1.5rem',
             marginBottom: '0.5rem',
             backgroundColor: `${color}.light`,
-            width: '100%',
+            width: width ?? '100%',
             ":hover": {
                 backgroundColor: `${color}.main`,
             },

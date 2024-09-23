@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material"
+import { Box } from "@mui/material"
 import { Puzzle } from "@prisma/client";
 import { EmojiObjects, Edit } from "@mui/icons-material";
 import Link from "next/link";

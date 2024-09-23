@@ -9,6 +9,8 @@ import { Box, Button } from "@mui/material";
 import { Rule, Check, Clear } from "@mui/icons-material";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import DescriptionViewer from "@/lib/components/DescriptionViewer";
+import CommonButton from "@/lib/components/common/CommonButton";
 
 /**
  * 正解かどうかを送信
@@ -70,8 +72,8 @@ export default function Page({ params }: { params: { id: string } }) {
 
     // 不正解時の処理
     const incorrect = () => {
-        const isSolved = false;
         sendIsSolved(params.id, false);
+        router.push("/puzzles");
     };
 
     if (!puzzle) {
@@ -81,21 +83,20 @@ export default function Page({ params }: { params: { id: string } }) {
     return (
         <>
         <Box sx={{  display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
-            <h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <Rule />
                 <span>答え合わせ</span>
             </h2>
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <h3>問題</h3>
-                <Viewer defaultValue={puzzle?.description ?? ""}/>
-            </Box>
+
+            <DescriptionViewer descriptionHtml={puzzle?.description ?? ""} />
+
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>あなたの解答</h3>
-                <Viewer defaultValue={puzzle?.user_answer ?? ""} />
+                <Viewer defaultHtml={puzzle?.user_answer ?? ""} />
             </Box>
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>正解</h3>
-                <Viewer defaultValue={puzzle?.solution ?? ""}/>
+                <Viewer defaultHtml={puzzle?.solution ?? ""} />
             </Box>
             <Box
             sx={{
@@ -103,39 +104,15 @@ export default function Page({ params }: { params: { id: string } }) {
                 justifyContent: 'center',
                 paddingY: '1rem',
                 marginY: '1rem',
-                gap: '2rem',
-            }}>
-                <Button 
-                sx={{
-                    padding: '1.5rem',
-                    backgroundColor: 'success.light',
-                    width: '20%',
-                    ":hover": {
-                        backgroundColor: 'success.main',
-                    }
-                }}
-                onClick={correct}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                        <Check />
-                        正解！
-                    </Box>
-                </Button>
-
-                <Button
-                sx={{
-                    padding: '1.5rem',
-                    backgroundColor: 'error.light',
-                    width: '20%',
-                    ":hover": {
-                        backgroundColor: 'error.main',
-                    }
-                }}
-                onClick={incorrect}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                        <Clear />
-                        不正解...
-                    </Box>
-                </Button>
+                gap: '2rem' }}>
+                <CommonButton color="success" onClick={correct} width="20%">
+                    <Check />
+                    正解！
+                </CommonButton>
+                <CommonButton color="error" onClick={incorrect} width="20%">
+                    <Clear />
+                    不正解...
+                </CommonButton>
             </Box>
         </Box>
         </>

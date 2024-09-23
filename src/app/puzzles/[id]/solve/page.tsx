@@ -2,23 +2,22 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Puzzle } from "@prisma/client";
-import Viewer from "@/lib/components/Viewer";
 import Editor from "@/lib/components/Editor";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import Quill from "quill";
 import { Category } from "@prisma/client";
 import { getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { useRouter } from "next/navigation";
-import { Box, Button } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import HintsViewer from "@/lib/components/HintsViewer";
 import ApproachesViewer from "@/lib/components/ApproachesViewer";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
-
-type Change = {
-    ops: any[];
-};
+import CommonButton from "@/lib/components/common/CommonButton";
+import CategoryShowPart from "@/lib/components/CategoryShowPart";
+import DescriptionViewer from "@/lib/components/DescriptionViewer";
+import Delta from "quill-delta";
 
 /**
  * 回答を送信
@@ -63,18 +62,25 @@ async function send(id: string, answerRef: React.RefObject<Quill | null>): Promi
     return puzzle as Puzzle;
 }
 
+type Range = {
+    index: number;
+    length: number;
+};
+
 export default function Page({ params }: { params: { id: string } }) {
     const router = useRouter();
 
     const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [answer, setAnswer] = useState<string>('');
-    const [range, setRange] = useState<Range>();
-    const [lastChange, setLastChange] = useState<Change | null>(null);
+
+    const [, setRange] = useState<Range | null>(null);
+    const [, setLastChange] = useState<Delta | null>(null);
 
     const answerRef = useRef<Quill | null>(null);
 
     const [categories, setCategories] = useState<Category[] | null>(null);
     const user = useContext(FirebaseUserContext);
+
+    const [isLoading, setIsLoading] = useState(true);
 
     // パズルを取得
     useEffect(() => {
@@ -82,6 +88,8 @@ export default function Page({ params }: { params: { id: string } }) {
             if (!user) return;
             const puzzle = await getPuzzleById(params.id, user.uid ?? '') as Puzzle;
             setPuzzle(puzzle);
+            const module = await import('quill');
+            setIsLoading(false);
         }
         fetchPuzzle();
     }, [user]);
@@ -104,67 +112,36 @@ export default function Page({ params }: { params: { id: string } }) {
         }
     }
 
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <>
-        <Box
-        sx={{
-            padding: "1rem",
-            backgroundColor: "white",
-            borderRadius: "5px",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-        }}>
+        <Paper sx={{ padding: "1rem" }}>
             <h2>「{puzzle?.title}」の解答画面</h2>
-            <Box
-            sx={{
-                display: "flex",
-                alignItems: "center",
-                paddingY: "0.5rem",
-            }}>
-                <h3>カテゴリー: </h3>
-                <span>{categories?.map(category => (
-                    <span key={category.id}>{category.name} </span>
-                ))}</span>
-            </Box>
+            <CategoryShowPart categories={categories ?? []} />
+     
+            <DescriptionViewer descriptionHtml={puzzle?.description ?? ""} />
+
+            <HintsViewer puzzleId={params.id} />
             
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <h3>問題文</h3>
-                <Viewer
-                    defaultValue={puzzle?.description ?? ''} />
-            </Box>
+            <ApproachesViewer puzzleId={params.id} />
 
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <HintsViewer puzzleId={params.id} />
-            </Box>
-
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <ApproachesViewer puzzleId={params.id} />
-            </Box>
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h3>回答を入力</h3>
                 <Editor
-                ref={answerRef}
-                defaultValue={answer}
+                defaultValue={new Delta()}
+                onSelectionChange={setRange}
                 onTextChange={setLastChange}
-                onSelectionChange={setRange}/>
+                ref={answerRef} />
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button 
-                sx={{
-                    padding: '1.5rem',
-                    backgroundColor: 'secondary.light',
-                    width: '20%',
-                    ":hover": {
-                        backgroundColor: 'secondary.main',
-                    }
-                }}
-                onClick={() => handleSend()}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', scale: "1.8", color: "black" }}>
-                    <Send />
-                    <span>解答を送信</span>
-                    </Box>
-                </Button>
-            </Box>
-        </Box>
+
+            <CommonButton color="secondary" onClick={() => handleSend()} width="100%">
+                <Send />
+                <span>解答を送信</span>
+            </CommonButton>
+        </Paper>
         </>
     )
 }

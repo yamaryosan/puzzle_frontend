@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { deletePuzzle } from "@/lib/api/puzzleapi";
 import { deleteApproach } from "@/lib/api/approachApi";
 import DeleteModal from '@/lib/components/DeleteModal';
@@ -26,45 +27,56 @@ describe('DeleteModal', () => {
         render(<DeleteModal target="puzzle" id="1" onButtonClick={mockOnButtonClick} />);
         expect(screen.getByText('本当に削除しますか？')).toBeInTheDocument();
     });
+
     test('パズル削除で「いいえ」ボタンをクリック', async () => {
+        const ev = userEvent.setup();
         render(<DeleteModal target="puzzle" id="1" onButtonClick={mockOnButtonClick} />);
         const noButton = screen.getByText('いいえ');
-        fireEvent.click(noButton);
+
+        await ev.click(noButton);
         // いいえボタンをクリックしたので、deletePuzzleが呼ばれていないことを確認
         await waitFor(() => {
             expect(deletePuzzle).not.toHaveBeenCalled();
         });
     });
+
     test('パズル削除で「はい」ボタンをクリック', async () => {
+        const ev = userEvent.setup();
         render(<DeleteModal target="puzzle" id="1" onButtonClick={mockOnButtonClick} />);
         const yesButton = screen.getByText('はい');
-        fireEvent.click(yesButton);
+        await ev.click(yesButton);
         // はいボタンをクリックしたので、deletePuzzleが呼ばれていることを確認
         await waitFor(() => {
             expect(deletePuzzle).toHaveBeenCalledWith('1');
         });
     });
+
     test('定石削除で「いいえ」ボタンをクリック', async () => {
+        const ev = userEvent.setup();
         render(<DeleteModal target="approach" id="1" onButtonClick={mockOnButtonClick} />);
         const noButton = screen.getByText('いいえ');
-        fireEvent.click(noButton);
+        await ev.click(noButton);
         // いいえボタンをクリックしたので、deleteApproachが呼ばれていないことを確認
         await waitFor(() => {
             expect(deleteApproach).not.toHaveBeenCalled();
         });
     });
     test('定石削除で「はい」ボタンをクリック', async () => {
+        const ev = userEvent.setup();
         render(<DeleteModal target="approach" id="1" onButtonClick={mockOnButtonClick} />);
         const yesButton = screen.getByText('はい');
-        fireEvent.click(yesButton);
+        await ev.click(yesButton);
         // はいボタンをクリックしたので、deleteApproachが呼ばれていることを確認
         await waitFor(() => {
             expect(deleteApproach).toHaveBeenCalledWith('1');
         });
     });
+
     test('エスケープキーを押すとモーダルが閉じる', async () => {
+        const ev = userEvent.setup();
         render(<DeleteModal target="puzzle" id="1" onButtonClick={mockOnButtonClick} />);
-        fireEvent.keyDown(window, { key: 'Escape' });
+        // エスケープキーを押す
+        await ev.type(screen.getByText('本当に削除しますか？'), '{esc}');
         // エスケープキーを押したので、onButtonClickがfalseで呼ばれていることを確認
         await waitFor(() => {
             expect(mockOnButtonClick).toHaveBeenCalledWith(false);

@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import CategoryInfo from '@/lib/components/CategoryInfo';
 import { Category } from '@prisma/client';
 import { updateCategory } from "@/lib/api/categoryapi";
@@ -58,6 +59,7 @@ describe('CategoryInfo', () => {
     })
 
     test('編集ボタンをクリックしてカテゴリー名を変更', async() => {
+        const ev = userEvent.setup();
         await act(async () => {
             render(
             <FirebaseUserContext.Provider value={mockUser}>
@@ -65,18 +67,26 @@ describe('CategoryInfo', () => {
             </FirebaseUserContext.Provider>);
         });
         const editButton = screen.getByTestId('EditIcon');
-        fireEvent.click(editButton);
+    
+        await ev.click(editButton);
         const input = screen.getByRole('textbox');
         expect(input).toBeInTheDocument();
-        fireEvent.change(input, { target: { value: 'カテゴリー2' } });
+        // 一度入力をクリア
+        await ev.clear(input);
+        // カテゴリー名を入力
+        await ev.type(input, 'カテゴリー2');
+        expect(input).toHaveValue('カテゴリー2');
+        // 更新ボタンをクリック
         const updateButton = screen.getByTestId('UpdateIcon');
-        fireEvent.click(updateButton);
+        await ev.click(updateButton);
+        // カテゴリー名が更新されたことを確認
         await waitFor(() => {
-            expect(updateCategory).toHaveBeenCalledWith('1', 'カテゴリー2');
+            expect(updateCategory).toHaveBeenCalledWith("1", "カテゴリー2");
         });
     });
 
     test('カテゴリー名が空のまま更新ボタンが押された場合', async() => {
+        const ev = userEvent.setup();
         await act(async () => {
             render(
             <FirebaseUserContext.Provider value={mockUser}>
@@ -84,12 +94,15 @@ describe('CategoryInfo', () => {
             </FirebaseUserContext.Provider>);
         });
         const editButton = screen.getByTestId('EditIcon');
-        fireEvent.click(editButton);
+
+        await ev.click(editButton);
         const input = screen.getByRole('textbox');
         expect(input).toBeInTheDocument();
-        fireEvent.change(input, { target: { value: '' } });
+        // 一度入力をクリア
+        await ev.clear(input);
+        // 更新ボタンをクリック
         const updateButton = screen.getByTestId('UpdateIcon');
-        fireEvent.click(updateButton);
+        await ev.click(updateButton);
         // アラートが表示された後、カテゴリー名が更新されないことを確認
         await waitFor(() => {
             expect(mockAlert).toHaveBeenCalledWith('カテゴリー名は必須です');

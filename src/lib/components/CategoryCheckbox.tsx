@@ -13,7 +13,7 @@ import { CreateNewFolderOutlined } from "@mui/icons-material";
 async function create(name: string, userId: string) {
     // カテゴリー名が空の場合は作成しない
     if (name === "") {
-        return
+        return;
     }
     const newCategory = await createCategory(name, userId);
     return newCategory as Category;
@@ -98,68 +98,57 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
 
     return (
         <>
-        <Box
-        sx={{
-            padding: "1rem",
-            border: "1px solid #ccc",
-            borderRadius: "0.25rem",
-            fontSize: "1.5rem",
-        }}
-        >
-            {categories?.length === 0 && <p>カテゴリーを作成しましょう</p>}
-            <Box
-            sx={{
-                display: "grid",
-                gap: "1rem",
-                gridTemplateColumns: "2fr 2fr",
-            }}
-            >
-            {categories?.map((category) => (
-                <div key={category.id}>
-                    <input
-                        type="checkbox"
-                        checked={checkedCategoryIds.includes(category.id)}
-                        id={category.id.toString()}
-                        onChange={() => handleCheckboxChange(category.id)}
-                    />
-                    <label htmlFor={category.id.toString()} className="cursor-pointer">{category.name}</label>
-                </div>
-            ))}
-            </Box>
+        <Box sx={{ paddingY: '0.5rem' }}>
+            <h3>カテゴリー</h3>
+            <Box sx={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "0.25rem", fontSize: "1.5rem" }}>
+                {categories?.length === 0 && <p>カテゴリーを作成しましょう</p>}
+                <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: "2fr 2fr" }} >
+                {categories?.map((category) => (
+                    <div key={category.id}>
+                        <input
+                            type="checkbox"
+                            checked={checkedCategoryIds.includes(category.id)}
+                            id={category.id.toString()}
+                            onChange={() => handleCheckboxChange(category.id)}
+                        />
+                        <label htmlFor={category.id.toString()} className="cursor-pointer">{category.name}</label>
+                    </div>
+                ))}
+                </Box>
 
-            <Box
-            sx={{
-                display: "flex",
-                flexDirection: "row",
-                paddingTop: "1rem",
-                gap: "1rem",
-            }}
-            >
-            <Input
-                type="text"
-                role="textbox"
-                placeholder="新規カテゴリー"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                sx={{ padding: "0.5rem", fontSize: "1rem", width: "100%" }}
-            />
-            <Button
-            sx={{
-                color: "black",
-                padding: "0.5rem 1rem",
-                borderRadius: "0.25rem",
-                cursor: "pointer",
-                ":hover": {
-                    backgroundColor: "secondary.light",
-                    transition: "background-color 0.3s",
-                }
-            }}
-            aria-label="create"
-            onClick={handleNewCategory}>
-                <CreateNewFolderOutlined />
-            </Button>
+                <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    paddingTop: "1rem",
+                    gap: "1rem",
+                }}
+                >
+                <Input
+                    type="text"
+                    role="textbox"
+                    placeholder="新規カテゴリー"
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    sx={{ padding: "0.5rem", fontSize: "1rem", width: "100%" }}
+                />
+                <Button
+                sx={{
+                    color: "black",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "0.25rem",
+                    cursor: "pointer",
+                    ":hover": {
+                        backgroundColor: "secondary.light",
+                        transition: "background-color 0.3s",
+                    }
+                }}
+                aria-label="create"
+                onClick={handleNewCategory}>
+                    <CreateNewFolderOutlined />
+                </Button>
+                </Box>
             </Box>
-
         </Box>
         </>
     );

@@ -19,11 +19,11 @@ export default function Page () {
                 handleCodeInApp: true
             };
             await sendPasswordResetEmail(auth, email, actionCodeSettings);
-            setMessage("パスワードリセット用リンクを送信しました。メールをご確認ください。");
         } catch (error : unknown) {
             if (error instanceof Error) {
-                setMessage("パスワードリセット用リンクを送信しました。メールをご確認ください。");
             }
+        } finally {
+            setMessage("パスワードリセット用リンクを送信しました。メールをご確認ください。");
         }
     };
 

@@ -11,25 +11,37 @@ const mockPuzzle = {
     description: 'パズルの説明',
     is_solved: false,
     is_favorite: false,
+    difficulty: 1,
     user_id: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
 } as Puzzle;
 
-jest.mock('@/lib/components/Viewer');
+jest.mock('@/lib/components/DifficultyViewer', () => {
+    return function DifficultyViewer({ value }: { value: number }) {
+        return (
+            <span>{value}</span>
+        )
+    }
+});
 
-jest.mock('@/lib/components/Viewer', () => {
-    return function Viewer({ defaultValue }: { defaultValue: string }) {
-        return <div>{defaultValue}</div>;
+jest.mock('@/lib/components/DescriptionViewer', () => {
+    return function DescriptionViewer({ descriptionHtml }: { descriptionHtml: string }) {
+        return (
+            <div>
+                <h3>本文</h3>
+                <p>{descriptionHtml}</p>
+            </div>
+        )
     }
 });
 
 describe('PuzzleInfo', () => {
-    test('パズルの情報を表示', async () => {
+    test('パズルの情報を表示', () => {
         render(<PuzzleInfo puzzle={mockPuzzle} />);
-        const difficulty = screen.getByText('難易度:');
-        expect(difficulty).toBeInTheDocument();
-        const description = screen.getByText('パズルの説明');
-        expect(description).toBeInTheDocument();
+        expect(screen.getByText('難易度:')).toBeInTheDocument();
+        expect(screen.getByText('1')).toBeInTheDocument();
+        expect(screen.getByText('本文')).toBeInTheDocument();
+        expect(screen.getByText('パズルの説明')).toBeInTheDocument();
     });
 });

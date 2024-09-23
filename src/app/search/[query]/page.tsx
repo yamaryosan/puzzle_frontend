@@ -1,12 +1,11 @@
 'use client';
 
-import { List } from "@mui/material";
 import { useState, useEffect } from "react";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { Puzzle } from "@prisma/client";
-import PuzzleCard from "@/lib/components/PuzzleCard";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import SearchResult from "@/lib/components/SearchResult";
 
 export default function Page({ params }: { params: { query: string } }) {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
@@ -39,16 +38,5 @@ export default function Page({ params }: { params: { query: string } }) {
         setActiveCardId(id === activeCardId ? null : id);
     };
 
-    return (
-        <>
-        <h2>{`"${decodedQuery}" の検索結果`}</h2>
-        <List>
-            {puzzles?.map((puzzle) => (
-                <li key={puzzle.id} >
-                    <PuzzleCard puzzle={puzzle} isActive={puzzle.id === activeCardId} onClick={() => handleCardClick(puzzle.id)} />
-                </li>
-            ))}
-        </List>
-        </>
-    )
+    return (<SearchResult decodedQuery={decodedQuery} puzzles={puzzles} activeCardId={activeCardId} handleCardClick={handleCardClick} />);
 }

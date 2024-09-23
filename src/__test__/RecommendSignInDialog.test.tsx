@@ -20,7 +20,7 @@ describe('RecommendSignInDialog', () => {
                 <RecommendSignInDialog />
             </FirebaseUserContext.Provider>
         );
-        const signInLink = screen.getByText('サインイン');
+        const signInLink = screen.getByText('お知らせ');
         expect(signInLink).toBeInTheDocument();
     });
     test('ログイン時に非表示', async () => {
@@ -29,7 +29,7 @@ describe('RecommendSignInDialog', () => {
                 <RecommendSignInDialog />
             </FirebaseUserContext.Provider>
         );
-        const signInLink = screen.queryByText('サインイン');
+        const signInLink = screen.queryByText('お知らせ');
         expect(signInLink).toBeNull();
     });
 });

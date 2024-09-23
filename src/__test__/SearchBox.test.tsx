@@ -1,7 +1,6 @@
 import React, { use } from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, act, waitFor } from '@testing-library/react';
-import { fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { Puzzle } from '@prisma/client';
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";

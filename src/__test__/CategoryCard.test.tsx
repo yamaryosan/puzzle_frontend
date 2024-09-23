@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import CategoryCard from '@/lib/components/CategoryCard';
 import { Category } from '@prisma/client';
 
@@ -34,7 +35,11 @@ describe('CategoryCard', () => {
         render(<CategoryCard category={mockCategory} isActive={false} onClick={mockOnClick} />);
 
         const card = screen.getByTestId('category-info').closest('div');
-        fireEvent.click(card as Element);
-        expect(mockOnClick).toHaveBeenCalledTimes(1);
+        const ev = userEvent.setup();
+        ev.click(card as Element);
+
+        await waitFor(() => {
+            expect(mockOnClick).toHaveBeenCalledTimes(1);
+        });
     }); 
 });

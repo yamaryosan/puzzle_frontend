@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Puzzle } from '@prisma/client';
 import { getFavoritePuzzles } from '@/lib/api/puzzleapi';
-import PuzzleCard from '@/lib/components/PuzzleCard';
-import RecommendSignInDialog from '@/lib/components/RecommendSignInDialog';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
+import FavoritePuzzles from '@/lib/components/FavoritePuzzles';
 
-export default function Home() {
+export default function Page() {
     const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
@@ -33,27 +32,5 @@ export default function Home() {
         setActiveCardId(id === activeCardId ? null : id);
     };
         
-    return (
-        <>
-        {user ? (
-        <div>
-            <ul>
-                {puzzles.length === 0 ?
-                (<p>お気に入りのパズルがありません</p>
-                ) : (
-                    puzzles?.map((puzzle) => (
-                        <li key={puzzle.id}>
-                            <PuzzleCard puzzle={puzzle} isActive={puzzle.id === activeCardId} onClick={() => handleCardClick(puzzle.id)} />
-                        </li>
-                    ))
-                )}
-            </ul>
-        </div>
-        ) : (
-            <div>
-                <RecommendSignInDialog />
-            </div>
-        )}
-        </>
-    );
+    return (<FavoritePuzzles puzzles={puzzles} activeCardId={activeCardId} handleCardClick={handleCardClick} />);
 }

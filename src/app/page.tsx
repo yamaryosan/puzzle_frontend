@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Puzzle } from "@prisma/client";
 import { getPuzzles } from "@/lib/api/puzzleapi";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
 import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
@@ -12,11 +12,18 @@ import { useContext } from "react";
 
 type Puzzles = Puzzle[];
 
-export default function Page() {
-    const user = useContext(FirebaseUserContext);
-
+function SearchParamsWrapper() {
     const searchParams = useSearchParams();
     const passwordReset = searchParams.get("passwordReset") === "true";
+    return (
+        <>
+            {passwordReset && ( <MessageModal message="パスワードのリセットが完了しました。" param="passwordReset" /> )}
+        </>
+    );
+}
+
+export default function Page() {
+    const user = useContext(FirebaseUserContext);
     const [puzzles, setPuzzles] = useState<Puzzles | null>(null);
 
     // パズル一覧を取得
@@ -31,11 +38,13 @@ export default function Page() {
             }
         }
         fetchPuzzles();
-    }, []);
+    }, [user]);
 
     return (
         <div>
-            {passwordReset && ( <MessageModal message="パスワードのリセットが完了しました。" param="passwordReset" /> )}
+            <Suspense fallback={null}>
+                <SearchParamsWrapper />
+            </Suspense>
             <p>難易度で並び替え</p>
             <p>カテゴリー別で並び替え</p>
             <p>ランダムに並び替え</p>

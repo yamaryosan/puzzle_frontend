@@ -146,7 +146,11 @@ export default function PuzzleCreateForm() {
     const [, setLastChange] = useState<Delta | null>(null);
     const descriptionRef = useRef<Quill | null>(null);
     const solutionRef = useRef<Quill | null>(null);
-    const hintRefs = Array.from({ length: 3 }, () => useRef<Quill | null>(null));
+
+    const hintRef1 = useRef<Quill | null>(null);
+    const hintRef2 = useRef<Quill | null>(null);
+    const hintRef3 = useRef<Quill | null>(null);
+    const hintRefs = [hintRef1, hintRef2, hintRef3];
 
     const maxHints = 3;
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
@@ -156,8 +160,8 @@ export default function PuzzleCreateForm() {
     useEffect(() => {
         // Deltaクラスを取得
         async function loadQuill() {
-            const module = await import('quill');
-            const Delta = module.default.import('delta');
+            const quillModule = await import('quill');
+            const Delta = quillModule.default.import('delta');
         }
         loadQuill();
     }, []);

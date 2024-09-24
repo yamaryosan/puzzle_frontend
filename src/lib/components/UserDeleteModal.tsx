@@ -50,7 +50,7 @@ const deleteAccount = async (user: User) => {
             await deleteUserInPrisma(user.uid);
         } else {
             const actionCodeSettings = {
-                url: "http://localhost:3000/reauthenticate-for-delete",
+                url: `${process.env.NEXT_PUBLIC_URL}/reauthenticate-for-delete`,
                 handleCodeInApp: true,
             }
             await sendEmailVerification(user, actionCodeSettings);

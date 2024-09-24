@@ -136,7 +136,7 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
                     await updateEmail(user, form.email);
                 } else {
                     const actionCodeSettings = {
-                        url: "http://localhost:3000/complete-email-update",
+                        url: `${process.env.NEXT_PUBLIC_URL}/complete-email-update`,
                         handleCodeInApp: true,
                     }
                     await verifyBeforeUpdateEmail(user, form.email, actionCodeSettings);

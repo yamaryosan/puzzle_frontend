@@ -58,7 +58,7 @@ async function signUpWithGoogle(auth: Auth) {
 export default function Page() {
     const auth = getAuth(firebaseApp);
     const actionCodeSettings = {
-        url: "http://localhost:3000/complete-registration",
+        url: `${process.env.NEXT_PUBLIC_URL}/complete-registration`,
         handleCodeInApp: true,
     }
     const [email, setEmail] = useState("");

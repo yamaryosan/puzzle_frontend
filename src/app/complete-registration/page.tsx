@@ -38,14 +38,14 @@ export default function Page() {
         }
     }, []);
 
-    // パスワードのバリデーション
-    const validatePassword = async () => {
-        const { message, isVerified } = await checkPasswordStrength(password);
-        setPasswordError(message);
-        setIsVerified(isVerified);
-    };
+
     
     useEffect(() => {
+        const validatePassword = async () => {
+            const { message, isVerified } = await checkPasswordStrength(password);
+            setPasswordError(message);
+            setIsVerified(isVerified);
+        };
         validatePassword();
     }, [password]);
 

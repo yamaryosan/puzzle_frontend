@@ -18,15 +18,14 @@ export default function MessageModal({ message, param }: MessageModalProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const removeParam = () => {
-        const current = new URLSearchParams(searchParams);
-        current.delete(param);
-
-        const newParam = current.toString();
-        router.push(`${window.location.pathname}?${newParam}`);
-    }
-
     useEffect(() => {
+        const removeParam = () => {
+            const current = new URLSearchParams(searchParams);
+            current.delete(param);
+    
+            const newParam = current.toString();
+            router.push(`${window.location.pathname}?${newParam}`);
+        };
         const timer = setTimeout(() => {
             setIsVisible(false);
             removeParam();
@@ -34,7 +33,7 @@ export default function MessageModal({ message, param }: MessageModalProps) {
         return () => {
             clearTimeout(timer);
         };
-    }, []);
+    }, [param, router, searchParams]);
 
     const transitions = useTransition(isVisible, {
         from: { opacity: 0, transform: "translateY(-200%)" },

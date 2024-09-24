@@ -93,7 +93,7 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, []);
+    }, [onButtonClick]);
 
     // 5秒後に退会ボタンを有効化
     useEffect(() => {

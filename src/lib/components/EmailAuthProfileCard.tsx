@@ -51,12 +51,12 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
     const [isVerified, setIsVerified] = useState<boolean>(false);
 
     // パスワードのバリデーション
-    const validatePassword = async () => {
-        const { message, isVerified } = await checkPasswordStrength(form.newPassword);
-        setPasswordError(message);
-        setIsVerified(isVerified);
-    };
     useEffect(() => {
+        const validatePassword = async () => {
+            const { message, isVerified } = await checkPasswordStrength(form.newPassword);
+            setPasswordError(message);
+            setIsVerified(isVerified);
+        };
         validatePassword();
     }, [form.newPassword]);
 

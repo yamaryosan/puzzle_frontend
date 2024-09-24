@@ -30,7 +30,7 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
             setApproaches(approaches);
         }
         fetchapproaches();
-    }, []);
+    }, [user, puzzleId]);
 
     // タブの変更
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {

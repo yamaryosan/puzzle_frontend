@@ -54,7 +54,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
             }
         }
         fetchPuzzle();
-    }, [id, isLoading]);
+    }, [id, isLoading, user]);
 
     // パズルのカテゴリーを取得
     useEffect(() => {
@@ -68,7 +68,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
             }
         }
         fetchCategories();
-    }, [id]);
+    }, [id, user]);
 
     if (isLoading) {
         return <div>Loading...</div>;

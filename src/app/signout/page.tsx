@@ -13,7 +13,7 @@ export default function App() {
     // サインアウト
     useEffect(() => {
         signOut(auth);
-    }, []);
+    }, [auth]);
 
     return (
         <div>

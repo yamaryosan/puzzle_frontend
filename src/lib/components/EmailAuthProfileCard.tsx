@@ -47,14 +47,14 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
     const [message, setMessage] = useState<string | null>(null);
     const [generalError, setGeneralError] = useState<string | null>(null);
 
-    const [passwordError, setPasswordError] = useState<string>("");
+    const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [isVerified, setIsVerified] = useState<boolean>(false);
 
     // パスワードのバリデーション
     useEffect(() => {
         const validatePassword = async () => {
-            const { message, isVerified } = await checkPasswordStrength(form.newPassword);
-            setPasswordError(message);
+            const { messages, isVerified } = await checkPasswordStrength(form.newPassword);
+            setPasswordErrors(messages);
             setIsVerified(isVerified);
         };
         validatePassword();
@@ -197,7 +197,9 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
             <span>新しいパスワード</span>
             <CommonInputText name="newPassword" elementType="password" value={form.newPassword} onChange={handleInputChange} />
             <PasswordOutlined />
-            {passwordError && <Box sx={{ color: 'red' }}>{passwordError}</Box>}
+            {passwordErrors.map((message, index) => (
+                <Box key={index} sx={{ color: 'red' }}>{message}</Box>
+            ))}
             <span>新しいパスワード（確認）</span>
             <CommonInputText name="confirmPassword" elementType="password" value={form.confirmPassword} onChange={handleInputChange} />
             <Box sx={{ color: 'red' }}>{generalError}</Box>

@@ -75,8 +75,9 @@ export async function PUT(req: NextRequest, {params}: {params: {id: string}}): P
 
 /**
  * 未分類カテゴリーを取得
+ * @params user_id ユーザID
  */
-export async function getUncategorizedCategory(): Promise<Category> {
+async function getUncategorizedCategory(user_id: string): Promise<Category> {
     const uncategorizedName = '未分類';
     let uncategorizedCategory = await prisma.category.findFirst({
         where: {
@@ -87,7 +88,8 @@ export async function getUncategorizedCategory(): Promise<Category> {
     if (!uncategorizedCategory) {
         uncategorizedCategory = await prisma.category.create({
             data: {
-                name: uncategorizedName
+                name: uncategorizedName,
+                user_id: user_id
             }
         });
     }
@@ -100,6 +102,12 @@ export async function getUncategorizedCategory(): Promise<Category> {
  * @params params パラメータ
  */
 export async function DELETE(req: NextRequest, {params}: {params: {id: string}}): Promise<NextResponse> {
+    const { searchParams } = new URL(req.url);
+    const user_id = searchParams.get("userId");
+
+    if (!user_id) {
+        throw new Error("ユーザIDが指定されていません");
+    }
     try {
         const id = parseInt(params.id);
         if (isNaN(id) || id <= 0) {
@@ -126,7 +134,7 @@ export async function DELETE(req: NextRequest, {params}: {params: {id: string}})
             }
         });
         // 紐づかないパズルを未分類カテゴリーに追加
-        const uncategorizedCategory = await getUncategorizedCategory();
+        const uncategorizedCategory = await getUncategorizedCategory(user_id);
         await prisma.puzzleCategory.createMany({
             data: puzzles.map((puzzle) => {
                 return {

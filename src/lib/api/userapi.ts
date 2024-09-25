@@ -87,34 +87,31 @@ export async function deleteUserInPrisma(firebaseUid: string) {
 /**
  * パスワードの強度をチェック
  * @param password パスワード
- * @returns エラーメッセージ, 真偽値
+ * @returns エラーメッセージの配列, 真偽値
  */
-export async function checkPasswordStrength(password: string): Promise<{ message: string, isVerified: boolean }> {
+export async function checkPasswordStrength(password: string): Promise<{ messages: string[], isVerified: boolean }> {
     const minLength = 10;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumbers = /\d/.test(password);
     const hasNonalphas = /\W/.test(password);
 
-    let message = "以下を満たしてください。";
+    let messages: string[] = [];
   
     if (password.length < minLength) {
-        message += "10文字以上 ";
+        messages.push("10文字以上 ");
     }
     if (!hasUpperCase) {
-        message += "1文字以上の大文字 ";
+        messages.push("1文字以上の大文字 ");
     }
     if (!hasLowerCase) {
-        message += "1文字以上の小文字 ";
+        messages.push("1文字以上の小文字 ");
     }
     if (!hasNumbers) {
-        message += "1文字以上の数字 ";
+        messages.push("1文字以上の数字 ");
     }
     if (!hasNonalphas) {
-        message += "1文字以上の記号 ";
+        messages.push("1文字以上の記号 ");
     }
-    if (message === "以下を満たしてください。") {
-        message = "";
-    }
-    return { message, isVerified: message === "" };
+    return { messages, isVerified: messages.length === 0 };
 }

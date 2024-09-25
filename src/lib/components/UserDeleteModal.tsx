@@ -50,7 +50,7 @@ const deleteAccount = async (user: User) => {
             await deleteUserInPrisma(user.uid);
         } else {
             const actionCodeSettings = {
-                url: "http://localhost:3000/reauthenticate-for-delete",
+                url: `${process.env.NEXT_PUBLIC_URL}/reauthenticate-for-delete`,
                 handleCodeInApp: true,
             }
             await sendEmailVerification(user, actionCodeSettings);
@@ -93,7 +93,7 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, []);
+    }, [onButtonClick]);
 
     // 5秒後に退会ボタンを有効化
     useEffect(() => {

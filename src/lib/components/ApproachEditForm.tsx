@@ -85,15 +85,15 @@ export default function ApproachEditForm({id}: {id: string}) {
             setApproach(approach);
             setTitle(approach.title);
 
-            const module = await import('quill');
-            const Delta = module.default.import('delta');
-            const quill = new module.default(document.createElement('div'));
+            const quillModule = await import('quill');
+            const Delta = quillModule.default.import('delta');
+            const quill = new quillModule.default(document.createElement('div'));
             const descriptionDelta = quill.clipboard.convert({ html: approach.content });
             setDescriptionDelta(new Delta(descriptionDelta.ops));            
             setIsLoading(false);
         }
         fetchApproach();
-    }, [id]);
+    }, [user, id]);
 
     // 送信ボタン押下時の処理
     const handleSendButton = async () => {

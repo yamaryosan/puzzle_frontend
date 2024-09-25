@@ -27,7 +27,7 @@ export default function Page({ params }: { params: { query: string } }) {
             }
         }
         fetchPuzzles();
-    }, [params.query, user, activeCardId]);
+    }, [params.query, user, activeCardId, decodedQuery]);
 
     if (!puzzles) {
         return <div>loading...</div>;

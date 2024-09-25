@@ -47,16 +47,16 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
     const [message, setMessage] = useState<string | null>(null);
     const [generalError, setGeneralError] = useState<string | null>(null);
 
-    const [passwordError, setPasswordError] = useState<string>("");
+    const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [isVerified, setIsVerified] = useState<boolean>(false);
 
     // パスワードのバリデーション
-    const validatePassword = async () => {
-        const { message, isVerified } = await checkPasswordStrength(form.newPassword);
-        setPasswordError(message);
-        setIsVerified(isVerified);
-    };
     useEffect(() => {
+        const validatePassword = async () => {
+            const { messages, isVerified } = await checkPasswordStrength(form.newPassword);
+            setPasswordErrors(messages);
+            setIsVerified(isVerified);
+        };
         validatePassword();
     }, [form.newPassword]);
 
@@ -136,7 +136,7 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
                     await updateEmail(user, form.email);
                 } else {
                     const actionCodeSettings = {
-                        url: "http://localhost:3000/complete-email-update",
+                        url: `${process.env.NEXT_PUBLIC_URL}/complete-email-update`,
                         handleCodeInApp: true,
                     }
                     await verifyBeforeUpdateEmail(user, form.email, actionCodeSettings);
@@ -197,7 +197,9 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
             <span>新しいパスワード</span>
             <CommonInputText name="newPassword" elementType="password" value={form.newPassword} onChange={handleInputChange} />
             <PasswordOutlined />
-            {passwordError && <Box sx={{ color: 'red' }}>{passwordError}</Box>}
+            {passwordErrors.map((message, index) => (
+                <Box key={index} sx={{ color: 'red' }}>{message}</Box>
+            ))}
             <span>新しいパスワード（確認）</span>
             <CommonInputText name="confirmPassword" elementType="password" value={form.confirmPassword} onChange={handleInputChange} />
             <Box sx={{ color: 'red' }}>{generalError}</Box>

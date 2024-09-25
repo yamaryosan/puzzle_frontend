@@ -156,9 +156,10 @@ export const Editor = forwardRef<Quill, EditorProps>(
     const onTextChangeRef = useRef<typeof onTextChange>(onTextChange);
 
     useEffect(() => {
+        let container : HTMLDivElement | null = null;
         async function initializeQuillEditor() {
             // エディタのDOM要素を取得
-            const container = containerRef.current;
+            container = containerRef.current;
             if (!container) { return; }
 
             const editorContainer = container.appendChild(
@@ -166,8 +167,8 @@ export const Editor = forwardRef<Quill, EditorProps>(
             );
             // Quillのインポート、Quillインスタンス初期化
             try {
-                const module = await import('quill');
-                const Quill = module.default;
+                const quillModule = await import('quill');
+                const Quill = quillModule.default;
                 const quillInstance = new Quill(editorContainer, options) as ExtendedQuill;
                 // ツールバーの画像ボタンのクリックイベントを設定
                 setupToolbarImageUploader(quillInstance, toolbarImageHandler);
@@ -206,7 +207,6 @@ export const Editor = forwardRef<Quill, EditorProps>(
         initializeQuillEditor();
         // クリーンアップ
         return () => {
-            const container = containerRef.current;
             if (!container) { return; }
             container.innerHTML = '';
         };
@@ -215,4 +215,5 @@ export const Editor = forwardRef<Quill, EditorProps>(
     return <div ref={containerRef}></div>;
     },
 );
+Editor.displayName = 'Editor';
 export default Editor;

@@ -88,11 +88,10 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
             if (!user) return;
             const puzzle = await getPuzzleById(id, user.uid ?? '') as Puzzle;
             setPuzzle(puzzle);
-            const module = await import('quill');
             setIsLoading(false);
         }
         fetchPuzzle();
-    }, [user]);
+    }, [id, user]);
 
     // カテゴリーを取得
     useEffect(() => {
@@ -102,7 +101,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
             setCategories(categories);
         }
         fetchCategories();
-    }, [user]);
+    }, [id, user]);
 
     // 送信
     const handleSend = async () => {

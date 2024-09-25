@@ -30,8 +30,9 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
             console.log("定石を取得しました: ", initialApproachIds);
             setCheckedApproachIds(initialApproachIds);
         });
-    }, []);
+    }, [puzzle_id]);
 
+    useEffect(() => {
     // 定石一覧を取得
     async function fetchApproaches() {
         try {
@@ -44,8 +45,6 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
             return null;
         }
     }
-
-    useEffect(() => {
         fetchApproaches();
     }, [user]);
 

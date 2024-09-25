@@ -24,7 +24,7 @@ export default function ResultSlider({ result }: ResultSliderProps) {
         return () => {
             setShow(false);
         }
-    }, [result]);
+    }, [result, user]);
 
     const handleClose = () => {
         setShow(false);

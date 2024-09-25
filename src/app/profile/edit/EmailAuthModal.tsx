@@ -101,7 +101,7 @@ const EmailAuthModal = ({ user, onClose, onProfileUpdated, onError }: EmailReaut
                     await updateEmail(user, formData.email);
                 } else {
                     const actionCodeSettings = {
-                        url: "http://localhost:3000/signin",
+                        url: `${process.env.NEXT_PUBLIC_URL}/signin`,
                         handleCodeInApp: true,
                     };
                     await verifyBeforeUpdateEmail(user, formData.email, actionCodeSettings);

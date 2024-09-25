@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getCategories, createCategory, getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { Category } from "@prisma/client";
 import { Box, Button, Input } from "@mui/material";
@@ -32,7 +32,7 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
     const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>(value);
 
     // カテゴリー一覧を取得
-    async function fetchCategories() {
+    const fetchCategories = useCallback(async () => {
         try {
             const categories = await getCategories(userId);
             setCategories(categories);
@@ -41,11 +41,11 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
             console.error("定石の取得に失敗: ", error);
             return null;
         }
-    }
+    }, [userId]);
 
     useEffect(() => {
         fetchCategories();
-    }, [userId]);
+    }, [fetchCategories]);
 
     // 選択中のカテゴリー一覧を取得
     useEffect(() => {
@@ -60,7 +60,7 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
             console.log("カテゴリーを取得しました: ", initialCategoryIds);
             setCheckedCategoryIds(initialCategoryIds);
         });
-    }, []);
+    }, [puzzle_id, userId]);
 
     // チェックされたカテゴリーのIDを親コンポーネントに渡す
     useEffect(() => {

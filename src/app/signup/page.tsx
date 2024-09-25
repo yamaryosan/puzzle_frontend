@@ -31,9 +31,15 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
         window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
         if (error instanceof FirebaseError) {
-            // メールアドレスが未入力の場合
-            if (error.code === 'auth/missing-email') {
-                throw new Error('メールアドレスを入力してください');
+            switch (error.code) {
+                case 'auth/missing-email':
+                    throw new Error('メールアドレスは必須です');
+                case 'auth/invalid-email':
+                    throw new Error('有効なメールアドレスを入力してください');
+                case 'auth/operation-not-allowed':
+                    throw new Error('メールリンク認証が無効です');
+                default:
+                    throw new Error('メールを送信できませんでした');
             }
         }
     }
@@ -47,23 +53,24 @@ async function signUpWithGoogle(auth: Auth) {
     try {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
-        console.log("Googleアカウントでサインアップしました");
         return true;
     } catch (error) {
-        console.error(error);
-        return false;
+        if (error instanceof FirebaseError) {
+            return false;
+        }
     }
 }
 
 export default function Page() {
     const auth = getAuth(firebaseApp);
     const actionCodeSettings = {
-        url: "http://localhost:3000/complete-registration",
+        url: `${process.env.NEXT_PUBLIC_URL}/complete-registration`,
         handleCodeInApp: true,
     }
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isMailSent, setIsMailSent] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const router = useRouter();
 
@@ -73,7 +80,9 @@ export default function Page() {
             await sendSignInLink(auth, email, actionCodeSettings);
             setIsMailSent(true);
         } catch (error) {
-            console.error(error);
+            if (error instanceof Error) {
+                setError(error.message);
+            }
         }
     }
 
@@ -109,6 +118,7 @@ export default function Page() {
                     ) : (
                         <CommonInputText value={email} elementType="email" onChange={(e) => setEmail(e.target.value)}/>
                     )}
+                    <p className="text-red-500">{error}</p>
                     <Box sx={{ paddingY: '0.5rem' }}>
                         <CommonButton color="primary" onClick={handleSubmit} disabled={isLoading}>
                             <EmailOutlined />

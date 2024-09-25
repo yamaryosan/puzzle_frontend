@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { createUserInPrisma } from '@/lib/api/userapi';
@@ -69,7 +69,7 @@ async function signInWithGoogle(auth: Auth) {
             return true;
         }
         // ユーザが存在しない場合は新規登録
-        createUserInPrisma({
+        await createUserInPrisma({
             firebaseUid: auth.currentUser!.uid,
             email: auth.currentUser!.email,
             displayName: auth.currentUser!.displayName,
@@ -81,15 +81,22 @@ async function signInWithGoogle(auth: Auth) {
     }
 }
 
+function SearchParamsWrapper() {
+    const searchParams = useSearchParams();
+    const deleted = searchParams.get('deleted') === 'true';
+    return (
+        <>
+            {deleted && <MessageModal message="アカウントが削除されました。" param="deleted" />}
+        </>
+    );
+}
+
 export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const user = useContext(FirebaseUserContext);
     const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
-
-    const searchParams = useSearchParams();
-    const deleted = searchParams.get('deleted') === 'true';
 
     // ログインしている場合はホーム画面にリダイレクト
     if (user) {
@@ -131,7 +138,9 @@ export default function Page() {
 
     return (
         <>
-        {deleted && <MessageModal message="退会しました" param="deleted" />}
+        <Suspense fallback={null}>
+            <SearchParamsWrapper />
+        </Suspense>
         <CommonPaper>
             <Box component="form">
                 <h2>メールアドレスでログイン</h2>

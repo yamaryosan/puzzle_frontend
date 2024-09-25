@@ -28,20 +28,21 @@ export const Viewer = forwardRef<Quill, ViewerProps>(
     const defaultValueRef = useRef<Delta>();
 
     useEffect(() => {
+        let container: HTMLDivElement | null = null;
         async function initializeQuillEditor() {
-            const container = containerRef.current;
+            container = containerRef.current;
             if (!container) { return; }
 
             const editorContainer = container.appendChild(
                 container.ownerDocument.createElement('div')
             );
             try {
-                const module = await import('quill');
-                const Quill = module.default;
+                const quillModule = await import('quill');
+                const Quill = quillModule.default;
                 const quillInstance = new Quill(editorContainer, options);
                 // デフォルトのHTMLをDeltaに変換
-                const Delta = module.default.import('delta');
-                const quill = new module.default(document.createElement('div'));
+                const Delta = quillModule.default.import('delta');
+                const quill = new quillModule.default(document.createElement('div'));
                 const delta = quill.clipboard.convert({ html: defaultHtml });
                 defaultValueRef.current = new Delta(delta.ops);
 
@@ -63,11 +64,10 @@ export const Viewer = forwardRef<Quill, ViewerProps>(
         initializeQuillEditor();
         // クリーンアップ
         return () => {
-            const container = containerRef.current;
             if (!container) { return; }
             container.innerHTML = '';
         };
-    }, []);
+    }, [defaultHtml, ref]);
     
     return <div ref={containerRef}></div>;
     },

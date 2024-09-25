@@ -32,7 +32,7 @@ export default function DeleteModal({ target, id, onButtonClick }: DeleteModalPr
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, []);
+    }, [onButtonClick]);
 
     const handleDelete = async () => {
         if (target === "puzzle") {

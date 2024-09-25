@@ -150,7 +150,11 @@ export default function PuzzleEditForm({ id }: { id: string }) {
     const [solutionDelta, setSolutionDelta] = useState<Delta>();
     const descriptionRef = useRef<Quill | null>(null);
     const solutionRef = useRef<Quill | null>(null);
-    const hintRefs = Array.from({ length: 3 }, () => useRef<Quill | null>(null));
+
+    const hintRef1 = useRef<Quill | null>(null);
+    const hintRef2 = useRef<Quill | null>(null);
+    const hintRef3 = useRef<Quill | null>(null);
+    const hintRefs = [hintRef1, hintRef2, hintRef3];
     const [hintsDelta, setHintsDelta] = useState<Delta[]>([]);
 
     const maxHints = 3;
@@ -175,9 +179,9 @@ export default function PuzzleEditForm({ id }: { id: string }) {
             setTitle(puzzle.title);
             setDifficulty(puzzle.difficulty);
             // 初期値を設定
-            const module = await import('quill');
-            const Delta = module.default.import('delta');
-            const quill = new module.default(document.createElement('div'));
+            const quillModule = await import('quill');
+            const Delta = quillModule.default.import('delta');
+            const quill = new quillModule.default(document.createElement('div'));
             if (!puzzle.description || !puzzle.solution) {
                 return;
             }

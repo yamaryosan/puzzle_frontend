@@ -21,7 +21,9 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <Header />
-                    <Main children={children} />
+                    <Main>
+                        {children}
+                    </Main>
                     <Footer />
                 </ThemeProvider>
             </body>

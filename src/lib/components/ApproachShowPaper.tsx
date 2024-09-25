@@ -39,7 +39,7 @@ export default function ApproachShowPaper({ id }: { id: string }) {
             setApproach(approach);
         }
         fetchApproach();
-    }, [user]);
+    }, [user, id]);
 
     // 定石に紐づく問題情報を取得
     useEffect(() => {
@@ -52,7 +52,7 @@ export default function ApproachShowPaper({ id }: { id: string }) {
             setPuzzles(puzzles);
         }
         fetchPuzzles();
-    }, [user]);
+    }, [user, id]);
 
     // 定石編集画面へ遷移
     const handleSendButton = () => {

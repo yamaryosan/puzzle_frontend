@@ -69,7 +69,7 @@ async function signInWithGoogle(auth: Auth) {
             return true;
         }
         // ユーザが存在しない場合は新規登録
-        createUserInPrisma({
+        await createUserInPrisma({
             firebaseUid: auth.currentUser!.uid,
             email: auth.currentUser!.email,
             displayName: auth.currentUser!.displayName,

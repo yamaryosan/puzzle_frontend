@@ -25,7 +25,7 @@ export default function Page() {
     const [password, setPassword] = useState<string>("");
     const [generalError, setGeneralError] = useState<string>("");
 
-    const [passwordError, setPasswordError] = useState<string>("");
+    const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [isVerified, setIsVerified] = useState<boolean>(false);
 
     const router = useRouter();
@@ -42,8 +42,8 @@ export default function Page() {
     
     useEffect(() => {
         const validatePassword = async () => {
-            const { message, isVerified } = await checkPasswordStrength(password);
-            setPasswordError(message);
+            const { messages, isVerified } = await checkPasswordStrength(password);
+            setPasswordErrors(messages);
             setIsVerified(isVerified);
         };
         validatePassword();
@@ -113,7 +113,15 @@ export default function Page() {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="パスワード"/>
                 </Box>
-                {passwordError && <Box sx={{ color: "error.main" }}>{passwordError}</Box>}
+                {(passwordErrors.length > 0 && password.length > 0) &&
+                <Box sx={{ color: "error.main", display: "flex", gap: "0.5rem" }}>
+                    <ErrorOutline />
+                    <ul>
+                        {passwordErrors.map((error, index) => (
+                            <li key={index}>{error}</li>
+                        ))}
+                    </ul>
+                </Box>}
                 <Box sx={{ marginTop: "1rem" }}>
                     <CommonButton onClick={handleSubmit} color="primary">
                         <HowToRegOutlined />

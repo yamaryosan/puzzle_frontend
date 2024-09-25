@@ -34,6 +34,10 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
             switch (error.code) {
                 case 'auth/missing-email':
                     throw new Error('メールアドレスは必須です');
+                case 'auth/invalid-email':
+                    throw new Error('有効なメールアドレスを入力してください');
+                case 'auth/operation-not-allowed':
+                    throw new Error('メールリンク認証が無効です');
                 default:
                     throw new Error('メールを送信できませんでした');
             }

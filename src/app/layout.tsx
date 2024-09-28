@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Main from "@/app/Main";
 import theme from "@/theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
+import DeviceTypeProvider from "@/lib/components/DeviceTypeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,14 +19,16 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     return (
         <html lang="ja">
             <body className={inter.className}>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <Header />
-                    <Main>
-                        {children}
-                    </Main>
-                    <Footer />
-                </ThemeProvider>
+                <DeviceTypeProvider>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        <Header />
+                        <Main>
+                            {children}
+                        </Main>
+                        <Footer />
+                    </ThemeProvider>
+                </DeviceTypeProvider>
             </body>
         </html>
     );

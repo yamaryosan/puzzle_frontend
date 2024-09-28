@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import { useState } from "react";
 import { Puzzle } from "@prisma/client";
 import { getPuzzles } from "@/lib/api/puzzleapi";
@@ -9,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
 import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import Puzzles from "@/lib/components/Puzzles";
 
 type Puzzles = Puzzle[];
 
@@ -45,19 +45,7 @@ export default function Page() {
             <Suspense fallback={null}>
                 <SearchParamsWrapper />
             </Suspense>
-            <p>難易度で並び替え</p>
-            <p>カテゴリー別で並び替え</p>
-            <p>ランダムに並び替え</p>
-            <p>パズル一覧</p>
-            <ul>
-                {puzzles?.map((puzzle) => (
-                <li key={puzzle.id}>
-                    <Link href={`/puzzles/${puzzle.id}`}>
-                    {puzzle.title}
-                    </Link>
-                </li>
-                ))}
-            </ul>
+            <Puzzles />
         </div>
     );
 }

@@ -2,8 +2,8 @@
 
 import { createContext } from 'react';
 
-// デバイスの種類を保持するコンテキスト
-type DeviceType = "desktop" | "mobile" | "unknown";
+// デバイスの種類を定義
+type DeviceType = "desktop" | "mobile";
 
 export const DeviceTypeContext = createContext<DeviceType>("desktop");
 

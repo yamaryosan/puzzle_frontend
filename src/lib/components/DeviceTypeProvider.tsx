@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
-type DeviceType = "desktop" | "mobile" | "unknown";
+type DeviceType = "desktop" | "mobile";
 
 export default function DeviceTypeProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const [deviceType, setDeviceType] = useState<DeviceType>("desktop");

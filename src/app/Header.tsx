@@ -14,7 +14,38 @@ export default function Header() {
         <header>
             <p>デバイスの種類: {deviceType}</p>
             <FirebaseUserProvider>
-                <Box sx={{ 
+                {deviceType==="mobile" && (
+                    <Box sx={{ 
+                    display: 'flex', 
+                    bgcolor: 'primary.main',
+                    padding: '1rem', 
+                    color: 'white',
+                    gap: '1.5rem',
+                    alignItems: 'center',
+                    justifyContent: 'space-around',
+                    }}>
+                        <Link href="/">
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scale: '1.5' }}>
+                            <Home />
+                            <span>ホーム</span>
+                        </Box>
+                        </Link>
+                        <Link href="/categories">
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scale: '1.5' }}>
+                            <Category />
+                            <span>カテゴリー</span>
+                        </Box>
+                        </Link>
+                        <Link href="/favorites">
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scale: '1.5' }}>
+                            <Favorite />
+                            <span>お気に入り</span>
+                        </Box>
+                        </Link>
+                    </Box>
+                )}
+                {deviceType==="desktop" && (
+                    <Box sx={{ 
                     display: 'flex', 
                     bgcolor: 'primary.main',
                     padding: '1rem', 
@@ -25,18 +56,19 @@ export default function Header() {
                     }}>
                         <Link href="/">
                         <Home />
-                        ホーム
+                        <span>ホーム</span>
                         </Link>
                         <Link href="/categories">
                         <Category />
-                        カテゴリー一覧
+                        <span>カテゴリー</span>
                         </Link>
                         <Link href="/favorites">
                         <Favorite />
-                        お気に入り
+                        <span>お気に入り</span>
                         </Link>
                         <SearchBox />
-                </Box>
+                    </Box>
+                )}
             </FirebaseUserProvider>
         </header>
     );

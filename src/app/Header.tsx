@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Box from '@mui/material/Box';
 import { Home, Category, Favorite } from '@mui/icons-material';
 import { useContext } from 'react';
-import SearchBox from '@/lib/components/SearchBox';
+import DesktopSearchBox from '@/lib/components/desktopSearchBox';
 import FirebaseUserProvider from "@/lib/components/FirebaseUserProvider";
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
@@ -66,7 +66,7 @@ export default function Header() {
                         <Favorite />
                         <span>お気に入り</span>
                         </Link>
-                        <SearchBox />
+                        <DesktopSearchBox />
                     </Box>
                 )}
             </FirebaseUserProvider>

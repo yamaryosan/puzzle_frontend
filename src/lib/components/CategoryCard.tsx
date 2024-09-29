@@ -16,10 +16,7 @@ export default function CategoryCard({ category, isActive, onClick }: CategoryCa
                 marginY: 1,
                 padding: "1rem",
                 cursor: "pointer",
-                ":hover": {
-                    backgroundColor: "secondary.light",
-                    transition: "background-color 0.3s",
-                },
+                backgroundColor: isActive ? "#f0f0f0" : "white",
             }}
             onClick={onClick}>
                 <CategoryInfo category={category} isActive={isActive} />

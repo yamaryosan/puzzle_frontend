@@ -70,25 +70,29 @@ export default function ApproachInfo({ approach, isActive }: ApproachInfoProps) 
             transition: 'max-height 0.5s ease-in-out',
         }}>
             {/* 定石に紐づくパズル一覧を表示 */}
-            {puzzles.length === 0 && <p style={{ fontSize: "1rem" }}>この定石に紐づくパズルはありません</p>}
-            <p style={{ fontSize: "1rem" }}>定石に紐づくパズル</p>
-            {puzzles.map((puzzle) => (
-                <Link key={puzzle.id} href={`/puzzles/${puzzle.id}`}>
-                    <Button
-                    sx={{
-                        display: 'block',
-                        textAlign: 'left',
-                        width: '100%',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: "secondary.main",
-                        },
-                    }}
-                    >
-                        <h4>{puzzle.title}</h4>
-                    </Button>
-                </Link>
-            ))}
+            {puzzles.length === 0 ? (<p style={{ fontSize: "1rem" }}>この定石に紐づくパズルはありません</p>
+            ) : (
+                <>
+                <p style={{ fontSize: "1rem" }}>定石に紐づくパズル</p>
+                {puzzles.map((puzzle) => (
+                    <Link key={puzzle.id} href={`/puzzles/${puzzle.id}`}>
+                        <Button
+                        sx={{
+                            display: 'block',
+                            textAlign: 'left',
+                            width: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: "secondary.main",
+                            },
+                        }}
+                        >
+                            <h4>{puzzle.title}</h4>
+                        </Button>
+                    </Link>
+                ))}
+                </>
+            )}
         </Box>
         </>
     );

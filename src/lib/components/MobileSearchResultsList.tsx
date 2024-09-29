@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
-import { Box, TextField, Button, Paper } from "@mui/material";
+import { Box, TextField, Button } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { Puzzle } from "@prisma/client";
@@ -54,7 +54,7 @@ export default function MobileSearchResultsList({ onClose }: props) {
 
     return (
         <Box sx={{
-            padding: '1rem',
+            padding: '0.5rem',
         }}>
             <form onSubmit={handleSearch}>
                 <TextField
@@ -75,8 +75,8 @@ export default function MobileSearchResultsList({ onClose }: props) {
                     backgroundColor: "white",
                     top: "100%",
                     left: "0",
-                    width: "300px" }}>
-                    <p style={{padding: '0.5rem'}}>
+                    width: "100%" }}>
+                    <p>
                         {searchResults.length === 0 ? "検索結果はありません" : `${searchResults.length}件の検索結果`}
                     </p>
                     <List>

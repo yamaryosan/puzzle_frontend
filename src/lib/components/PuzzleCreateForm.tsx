@@ -155,7 +155,7 @@ export default function PuzzleCreateForm() {
     const maxHints = 3;
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
     const [approachIds, setApproachIds] = useState<number[]>([]);
-    const [difficulty, setDifficulty] = useState<number>(0);
+    const [difficulty, setDifficulty] = useState<number>(1);
 
     useEffect(() => {
         // Deltaクラスを取得

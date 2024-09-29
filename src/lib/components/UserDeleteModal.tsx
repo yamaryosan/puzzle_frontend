@@ -104,11 +104,11 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
         };
     }, [onButtonClick]);
 
-    // 5秒後に退会ボタンを有効化
+    // 3秒後に退会ボタンを有効化
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsDeleteButtonDisabled(false);
-        }, 5000);
+        }, 3000);
         return () => clearTimeout(timer);
     }, []);
 

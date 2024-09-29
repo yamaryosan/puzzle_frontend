@@ -17,7 +17,7 @@ const baseMenu = [
 
 const authMenu = [
     {title: 'プロフィール', icon: AccountCircle, href: '/profile'},
-    {title: 'サインアウト', icon: Logout, href: '/signout'},
+    {title: 'ログアウト', icon: Logout, href: '/signout'},
 ];
 
 const guestMenu = [

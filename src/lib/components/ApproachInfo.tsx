@@ -50,6 +50,7 @@ export default function ApproachInfo({ approach, isActive }: ApproachInfoProps) 
         }}>
             {/* 定石に紐づくパズル一覧を表示 */}
             {puzzles.length === 0 && <p>この定石に紐づくパズルはありません</p>}
+            <p style={{ fontSize: "1rem" }}>定石に紐づくパズル</p>
             {puzzles.map((puzzle) => (
                 <Link key={puzzle.id} href={`/puzzles/${puzzle.id}`}>
                     <Button

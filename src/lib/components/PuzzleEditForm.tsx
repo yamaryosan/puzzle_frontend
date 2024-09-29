@@ -19,6 +19,8 @@ import { Upload, Clear, Delete } from '@mui/icons-material';
 import CommonButton from '@/lib/components/common/CommonButton';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
+import { Box } from '@mui/material';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 /**
  * 内容を送信
@@ -165,6 +167,8 @@ export default function PuzzleEditForm({ id }: { id: string }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     useEffect(() => {
         async function loadQuill() {
@@ -324,14 +328,21 @@ export default function PuzzleEditForm({ id }: { id: string }) {
         
         <DifficultEditor value={difficulty} onChange={setDifficulty} />
 
-        <CommonButton color="secondary" onClick={() => handleSendButton()}>
-            <Upload />
-            編集完了
-        </CommonButton>
-        <CommonButton color="error" onClick={toggleDeleteModal}>
-            <Delete />
-            削除
-        </CommonButton>
+        <Box sx={{ 
+            paddingY: '0.5rem',
+            display: 'flex',
+            flexDirection: `${deviceType === 'mobile' ? 'column' : 'row'}`,
+            justifyContent: 'space-between',
+            width: '100%'}}>
+            <CommonButton color="error" onClick={toggleDeleteModal} width={`${deviceType === 'mobile' ? '100%' : '45%'}`}>
+                <Delete />
+                削除
+            </CommonButton>
+            <CommonButton color="secondary" onClick={() => handleSendButton()} width={`${deviceType === 'mobile' ? '100%' : '45%'}`}>
+                <Upload />
+                編集完了
+            </CommonButton>
+        </Box>
         </>
     )
 }

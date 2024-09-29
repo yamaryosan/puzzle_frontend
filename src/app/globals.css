@@ -32,7 +32,7 @@
     }
     /* Quillエディタ */
     .ql-editor {
-        font-size: 1.5rem;
+        font-size: clamp(0.8rem, 2vw, 1.25rem);
         line-height: 1.5;
     }
 }

@@ -11,7 +11,7 @@ export default function Main({ children }: Readonly<{ children: React.ReactNode;
             <Box sx={{ minHeight: '600px', position: 'relative' }}>
                 <LeftDrawer />
                 <SearchDrawer />
-                <Box sx={{ paddingX: '4rem', paddingTop: '2rem', fontSize: '1.2rem' }}>
+                <Box sx={{ paddingX: '2rem', paddingTop: '2rem', fontSize: '1.2rem' }}>
                     <AuthGuardLayout>
                         {children}
                     </AuthGuardLayout>

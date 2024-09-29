@@ -49,7 +49,7 @@ export default function LeftDrawer() {
                 alignItems: 'center',
                 transform: 'translateY(-50%)',
                 cursor: 'pointer', 
-                width: '4rem',
+                width: '2rem',
                 height: '100%'
                 }} >
                 < ArrowRight />
@@ -83,7 +83,7 @@ export default function LeftDrawer() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    width: '4rem',
+                    width: '2rem',
                     height: '4rem',
                     backgroundColor: 'lightgray',
                     }}>

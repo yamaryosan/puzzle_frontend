@@ -2,7 +2,6 @@
 
 import {Drawer, Box} from '@mui/material';
 import { useState } from 'react';
-import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 import { Search } from "@mui/icons-material";
@@ -30,11 +29,11 @@ export default function SearchDrawer() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    width: '4rem',
+                    width: '2rem',
                     height: '4rem',
                     backgroundColor: 'lightgray',
                     }}>
-                    < Search sx={{ scale: '2' }} />
+                    < Search sx={{ scale: '1.5' }} />
                 </Box>
                 <Drawer anchor="left" open={isOpen} onClose={() => setOpen(false)}>
                     <MobileSearchResultsList onClose={() => setOpen(false)} />

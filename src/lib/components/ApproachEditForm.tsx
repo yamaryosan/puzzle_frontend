@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import { getApproach } from '@/lib/api/approachApi';
 import Quill from 'quill';
 import { Approach } from '@prisma/client';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { Edit, Upload } from '@mui/icons-material';
 import TitleEditor from '@/lib/components/TitleEditor';
 import { useRouter } from 'next/navigation';
-import { Delete, Clear } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
@@ -16,6 +16,7 @@ import { useContext } from 'react';
 import Delta from 'quill-delta';
 import DescriptionEditor from '@/lib/components/DescriptionEditor';
 import CommonButton from '@/lib/components/common/CommonButton';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 type Range = {
     index: number;
@@ -76,6 +77,8 @@ export default function ApproachEditForm({id}: {id: string}) {
     const [isLoading, setIsLoading] = useState(true);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     // 編集前に以前の定石を取得
     useEffect(() => {
@@ -143,16 +146,42 @@ export default function ApproachEditForm({id}: {id: string}) {
             onTextChange={setLastChange} />
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingY: '1rem', marginY: '1rem' }}>
-            <CommonButton color="secondary" onClick={handleSendButton} width="20%">
+        {deviceType === 'mobile' && (
+        <Box sx={{ 
+            paddingY: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: '2rem',
+            width: '100%'}}>
+            <CommonButton color="secondary" onClick={handleSendButton} width='100%'>
                 <Upload />
                 <span>編集完了</span>
             </CommonButton>
-            <CommonButton color="error" onClick={toggleDeleteModal} width="20%">
+            <CommonButton color="error" onClick={toggleDeleteModal} width='100%'>
                 <Delete />
                 <span>削除</span>
             </CommonButton>
         </Box>
+        )}
+
+        {deviceType === 'desktop' && (
+        <Box sx={{ 
+            paddingY: '0.5rem',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%'}}>
+            <CommonButton color="error" onClick={toggleDeleteModal} width='45%'>
+                <Delete />
+                <span>削除</span>
+            </CommonButton>
+            <CommonButton color="secondary" onClick={handleSendButton} width='45%'>
+                <Upload />
+                <span>編集完了</span>
+            </CommonButton>
+        </Box>
+        )}
         </>
     );
 }

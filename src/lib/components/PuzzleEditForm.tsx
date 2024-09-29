@@ -328,21 +328,42 @@ export default function PuzzleEditForm({ id }: { id: string }) {
         
         <DifficultEditor value={difficulty} onChange={setDifficulty} />
 
+        {deviceType === 'mobile' && (
         <Box sx={{ 
             paddingY: '0.5rem',
             display: 'flex',
-            flexDirection: `${deviceType === 'mobile' ? 'column' : 'row'}`,
+            flexDirection: 'column',
             justifyContent: 'space-between',
+            gap: '2rem',
             width: '100%'}}>
-            <CommonButton color="error" onClick={toggleDeleteModal} width={`${deviceType === 'mobile' ? '100%' : '45%'}`}>
-                <Delete />
-                削除
-            </CommonButton>
-            <CommonButton color="secondary" onClick={() => handleSendButton()} width={`${deviceType === 'mobile' ? '100%' : '45%'}`}>
+            <CommonButton color="secondary" onClick={handleSendButton} width='100%'>
                 <Upload />
-                編集完了
+                <span>編集完了</span>
+            </CommonButton>
+            <CommonButton color="error" onClick={toggleDeleteModal} width='100%'>
+                <Delete />
+                <span>削除</span>
             </CommonButton>
         </Box>
+        )}
+
+        {deviceType === 'desktop' && (
+        <Box sx={{ 
+            paddingY: '0.5rem',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%'}}>
+            <CommonButton color="error" onClick={toggleDeleteModal} width='45%'>
+                <Delete />
+                <span>削除</span>
+            </CommonButton>
+            <CommonButton color="secondary" onClick={handleSendButton} width='45%'>
+                <Upload />
+                <span>編集完了</span>
+            </CommonButton>
+        </Box>
+        )}
         </>
     )
 }

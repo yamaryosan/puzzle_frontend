@@ -1,11 +1,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Input } from "@mui/material";
 import { GoogleAuthProvider, User, sendEmailVerification } from 'firebase/auth';
 import { reauthenticateWithPopup } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
 import { useState } from "react";
 import { deleteUserInPrisma } from "@/lib/api/userapi";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
+import { CancelOutlined } from "@mui/icons-material";
 
 const isEmulator = process.env.NODE_ENV === 'development';
 
@@ -75,6 +79,11 @@ type DeleteModalProps = {
  */
 export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
     const router = useRouter();
+    const user = useContext(FirebaseUserContext);
+
+    const [inputName, setInputName] = useState('');
+
+    const deviceType = useContext(DeviceTypeContext);
 
     // 退会確認ステップ
     const [deletionConfirmStep, setDeletionConfirmStep] = useState(0);
@@ -148,60 +157,57 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
                 position: "fixed",
                 top: "50%",
                 left: "50%",
+                width: deviceType === 'mobile' ? "90%" : "50%",
                 transform: "translate(-50%, -50%)",
                 backgroundColor: "white",
-                padding: "3rem",
+                padding: "2rem",
                 zIndex: 2,
                 boxShadow: 24,
                 borderRadius: 2,
-                textAlign: "center",
             }}
             >
                 {deletionConfirmStep === 0 && (
                     <>
-                    <Box sx={{ marginBottom: "1rem" }}>
-                        <p>退会しますか？</p>
-                    </Box>
-                    <Box sx={{scale: "1.5"}}>
-                        <Button
-                        sx={{
-                            marginRight: "1rem",
-                            backgroundColor: "success.light",
-                            color: "white",
-                            ":hover": {
-                                backgroundColor: "success.dark",
-                            },
-                        }}
-                        onClick={() => onButtonClick(false)}>いいえ</Button>
-                        <Button
-                        sx={{
-                            backgroundColor: "error.light",
-                            color: "white",
-                            ":hover": {
-                                backgroundColor: "error.main",
-                            },
-                        }}
-                        onClick={() => handleDelete()}>はい</Button>
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <Box sx={{ marginBottom: "1rem" }}>
+                            <p>退会しますか？</p>
+                        </Box>
+                        <Box sx={{scale: "1.5"}}>
+                            <Button
+                            sx={{
+                                marginRight: "1rem",
+                                backgroundColor: "success.light",
+                                color: "white",
+                                ":hover": {
+                                    backgroundColor: "success.dark",
+                                },
+                            }}
+                            onClick={() => onButtonClick(false)}>いいえ</Button>
+                            <Button
+                            sx={{
+                                backgroundColor: "error.light",
+                                color: "white",
+                                ":hover": {
+                                    backgroundColor: "error.main",
+                                },
+                            }}
+                            onClick={() => handleDelete()}>はい</Button>
+                        </Box>
                     </Box>
                     </>
                 )}
 
                 {deletionConfirmStep === 1 && (
                     <>
-                    <Box sx={{ marginBottom: "1rem" }}>
-                        <p>本当に退会しますか？(この操作は取り消せません)</p>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+                    <Button onClick={() => onButtonClick(false)}>
+                        <CancelOutlined />
+                    </Button>
                     </Box>
-                    <Box sx={{scale: "1.5"}}>
-                        <Button
-                        sx={{
-                            marginRight: "1rem",
-                            backgroundColor: "success.light",
-                            color: "white",
-                            ":hover": {
-                                backgroundColor: "success.dark",
-                            },
-                        }}
-                        onClick={() => onButtonClick(false)}>いいえ</Button>
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <p style={{ fontSize: "1rem", marginBottom: "1rem" }}>退会するには、ユーザ名を入力してください</p>
+                        <Box sx={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+                        <Input type="text" placeholder={user?.displayName ?? ''} value={inputName} onChange={(e) => setInputName(e.target.value)} />
                         <Button
                         sx={{
                             backgroundColor: "error.light",
@@ -209,17 +215,13 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
                             ":hover": {
                                 backgroundColor: "error.main",
                             },
-                            ":disabled": {
-                                backgroundColor: "error.dark",
-                            }
                         }}
-                        onClick={() => handleDelete()}
-                        disabled={isDeleteButtonDisabled}>はい</Button>
+                        disabled={inputName !== user?.displayName}
+                        onClick={() => handleDelete()}>退会</Button>
+                        </Box>
                     </Box>
                     </>
-                )}                
-
-
+                )}
             </Box>
         </Box>
         </>

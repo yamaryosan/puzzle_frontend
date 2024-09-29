@@ -13,7 +13,7 @@ type props = {
 export default function SolutionEditor({ defaultValue, containerRef, onSelectionChange, onTextChange  }: props) {
     return (
         <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>正答</h3>
+            <h4>正答</h4>
             <Editor
             defaultValue={defaultValue || new Delta()}
             ref={containerRef}

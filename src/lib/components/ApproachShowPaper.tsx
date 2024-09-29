@@ -96,7 +96,7 @@ export default function ApproachShowPaper({ id }: { id: string }) {
 
             <DescriptionViewer descriptionHtml={approach.content} />
             
-            {puzzles?.length === 0 ? <p>この定石に紐づくパズルはありません</p> : ( 
+            {puzzles?.length === 0 ? <p style={{ fontSize: "0.8rem" }}>この定石に紐づくパズルはありません</p> : ( 
             <div>
                 <p>この定石に紐づくパズル</p>
                 <PuzzleCards puzzles={puzzles ?? []} activeCardId={activeCardId} handleCardClick={handleCardClick} />

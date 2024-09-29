@@ -46,7 +46,7 @@ export default function HintsViewer({ puzzleId }: HintsViewerProps) {
         <>
         <Box sx={{ paddingY: '0.5rem' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <h3>ヒント</h3>
+                <h4>ヒント</h4>
                 <Button onClick={handleToggle} sx={{ marginLeft: '1rem' }}>{show ? '非表示' : '表示'}</Button>
             </Box>
             {show &&

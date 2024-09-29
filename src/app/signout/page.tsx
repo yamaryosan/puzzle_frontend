@@ -21,7 +21,7 @@ export default function App() {
             <Link href="/signin">
             <CommonButton color="secondary" onClick={() => {}}>
                 <Login />
-                サインイン画面に戻る
+                サインイン
             </CommonButton>
             </Link>
         </div>

@@ -1,8 +1,12 @@
+'use client';
+
 import { Box, Card } from "@mui/material";
 import PuzzleInfo from "@/lib/components/PuzzleInfo";
 import { Puzzle } from "@prisma/client";
 import FavoriteButton from "@/lib/components/FavoriteButton";
 import CompletionStatusIcon from "@/lib/components/CompletionStatusIcon";
+import { useContext } from "react";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
 type PuzzleCardProps = {
     puzzle: Puzzle;
@@ -11,6 +15,8 @@ type PuzzleCardProps = {
 };
 
 export default function PuzzleCard({ puzzle, isActive, onClick }: PuzzleCardProps) {
+
+    const deviceType = useContext(DeviceTypeContext);
 
     const handleFavoriteChange = (checked: boolean) => {
         puzzle.is_favorite = checked;
@@ -22,12 +28,10 @@ export default function PuzzleCard({ puzzle, isActive, onClick }: PuzzleCardProp
                 marginY: 1,
                 padding: "1rem",
                 cursor: "pointer",
-                ":hover": {
-                    backgroundColor: "secondary.light",
-                    transition: "background-color 0.3s",
-                },
+                backgroundColor: isActive ? "#f0f0f0" : "white",
             }}
             onClick={onClick}>
+            {deviceType === 'desktop' && (
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
                 <Box sx={{ display: "flex", gap: "1rem", alignItems: "center" }}>
@@ -38,6 +42,19 @@ export default function PuzzleCard({ puzzle, isActive, onClick }: PuzzleCardProp
                     onChange={handleFavoriteChange}/>
                 </Box>
             </Box>
+            )}
+            {deviceType === 'mobile' && (
+            <Box sx={{ display: "flex", flexDirection: "column"}}>
+                <h2 style={{display: "inline-block"}}>{puzzle.title}</h2>
+                <Box sx={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent:"flex-end" }}>
+                    <CompletionStatusIcon isSolved={puzzle.is_solved} />
+                    <FavoriteButton
+                        initialChecked={puzzle.is_favorite}
+                        puzzleId={puzzle.id.toString()}
+                        onChange={handleFavoriteChange}/>
+                </Box>
+            </Box>
+            )}
             <Box sx={{
                 maxHeight: isActive ? '1000px' : '0px',
                 overflow: 'hidden',

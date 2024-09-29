@@ -30,6 +30,11 @@
     input[type="checkbox"] + label {
         cursor: pointer;
     }
+    /* Quillエディタ */
+    .ql-editor {
+        font-size: 1.5rem;
+        line-height: 1.5;
+    }
 }
 
 @media (prefers-color-scheme: dark) {

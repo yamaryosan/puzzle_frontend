@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Box from '@mui/material/Box';
 import { Home, Category, Favorite } from '@mui/icons-material';
 import { useContext } from 'react';
-import DesktopSearchBox from '@/lib/components/desktopSearchBox';
+import DesktopSearchBox from '@/lib/components/DesktopSearchBox';
 import FirebaseUserProvider from "@/lib/components/FirebaseUserProvider";
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 

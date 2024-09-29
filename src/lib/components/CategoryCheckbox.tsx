@@ -175,13 +175,13 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
                         marginTop: "1rem",
                         bgcolor: "primary.main",
                         cursor: "pointer",
-                        ":hover": {
-                            backgroundColor: "secondary.light",
-                            transition: "background-color 0.3s",
-                        }
+                        gap: "0.5rem",
+                        display: "flex",
+                        justifyContent: "center",
                     }}
                     aria-label="create"
                     onClick={handleNewCategory}>
+                        <CreateNewFolderOutlined />
                         <span>作成</span>
                     </Button>
                     </>

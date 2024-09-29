@@ -11,6 +11,7 @@ import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 import DescriptionViewer from "@/lib/components/DescriptionViewer";
 import CommonButton from "@/lib/components/common/CommonButton";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
 /**
  * 正解かどうかを送信
@@ -49,6 +50,8 @@ export default function CheckAnswer({ id } : { id: string }) {
     const router = useRouter();
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
     const user = useContext(FirebaseUserContext);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     // パズルを取得
     useEffect(() => {
@@ -91,29 +94,47 @@ export default function CheckAnswer({ id } : { id: string }) {
             <DescriptionViewer descriptionHtml={puzzle?.description ?? ""} />
 
             <Box sx={{ paddingY: '0.5rem' }}>
-                <h3>あなたの解答</h3>
+                <h4>あなたの解答</h4>
                 <Viewer defaultHtml={puzzle?.user_answer ?? ""} />
             </Box>
             <Box sx={{ paddingY: '0.5rem' }}>
-                <h3>正解</h3>
+                <h4>正答</h4>
                 <Viewer defaultHtml={puzzle?.solution ?? ""} />
             </Box>
-            <Box
-            sx={{
+
+            {deviceType === 'mobile' && (
+            <Box sx={{ 
+                paddingY: '0.5rem',
                 display: 'flex',
-                justifyContent: 'center',
-                paddingY: '1rem',
-                marginY: '1rem',
-                gap: '2rem' }}>
-                <CommonButton color="success" onClick={correct} width="20%">
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                width: '100%'}}>
+                <CommonButton color="success" onClick={correct}>
                     <Check />
                     正解！
                 </CommonButton>
-                <CommonButton color="error" onClick={incorrect} width="20%">
+                <CommonButton color="error" onClick={incorrect}>
                     <Clear />
                     不正解...
                 </CommonButton>
             </Box>
+            )}
+            {deviceType === 'desktop' && (
+            <Box sx={{ 
+                paddingY: '0.5rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%'}}>
+                <CommonButton color="error" onClick={incorrect} width="45%">
+                    <Clear />
+                    不正解...
+                </CommonButton>
+                <CommonButton color="success" onClick={correct} width="45%">
+                    <Check />
+                    正解！
+                </CommonButton>
+            </Box>
+            )}
         </Box>
         </>
     )

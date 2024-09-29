@@ -17,11 +17,11 @@ export default function App() {
 
     return (
         <div>
-            <p>サインアウトしました。</p>
+            <p>ログアウトしました。</p>
             <Link href="/signin">
             <CommonButton color="secondary" onClick={() => {}}>
                 <Login />
-                サインイン
+                ログイン
             </CommonButton>
             </Link>
         </div>

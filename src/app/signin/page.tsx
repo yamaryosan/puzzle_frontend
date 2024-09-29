@@ -15,6 +15,7 @@ import { LoginOutlined, Google, ErrorOutline } from '@mui/icons-material';
 import { FirebaseError } from 'firebase/app';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 /**
  * メールアドレスとパスワードでログインする
@@ -98,6 +99,8 @@ export default function Page() {
     const user = useContext(FirebaseUserContext);
     const [GoogleSignInLoading, setGoogleSignInLoading] = useState(false);
 
+    const deviceType = useContext(DeviceTypeContext);
+
     // ログインしている場合はホーム画面にリダイレクト
     if (user) {
         redirectToDashboard();
@@ -174,7 +177,7 @@ export default function Page() {
                     </>) : (
                     <>
                     <Google />
-                    <span>Googleアカウントでログイン</span>
+                    <span>Googleでログイン</span>
                     </>)}
             </CommonButton>
         </Box>

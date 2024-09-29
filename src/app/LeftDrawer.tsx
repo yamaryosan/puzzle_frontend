@@ -21,7 +21,7 @@ const authMenu = [
 ];
 
 const guestMenu = [
-    {title: 'サインイン', icon: Login, href: '/signin'},
+    {title: 'ログイン', icon: Login, href: '/signin'},
 ];
 
 export default function LeftDrawer() {

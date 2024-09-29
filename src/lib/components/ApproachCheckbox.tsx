@@ -5,6 +5,8 @@ import { getApproachesByPuzzleId } from '@/lib/api/approachApi';
 import { Box } from "@mui/material";
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from "react";
+import Checkbox from "@mui/material/Checkbox";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
 interface ApproachCheckboxProps {
     onChange: (approachIds: number[]) => void;
@@ -16,6 +18,8 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     const user = useContext(FirebaseUserContext);
     const [approaches, setApproaches] = useState<Approach[] | null>(null);
     const [checkedApproachIds, setCheckedApproachIds] = useState<number[]>(value);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     // 編集前に定石を取得
     useEffect(() => {
@@ -65,17 +69,22 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
     return (
         <Box sx={{ paddingY: '0.5rem' }}>
             <h3>定石</h3>
-            <Box sx={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "0.25rem", fontSize: "1.5rem" }}>
+            <Box sx={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "0.25rem", fontSize: `${deviceType === "mobile" ? "1rem" : "1.5rem"}` }}>
                 {approaches?.length === 0 && <p>定石がありません</p>}
-                <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: "2fr 2fr" }}>
+                <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: `${deviceType === "mobile" ? "1fr" : "1fr 1fr"}` }}>
                 {approaches?.map((approach) => (
                     <div key={approach.id}>
-                        <input
-                            type="checkbox"
-                            id={`approach_${approach.id.toString()}`}
+                        <Checkbox
                             checked={checkedApproachIds.includes(approach.id)}
+                            id={`approach_${approach.id.toString()}`}
                             onChange={() => handleCheckboxChange(approach.id)}
-                        />
+                            size={deviceType === "mobile" ? "large" : "medium"}
+                            sx={{
+                                color: "primary.main",
+                                "&.Mui-checked": {
+                                    color: "primary.main",
+                                }
+                            }}/>
                         <label htmlFor={`approach_${approach.id.toString()}`}>{approach.title}</label>
                     </div>
                 ))}

@@ -42,24 +42,28 @@ export default function Footer() {
                 bgcolor: 'primary.main',
                 padding: '1rem', 
                 color: 'white',
-                fontSize: '1.1rem',
-                gap: '1rem',
+                gap: '2rem',
                 flexDirection: 'column',
                 alignItems: 'center',
-                scale: '1.5',
                 }}>
-                    <Link href="/contact">
-                    <ContactSupport />
-                    お問い合わせ
-                    </Link>
-                    <Link href="/terms">
-                    <Gavel />
-                    利用規約
-                    </Link>
-                    <Link href="/about">
-                    <Info />
-                    このサイトについて
-                    </Link>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scale: '1.5' }}>
+                        <Link href="/contact">
+                        <ContactSupport />
+                        お問い合わせ
+                        </Link>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scale: '1.5' }}>
+                        <Link href="/terms">
+                        <Gavel />
+                        利用規約
+                        </Link>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scale: '1.5' }}>
+                        <Link href="/about">
+                        <Info />
+                        このサイトについて
+                        </Link>
+                    </Box>
             </Box>
             )}
         </footer>

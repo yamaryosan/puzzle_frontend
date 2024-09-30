@@ -6,10 +6,15 @@ import prisma from "@/lib/prismaclient";
  * @param req リクエスト
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
+    const { searchParams } = new URL(req.url);
+    const user_id = searchParams.get("userId");
+    if (!user_id) {
+        throw new Error("ユーザIDが指定されていません");
+    }
     try {
         // お気に入りのパズルを取得
         const puzzles = await prisma.puzzle.findMany({
-            where: { is_favorite: true },
+            where: { user_id, is_favorite: true },
         });
 
         return NextResponse.json(puzzles);

@@ -130,7 +130,7 @@ export default function Page() {
                             {isLoading ? "処理中..." : (
                                 <>
                                 <Google />
-                                <span>Googleアカウントで登録</span>
+                                <span>Googleで登録</span>
                                 </>
                                 )}
                         </CommonButton>

@@ -15,9 +15,11 @@ type Puzzles = Puzzle[];
 function SearchParamsWrapper() {
     const searchParams = useSearchParams();
     const passwordReset = searchParams.get("passwordReset") === "true";
+    const userCreated = searchParams.get("userCreated") === "true";
     return (
         <>
             {passwordReset && ( <MessageModal message="パスワードのリセットが完了しました。" param="passwordReset" /> )}
+            {userCreated && ( <MessageModal message="ユーザー登録が完了しました。" param="userCreated" /> )}
         </>
     );
 }

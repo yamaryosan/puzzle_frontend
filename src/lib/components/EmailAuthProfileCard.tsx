@@ -8,6 +8,7 @@ import { Email, BadgeOutlined, PasswordOutlined } from '@mui/icons-material';
 import CommonInputText from '@/lib/components/common/CommonInputText';
 import CommonButton from '@/lib/components/common/CommonButton';
 import { FirebaseError } from 'firebase/app';
+import { ErrorOutline } from '@mui/icons-material';
 
 type EmailAuthProfileCardProps = {
     user: User | null;
@@ -129,6 +130,7 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
                     displayName: form.username
                 })
                 setMessage('プロフィールを更新しました');
+                setGeneralError(null);
             }
             // メールアドレスの更新
             if (form.email !== user.email) {
@@ -148,6 +150,12 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
                     displayName: user.displayName
                 })
                 setMessage('入力されたメールアドレスに確認メールを送信しました。メール内のリンクをクリックして更新を完了してください');
+                setGeneralError(null);
+            }
+            // パスワードが変更されていない場合
+            if (form.newPassword === form.currentPassword) {
+                setGeneralError('新しいパスワードは現在のパスワードと異なるものを入力してください');
+                return;
             }
             // パスワードの更新
             if (form.newPassword) {
@@ -156,6 +164,7 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
                 }
                 await updatePassword(user, form.newPassword);
                 setMessage('パスワードを更新しました');
+                setGeneralError(null);
                 setForm(prevState => ({ ...prevState, currentPassword: "", newPassword: "", confirmPassword: "" }));
             }
         } catch (error) {
@@ -196,15 +205,21 @@ export default function EmailAuthProfileCard({ user }: EmailAuthProfileCardProps
             <PasswordOutlined />
             <span>新しいパスワード</span>
             <CommonInputText name="newPassword" elementType="password" value={form.newPassword} onChange={handleInputChange} />
+            {(passwordErrors.length > 0 && form.newPassword.length > 0) &&
+                <Box sx={{ color: "error.main", display: "flex", gap: "0.5rem"}}>
+                    <ErrorOutline />
+                    <ul>
+                        {passwordErrors.map((error, index) => (
+                            <li key={index}>{error}</li>
+                        ))}
+                    </ul>
+                </Box>}
             <PasswordOutlined />
-            {passwordErrors.map((message, index) => (
-                <Box key={index} sx={{ color: 'red' }}>{message}</Box>
-            ))}
-            <span>新しいパスワード（確認）</span>
+            <span>新しいパスワード(確認用)</span>
             <CommonInputText name="confirmPassword" elementType="password" value={form.confirmPassword} onChange={handleInputChange} />
             <Box sx={{ color: 'red' }}>{generalError}</Box>
             {message && <Box sx={{ color: 'green' }}>{message}</Box>}
-            <CommonButton color="primary" onClick={handleUpdate}>編集結果を確定</CommonButton>
+            <CommonButton color="primary" onClick={handleUpdate}>更新</CommonButton>
         </Box>
         </>
     );

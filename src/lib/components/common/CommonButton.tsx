@@ -23,7 +23,8 @@ export default function CommonButton({ children, color, onClick, disabled, width
             },
             ":disabled": {
                 backgroundColor: `${color}.dark`,
-            }
+            },
+            textTransform: 'none',
         }}
         onClick={onClick}
         disabled={disabled}>

@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { Puzzle } from '@prisma/client';
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { User } from 'firebase/auth';
-import SearchBox from '@/lib/components/SearchBox';
+import SearchBox from '@/lib/components/DesktopSearchBox';
 import { searchPuzzles } from '@/lib/api/puzzleapi';
 
 // モックデータ

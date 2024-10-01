@@ -19,6 +19,8 @@ import { Upload, Clear, Delete } from '@mui/icons-material';
 import CommonButton from '@/lib/components/common/CommonButton';
 import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
+import { Box } from '@mui/material';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 /**
  * 内容を送信
@@ -165,6 +167,8 @@ export default function PuzzleEditForm({ id }: { id: string }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     useEffect(() => {
         async function loadQuill() {
@@ -324,14 +328,42 @@ export default function PuzzleEditForm({ id }: { id: string }) {
         
         <DifficultEditor value={difficulty} onChange={setDifficulty} />
 
-        <CommonButton color="secondary" onClick={() => handleSendButton()}>
-            <Upload />
-            編集完了
-        </CommonButton>
-        <CommonButton color="error" onClick={toggleDeleteModal}>
-            <Delete />
-            削除
-        </CommonButton>
+        {deviceType === 'mobile' && (
+        <Box sx={{ 
+            paddingY: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: '2rem',
+            width: '100%'}}>
+            <CommonButton color="secondary" onClick={handleSendButton} width='100%'>
+                <Upload />
+                <span>編集完了</span>
+            </CommonButton>
+            <CommonButton color="error" onClick={toggleDeleteModal} width='100%'>
+                <Delete />
+                <span>削除</span>
+            </CommonButton>
+        </Box>
+        )}
+
+        {deviceType === 'desktop' && (
+        <Box sx={{ 
+            paddingY: '0.5rem',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%'}}>
+            <CommonButton color="error" onClick={toggleDeleteModal} width='45%'>
+                <Delete />
+                <span>削除</span>
+            </CommonButton>
+            <CommonButton color="secondary" onClick={handleSendButton} width='45%'>
+                <Upload />
+                <span>編集完了</span>
+            </CommonButton>
+        </Box>
+        )}
         </>
     )
 }

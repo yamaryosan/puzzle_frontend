@@ -12,6 +12,7 @@ import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 import CommonButton from '@/lib/components/common/CommonButton';
 import PuzzleCards from '@/lib/components/PuzzleCards';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 export default function Puzzles() {
     const user = useContext(FirebaseUserContext);
@@ -24,6 +25,8 @@ export default function Puzzles() {
     // メッセージモーダルの表示
     const searchParams = useSearchParams();
     const showDeletedModal = searchParams.get('deleted') === 'true';
+
+    const deviceType = useContext(DeviceTypeContext);
 
     // パズル一覧を取得
     useEffect(() => {
@@ -81,6 +84,7 @@ export default function Puzzles() {
             <MessageModal message="パズルを削除しました" param="deleted" />
         )}
         <div>
+            {deviceType === 'desktop' && (
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Link href="/puzzles/create" style={{display: "block", width: "30%"}}>
                     <CommonButton color="secondary" onClick={() => {}}>
@@ -97,6 +101,26 @@ export default function Puzzles() {
                     シャッフル
                 </CommonButton>
             </Box>
+            )}
+
+            {deviceType === 'mobile' && (
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
+                <Link href="/puzzles/create" style={{display: "block", width: "100%"}}>
+                    <CommonButton color="secondary" onClick={() => {}}>
+                        <AddCircleOutline />
+                        パズル作成
+                    </CommonButton>
+                </Link>
+                <CommonButton color="secondary" onClick={handleSort} width="100%">
+                    <Sort />
+                    難易度ソート
+                </CommonButton>
+                <CommonButton color="secondary" onClick={handleShuffle} width="100%">
+                    <Shuffle />
+                    シャッフル
+                </CommonButton>
+            </Box>
+            )}
             <PuzzleCards puzzles={puzzles} activeCardId={activeCardId} handleCardClick={handleCardClick} />
         </div>
     </>

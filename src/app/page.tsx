@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import { useState } from "react";
 import { Puzzle } from "@prisma/client";
 import { getPuzzles } from "@/lib/api/puzzleapi";
@@ -9,15 +8,18 @@ import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
 import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import Puzzles from "@/lib/components/Puzzles";
 
 type Puzzles = Puzzle[];
 
 function SearchParamsWrapper() {
     const searchParams = useSearchParams();
     const passwordReset = searchParams.get("passwordReset") === "true";
+    const userCreated = searchParams.get("userCreated") === "true";
     return (
         <>
             {passwordReset && ( <MessageModal message="パスワードのリセットが完了しました。" param="passwordReset" /> )}
+            {userCreated && ( <MessageModal message="ユーザー登録が完了しました。" param="userCreated" /> )}
         </>
     );
 }
@@ -45,19 +47,7 @@ export default function Page() {
             <Suspense fallback={null}>
                 <SearchParamsWrapper />
             </Suspense>
-            <p>難易度で並び替え</p>
-            <p>カテゴリー別で並び替え</p>
-            <p>ランダムに並び替え</p>
-            <p>パズル一覧</p>
-            <ul>
-                {puzzles?.map((puzzle) => (
-                <li key={puzzle.id}>
-                    <Link href={`/puzzles/${puzzle.id}`}>
-                    {puzzle.title}
-                    </Link>
-                </li>
-                ))}
-            </ul>
+            <Puzzles />
         </div>
     );
 }

@@ -46,8 +46,10 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
         <>
         <Box sx={{ paddingY: '0.5rem' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <h3>定石</h3>
-                <Button onClick={handleToggle} sx={{ marginLeft: '1rem' }}>{show ? '非表示' : '表示'}</Button>
+                <h4>定石</h4>
+                <Button onClick={handleToggle} sx={{ marginLeft: '1rem', padding: '0.5rem' }}>
+                    {show ? '非表示' : '表示'}
+                </Button>
             </Box>
             {show &&
             <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>

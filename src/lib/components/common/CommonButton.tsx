@@ -23,11 +23,12 @@ export default function CommonButton({ children, color, onClick, disabled, width
             },
             ":disabled": {
                 backgroundColor: `${color}.dark`,
-            }
+            },
+            textTransform: 'none',
         }}
         onClick={onClick}
         disabled={disabled}>
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: "center", gap: '0.5rem', scale: "1.8", color: "black" }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: "center", gap: '0.5rem', scale: "1.5", color: "black" }}>
                 {children}
             </Box>
         </Button>

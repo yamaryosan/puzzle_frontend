@@ -84,7 +84,7 @@ export default function Page() {
                 await createUserInPrisma(firebaseUser);
 
                 window.localStorage.removeItem("emailForSignIn");
-                router.push("/?created=true");
+                router.push("/?userCreated=true");
             } catch (error) {
                 if (error instanceof FirebaseError) {
                     if (error.code === "auth/invalid-action-code") {
@@ -114,7 +114,7 @@ export default function Page() {
                         placeholder="パスワード"/>
                 </Box>
                 {(passwordErrors.length > 0 && password.length > 0) &&
-                <Box sx={{ color: "error.main", display: "flex", gap: "0.5rem" }}>
+                <Box sx={{ color: "error.main", display: "flex", gap: "0.5rem"}}>
                     <ErrorOutline />
                     <ul>
                         {passwordErrors.map((error, index) => (

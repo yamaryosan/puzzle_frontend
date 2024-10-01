@@ -4,6 +4,8 @@ import Quill from 'quill';
 import DeltaClass from 'quill-delta';
 import { Box, Button } from '@mui/material';
 import Delta from 'quill-delta';
+import { useContext } from 'react';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 type Range = {
     index: number;
@@ -23,11 +25,15 @@ export default function HintEditor({ hintRef, defaultValue, number, canToggle, s
     const [, setRange] = useState<Range | null>(null);
     const [, setLastChange] = useState<Delta | null>(null);
 
+    const deviceType = useContext(DeviceTypeContext);
+
     return (
         <Box>
             <Button 
             sx={{
                 marginY: 1,
+                fontSize: deviceType === "desktop" ? "1.5rem" : "2rem",
+                width: deviceType === "desktop" ? "auto" : "100%",
                 ":hover": {
                     backgroundColor: "secondary.light",
                     transition: "background-color 0.3s",

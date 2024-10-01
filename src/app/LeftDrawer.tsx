@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
 
 const baseMenu = [
     {title: 'パズル一覧', icon: Extension, href: '/puzzles'},
@@ -16,11 +17,11 @@ const baseMenu = [
 
 const authMenu = [
     {title: 'プロフィール', icon: AccountCircle, href: '/profile'},
-    {title: 'サインアウト', icon: Logout, href: '/signout'},
+    {title: 'ログアウト', icon: Logout, href: '/signout'},
 ];
 
 const guestMenu = [
-    {title: 'サインイン', icon: Login, href: '/signin'},
+    {title: 'ログイン', icon: Login, href: '/signin'},
 ];
 
 export default function LeftDrawer() {
@@ -29,12 +30,16 @@ export default function LeftDrawer() {
 
     const menu = baseMenu.concat(user ? authMenu : guestMenu);
 
+    const deviceType = useContext(DeviceTypeContext);
+
     const handleOpen = () => {
         setOpen(true);
     };
 
     return (
         <>
+        {deviceType === 'desktop' && (
+            <>
             <Box onClick={handleOpen} sx={{
                 position: 'absolute', 
                 top: '50%', 
@@ -44,7 +49,7 @@ export default function LeftDrawer() {
                 alignItems: 'center',
                 transform: 'translateY(-50%)',
                 cursor: 'pointer', 
-                width: '4rem',
+                width: '2rem',
                 height: '100%'
                 }} >
                 < ArrowRight />
@@ -67,6 +72,44 @@ export default function LeftDrawer() {
                     ))}
                 </List>
             </Drawer>
+            </>
+        )}
+        {deviceType === 'mobile' && (
+            <>
+                <Box onClick={handleOpen} sx={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '0',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '2rem',
+                    height: '4rem',
+                    backgroundColor: 'lightgray',
+                    }}>
+                    < ArrowRight sx={{ scale: '2' }} />
+                </Box>
+                <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
+                    <List>
+                        {menu.map((item) => (
+                            <Link href={item.href} key={item.title}>
+                                <ListItem key={item.title}
+                                 sx={{ scale: "1.2", ":active": {backgroundColor: "lightgray"}}}>
+                                    <ListItemButton onClick={() => setOpen(false)}>
+                                        <ListItemIcon>
+                                            <IconButton>
+                                                <item.icon />
+                                            </IconButton>
+                                        </ListItemIcon>
+                                        <ListItemText primary={item.title} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </Link>
+                        ))}
+                    </List>
+                </Drawer>
+            </>
+        )}
         </>
     );
 }

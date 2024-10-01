@@ -10,14 +10,20 @@ import ResultSlider from "@/lib/components/ResultSlider";
 import Link from "next/link";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
-export default function SearchBox() {
+/**
+ * PC用の検索ボックス
+ */
+export default function DesktopSearchBox() {
     const [searchText, setSearchText] = useState("");
     const [searchResults, setSearchResults] = useState<Puzzle[]>([]);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const searchBoxRef = useRef<HTMLInputElement>(null);
 
     const user = useContext(FirebaseUserContext);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     useEffect(() => {
         async function fetchPuzzles() {
@@ -61,6 +67,7 @@ export default function SearchBox() {
 
     return (
         <>
+        {deviceType === 'desktop' && (
         <Box sx={{ display: "flex", color: "black", position: "relative" }}>
             <InputBase type="text" placeholder="検索..." value={searchText} onChange={handleChange} onFocus={handleFocus} inputRef={searchBoxRef} disabled={!user}
             sx={{ backgroundColor: "white", padding: "0.25rem", paddingLeft: "0.75rem", borderRadius: "5px", width: "300px" }}
@@ -88,6 +95,7 @@ export default function SearchBox() {
                 </Box>
             )}
         </Box>
+        )}
         </>
     );
 }

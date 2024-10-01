@@ -15,6 +15,8 @@ import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 import CommonButton from '@/lib/components/common/CommonButton';
 import DescriptionViewer from '@/lib/components/DescriptionViewer';
+import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
+import PuzzleCards from '@/lib/components/PuzzleCards';
 
 export default function ApproachShowPaper({ id }: { id: string }) {
     const user = useContext(FirebaseUserContext);
@@ -24,9 +26,14 @@ export default function ApproachShowPaper({ id }: { id: string }) {
     const searchParams = useSearchParams();
     const showCreatedModal = searchParams.get('created') === 'true';
     const showEditedModal = searchParams.get('edited') === 'true';
+    
+    // アクティブなカードのID
+    const [activeCardId, setActiveCardId] = useState<number | null>(null);
 
     const router = useRouter();
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const deviceType = useContext(DeviceTypeContext);
 
     // 定石情報を取得
     useEffect(() => {
@@ -64,6 +71,11 @@ export default function ApproachShowPaper({ id }: { id: string }) {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
+    // カードのクリックイベント
+    const handleCardClick = (id: number) => {
+        setActiveCardId(id === activeCardId ? null : id);
+    };
+
     if (!approach) {
         return <div>定石が見つかりません</div>;
     }
@@ -84,29 +96,49 @@ export default function ApproachShowPaper({ id }: { id: string }) {
 
             <DescriptionViewer descriptionHtml={approach.content} />
             
-            {puzzles?.length === 0 ? <p>この定石に紐づくパズルはありません</p> : ( 
+            {puzzles?.length === 0 ? <p style={{ fontSize: "0.8rem" }}>この定石に紐づくパズルはありません</p> : ( 
             <div>
                 <p>この定石に紐づくパズル</p>
-                <ul>
-                    {puzzles?.map((puzzle) => (
-                        <li key={puzzle.id}>
-                            <Link href={`/puzzles/${puzzle.id}`}>{puzzle.title}</Link>
-                        </li>
-                    ))}
-                </ul>
+                <PuzzleCards puzzles={puzzles ?? []} activeCardId={activeCardId} handleCardClick={handleCardClick} />
             </div>
             )}
-            
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingY: '1rem', marginY: '1rem' }}>
-                <CommonButton color="secondary" onClick={handleSendButton} width="20%">
+
+            {deviceType === 'mobile' && (
+            <Box sx={{ 
+                paddingY: '0.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '2rem',
+                width: '100%'}}>
+                <CommonButton color="secondary" onClick={handleSendButton} width='100%'>
                     <Edit />
                     <span>編集</span>
                 </CommonButton>
-                <CommonButton color="error" onClick={toggleDeleteModal} width="20%">
+                <CommonButton color="error" onClick={toggleDeleteModal} width='100%'>
                     <Delete />
                     <span>削除</span>
                 </CommonButton>
             </Box>
+            )}
+
+            {deviceType === 'desktop' && (
+                <Box sx={{ 
+                    paddingY: '0.5rem',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '100%'}}>
+                    <CommonButton color="error" onClick={toggleDeleteModal} width='45%'>
+                        <Delete />
+                        <span>削除</span>
+                    </CommonButton>
+                    <CommonButton color="secondary" onClick={handleSendButton} width='45%'>
+                        <Edit />
+                        <span>編集</span>
+                    </CommonButton>
+                </Box>
+            )}
         </div>
         </>
     );

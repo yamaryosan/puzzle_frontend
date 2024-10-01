@@ -72,13 +72,22 @@ export default function Page() {
     const [isMailSent, setIsMailSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [sendCount, setSendCount] = useState(0);
+    const [isDisabled, setIsDisabled] = useState(false);
+
     const router = useRouter();
 
     // メールを送信
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (sendCount > 2) {
+            setError("リンクの送信回数が上限に達しました");
+            setIsDisabled(true);
+            return;
+        }
         try {
             await sendSignInLink(auth, email, actionCodeSettings);
             setIsMailSent(true);
+            setSendCount(sendCount + 1);
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
@@ -120,7 +129,7 @@ export default function Page() {
                     )}
                     <p className="text-red-500">{error}</p>
                     <Box sx={{ paddingY: '0.5rem' }}>
-                        <CommonButton color="primary" onClick={handleSubmit} disabled={isLoading}>
+                        <CommonButton color="primary" onClick={handleSubmit} disabled={isLoading || isDisabled}>
                             <EmailOutlined />
                             登録リンクを送信
                         </CommonButton>
@@ -130,7 +139,7 @@ export default function Page() {
                             {isLoading ? "処理中..." : (
                                 <>
                                 <Google />
-                                <span>Googleアカウントで登録</span>
+                                <span>Googleで登録</span>
                                 </>
                                 )}
                         </CommonButton>

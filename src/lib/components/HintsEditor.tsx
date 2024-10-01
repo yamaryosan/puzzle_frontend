@@ -4,6 +4,8 @@ import Quill from "quill";
 import HintEditor from "@/lib/components/HintEditor";
 import DeltaClass from 'quill-delta';
 import { Box } from "@mui/material";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
+import { useContext } from "react";
 
 type HintsEditorProps = {
     maxHints: number;
@@ -20,6 +22,8 @@ export default function HintsEditor({ maxHints, defaultValues, refs }: HintsEdit
     const [canToggle, setCanToggle] = useState(() => Array(maxHints).fill(false));
     // 各ヒントの表示/非表示状態
     const [show, setShow] = useState(() => Array(maxHints).fill(false));
+
+    const deviceType = useContext(DeviceTypeContext);
 
     useEffect(() => {
         for (const defaultValue of defaultValues) {
@@ -62,7 +66,7 @@ export default function HintsEditor({ maxHints, defaultValues, refs }: HintsEdit
     return (
         <Box sx={{ paddingY: '0.5rem' }}>
             <h3>ヒント</h3>
-            <Box sx={{display: "flex", flexDirection: "row", width: "100%" }}>
+            <Box sx={{display: "flex", flexDirection: "column", width: "100%" }}>
                 {Array.from({ length: maxHints }, (_, i) => (
                     <Box key={i}
                     sx={{

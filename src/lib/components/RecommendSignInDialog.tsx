@@ -4,10 +4,11 @@ import { ErrorOutline, CancelOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
 export default function RecommendSignInDialog() {
     const user = useContext(FirebaseUserContext);
-    const [isClosed, setIsClosed] = useState(false);
+    const deviceType = useContext(DeviceTypeContext);
 
     if (user) {
         return null;
@@ -33,22 +34,22 @@ export default function RecommendSignInDialog() {
             transform: 'translate(-50%, -50%)',
             zIndex: 2,
             padding: '1rem',
-            width: '40%',
+            width: deviceType === 'mobile' ? '90%' : '50%',
             display: 'block',
         }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <ErrorOutline sx={{ fontSize: '1.5rem' }} />
                 <h3>お知らせ</h3>
             </Box>
-            <p>ユーザ登録して、パズルを楽しもう！</p>
-            <Button variant="contained" color="primary" sx={{ marginTop: '1rem', width: '100%' }}>
+            <p style={{ fontSize: "1rem" }}>ユーザ登録して、パズルを楽しもう！</p>
+            <Button variant="contained" color="primary" sx={{ marginTop: '1rem', width: '100%', fontSize: '1.5rem' }}>
                 <Link href="/signup">登録</Link>
             </Button>
             <Box sx={{ height: '1rem' }} />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <p>アカウントをお持ちの方は
+                <p style={{ fontSize: "1.0rem" }}>アカウントをお持ちの方は
                     <Box component="span" sx={{ color: 'primary.main', cursor: 'pointer' }}>
-                        <Link href="/signin">こちら</Link>
+                        <Link href="/signin">ログイン</Link>
                     </Box>
                 </p>
             </Box>

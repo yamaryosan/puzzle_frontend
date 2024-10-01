@@ -1,6 +1,7 @@
 import { Puzzle } from "@prisma/client";
 import PuzzleCard from "@/lib/components/PuzzleCard";
 import { FavoriteOutlined } from "@mui/icons-material";
+import RandomPuzzles from "@/lib/components/RandomPuzzles";
 
 type props = {
     puzzles: Puzzle[];
@@ -17,7 +18,10 @@ export default function FavoritePuzzles({ puzzles, activeCardId, handleCardClick
         </h2>
         <ul>
             {puzzles.length === 0 ?
-            (<p>お気に入りのパズルがありません</p>
+            (<>
+            <p>お気に入りに登録してみましょう！</p>
+            <RandomPuzzles />
+            </>
             ) : (
                 puzzles?.map((puzzle) => (
                     <li key={puzzle.id}>

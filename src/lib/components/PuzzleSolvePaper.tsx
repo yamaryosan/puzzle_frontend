@@ -128,7 +128,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
             <ApproachesViewer puzzleId={id} />
 
             <Box sx={{ paddingY: '0.5rem' }}>
-                <h3>回答を入力</h3>
+                <h4>解答を入力</h4>
                 <Editor
                 defaultValue={new Delta()}
                 onSelectionChange={setRange}

@@ -17,6 +17,23 @@ export async function getPuzzles(userId: string) {
 }
 
 /**
+ * ランダムなパズル一覧を取得
+ * @param userId ユーザID
+ * @param count 取得するパズルの数
+ * @returns Promise<Puzzles>
+ */
+export async function getRandomPuzzles(userId: string, count: string) {
+    const response = await fetch(`/api/puzzles/random?userId=${userId}&count=${count}`);
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("ランダムなパズルの取得に失敗: ", error);
+    }
+    const puzzles = await response.json() as Puzzle[];
+    console.log("ランダムなパズルの取得に成功: ", puzzles);
+    return puzzles;
+}
+
+/**
  * IDからパズルを取得
  * @param id パズルID
  * @param userId ユーザID

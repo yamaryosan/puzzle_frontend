@@ -3,7 +3,7 @@ import firebaseApp from '@/app/firebase';
 import { useState, useEffect } from 'react';
 import { updateProfile } from 'firebase/auth';
 import { updateUserInPrisma } from '@/lib/api/userapi';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Input } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import { Email, BadgeOutlined } from '@mui/icons-material';
 
@@ -78,25 +78,15 @@ export default function GoogleAuthProfileCard({ user }: GoogleAuthProfileCardPro
             <BadgeOutlined style={{marginRight: "1rem"}} />
             {isEditing ? (
                 <>
-                <Box component="input" type="text" value={username} onClick={handleInputClick} onChange={(e) => setUsername(e.target.value)} required
-                sx={{ width: "20%", display: "inline-block", paddingY: "0.5rem", fontSize: "1.5rem", marginRight: "1rem" }}/>
+                <Input type="text" value={username} onClick={handleInputClick} onChange={(e) => setUsername(e.target.value)} required
+                sx={{ display: "inline-block", paddingY: "0.5rem", fontSize: "1.5rem", marginRight: "0.5rem" }}/>
                 <Button onClick={handleUpdateClick}>
                     <Edit />
                 </Button>
                 </>
             ) : (
                 <>
-                <Box component="p"
-                sx={{
-                    width: "20%",
-                    display: "inline-block",
-                    paddingY: "0.5rem",
-                    fontSize: "1.5rem",
-                    marginRight: "1rem",
-                    border: "0.1rem solid #ccc",
-                    borderRadius: "0.2rem",
-                    backgroundColor: "grey.300",
-                    }}>{user?.displayName}</Box>
+                <p>{user?.displayName}</p>
                 <Button onClick={handleEditClick}>
                     <Edit />
                 </Button>
@@ -105,12 +95,7 @@ export default function GoogleAuthProfileCard({ user }: GoogleAuthProfileCardPro
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
             <Email style={{marginRight: "1rem"}} />
-            <Box component="p"
-            sx={{
-                display: "inline-block",
-                paddingY: "0.5rem",
-                fontSize: "1.5rem",
-                }}>{user?.email}</Box>
+            <span style={{ overflowWrap: "anywhere" }}>{user?.email}</span>
         </Box>
         </>
     )

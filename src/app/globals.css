@@ -12,7 +12,7 @@
         line-height: 1.2;
     }
     h2 {
-        font-size: 1.5rem;
+        font-size: clamp(1.2rem, 2.5vw, 2rem);
         font-weight: 600;
         line-height: 1.2;
     }
@@ -29,6 +29,11 @@
     input[type="checkbox"],
     input[type="checkbox"] + label {
         cursor: pointer;
+    }
+    /* Quillエディタ */
+    .ql-editor {
+        font-size: clamp(0.8rem, 2vw, 1.25rem);
+        line-height: 1.5;
     }
 }
 

@@ -3,6 +3,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button } from "@mui/material";
 import { deleteApproach } from "@/lib/api/approachApi";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
+import { useContext, useState } from "react";
 
 type TargetType = "puzzle" | "approach";
 
@@ -21,6 +23,10 @@ type DeleteModalProps = {
 export default function DeleteModal({ target, id, onButtonClick }: DeleteModalProps) {
     const router = useRouter();
 
+    const [isDeleteButtonDisabled, setIsDeleteButtonDisabled] = useState(true);
+
+    const deviceType = useContext(DeviceTypeContext);
+
     // エスケープキーが押されたらモーダルを閉じる
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -33,6 +39,14 @@ export default function DeleteModal({ target, id, onButtonClick }: DeleteModalPr
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [onButtonClick]);
+
+    // 2秒後に退会ボタンを有効化
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsDeleteButtonDisabled(false);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleDelete = async () => {
         if (target === "puzzle") {
@@ -66,6 +80,7 @@ export default function DeleteModal({ target, id, onButtonClick }: DeleteModalPr
                 transform: "translate(-50%, -50%)",
                 backgroundColor: "white",
                 padding: "3rem",
+                width: deviceType === "mobile" ? "90%" : "50%",
                 zIndex: 2,
                 boxShadow: 24,
                 borderRadius: 2,
@@ -94,6 +109,7 @@ export default function DeleteModal({ target, id, onButtonClick }: DeleteModalPr
                             backgroundColor: "error.dark",
                         },
                     }}
+                    disabled={isDeleteButtonDisabled}
                     onClick={() => handleDelete()}>はい</Button>
                 </Box>
             </Box>

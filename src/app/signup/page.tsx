@@ -31,6 +31,7 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
+        console.error(error);
         if (error instanceof FirebaseError) {
             switch (error.code) {
                 case 'auth/missing-email':
@@ -39,6 +40,10 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
                     throw new Error('有効なメールアドレスを入力してください');
                 case 'auth/operation-not-allowed':
                     throw new Error('メールリンク認証が無効です');
+                case 'auth/invalid-continue-uri':
+                    throw new Error('無効なURLです。管理者にお問い合わせください');
+                case 'auth/quota-exceeded':
+                    throw new Error('リクエストの上限に達しました。しばらくしてから再度お試しください');
                 default:
                     throw new Error('メールを送信できませんでした');
             }

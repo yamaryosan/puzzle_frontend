@@ -34,7 +34,7 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
             }
         }
         fetchApproachesByPuzzleId();
-    }, [puzzle_id]);
+    }, [puzzle_id, user]);
 
     useEffect(() => {
     // 定石一覧を取得

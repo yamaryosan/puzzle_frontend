@@ -13,6 +13,17 @@ import { useContext } from 'react';
 import CommonButton from '@/lib/components/common/CommonButton';
 import PuzzleCards from '@/lib/components/PuzzleCards';
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
+import { Suspense } from 'react';
+
+function SearchParamsWrapper() {
+    const searchParams = useSearchParams();
+    const deleted = searchParams.get('deleted') === 'true';
+    return (
+        <>
+            {deleted && ( <MessageModal message="パズルを削除しました" param="deleted" /> )}
+        </>
+    );
+}
 
 export default function Puzzles() {
     const user = useContext(FirebaseUserContext);
@@ -21,10 +32,6 @@ export default function Puzzles() {
     
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
-
-    // メッセージモーダルの表示
-    const searchParams = useSearchParams();
-    const showDeletedModal = searchParams.get('deleted') === 'true';
 
     const deviceType = useContext(DeviceTypeContext);
 
@@ -80,9 +87,9 @@ export default function Puzzles() {
     
     return (
         <>
-        {showDeletedModal && (
-            <MessageModal message="パズルを削除しました" param="deleted" />
-        )}
+        <Suspense fallback={null}>
+            <SearchParamsWrapper />
+        </Suspense>
         <div>
             {deviceType === 'desktop' && (
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

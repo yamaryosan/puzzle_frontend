@@ -26,7 +26,7 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
     useEffect(() => {
         async function fetchapproaches() {
             if (!user) return;
-            const approaches = await getApproachesByPuzzleId(puzzleId) as Approach[];
+            const approaches = await getApproachesByPuzzleId(puzzleId, user.uid ?? '') as Approach[];
             setApproaches(approaches);
         }
         fetchapproaches();

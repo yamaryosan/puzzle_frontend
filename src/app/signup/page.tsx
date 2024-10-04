@@ -14,6 +14,7 @@ import { EmailOutlined, Google } from "@mui/icons-material";
 import { FirebaseError } from "firebase/app";
 import Link from "next/link";
 import CommonPaper from "@/lib/components/common/CommonPaper";
+import { a } from "react-spring";
 
 type actionCodeSettings = {
     url: string;
@@ -30,6 +31,7 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
     try {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem("emailForSignIn", email);
+        console.log(actionCodeSettings.url);
     } catch (error) {
         if (error instanceof FirebaseError) {
             console.error(error.code);
@@ -40,6 +42,10 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
                     throw new Error('有効なメールアドレスを入力してください');
                 case 'auth/operation-not-allowed':
                     throw new Error('メールリンク認証が無効です');
+                case 'auth/invalid-continue-uri':
+                    throw new Error('無効なURLです');
+                case 'auth/quota-exceeded':
+                    throw new Error('リクエストの上限に達しました。しばらくしてから再度お試しください');
                 default:
                     throw new Error('メールを送信できませんでした');
             }

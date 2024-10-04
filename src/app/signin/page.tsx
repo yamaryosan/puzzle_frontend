@@ -16,6 +16,7 @@ import { FirebaseError } from 'firebase/app';
 import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
 import { useContext } from 'react';
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
+import { createDefaultPuzzles } from '@/lib/api/puzzleapi';
 
 /**
  * メールアドレスとパスワードでログインする
@@ -46,10 +47,10 @@ async function signIn(auth: Auth, email: string, password: string) {
 }
 
 /**
- * ログイン成功したらダッシュボードにリダイレクト
+ * ログイン成功したらトップページにリダイレクト
  * @returns 
  */
-async function redirectToDashboard() {
+async function redirectToTopPage() {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     window.location.href = '/';
 }
@@ -75,6 +76,8 @@ async function signInWithGoogle(auth: Auth) {
             email: auth.currentUser!.email,
             displayName: auth.currentUser!.displayName,
         });
+        // デフォルトのパズルを登録
+        await createDefaultPuzzles(auth.currentUser!.uid);
         return true;
     } catch (error) {
         console.error(error);
@@ -103,7 +106,7 @@ export default function Page() {
 
     // ログインしている場合はホーム画面にリダイレクト
     if (user) {
-        redirectToDashboard();
+        redirectToTopPage();
         return (
             <div>
                 <p>ログインに成功しました。ホーム画面にリダイレクトします...</p>
@@ -133,7 +136,7 @@ export default function Page() {
         const success = await signInWithGoogle(auth);
         setGoogleSignInLoading(false);
         if (success) {
-            redirectToDashboard();
+            redirectToTopPage();
         } else {
             setError('Google認証に失敗しました。もう一度お試しください。');
         }

@@ -6,6 +6,7 @@ import firebaseApp from "@/app/firebase";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { createUserInPrisma } from "@/lib/api/userapi";
+import { createDefaultPuzzles } from "@/lib/api/puzzleapi";
 import CommonInputText from '@/lib/components/common/CommonInputText';
 import CommonButton from "@/lib/components/common/CommonButton";
 import { Box } from "@mui/material";
@@ -101,12 +102,13 @@ export default function Page() {
         const success = await signUpWithGoogle(auth);
         setIsLoading(false);
         if (success) {
-            createUserInPrisma({
+            await createUserInPrisma({
                 firebaseUid: auth.currentUser!.uid,
                 email: auth.currentUser!.email,
                 displayName: auth.currentUser!.displayName,
             });
-            router.push("/dashboard");
+            await createDefaultPuzzles(auth.currentUser!.uid);
+            router.push("/");
         } else {
             alert("Google認証に失敗しました。もう一度お試しください。");
         }

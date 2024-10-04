@@ -318,12 +318,12 @@ export default function PuzzleEditForm({ id }: { id: string }) {
         <CategoryCheckbox 
         userId={user?.uid || ""}
         onChange={handleCheckboxChange}
-        puzzle_id="0"
+        puzzle_id={id}
         value={checkedCategories} />
 
         <ApproachCheckbox
         onChange={setApproachIds}
-        puzzle_id="0"
+        puzzle_id={id}
         value={approachIds} />
         
         <DifficultEditor value={difficulty} onChange={setDifficulty} />

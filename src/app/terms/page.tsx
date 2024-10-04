@@ -5,7 +5,9 @@ export default function Page() {
     return (
         <div>
             <Box sx={{ fontSize: "1rem", lineHeight: 1.6, '& h3': {marginTop: "1rem"} }}>
-                <ReactMarkdown children={markdownText} />
+                <ReactMarkdown>
+                    {markdownText}
+                </ReactMarkdown>
             </Box>
         </div>
     );

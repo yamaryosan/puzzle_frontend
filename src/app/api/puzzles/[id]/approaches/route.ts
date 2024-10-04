@@ -10,6 +10,13 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     try {
         const id = parseInt(params.id);
 
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
+
+        if (!userId) {
+            return NextResponse.json({ error: "ユーザIDが指定されていません" }, { status: 400 });
+        }
+
         // IDが数字でない場合はエラー
         if (isNaN(id)) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });

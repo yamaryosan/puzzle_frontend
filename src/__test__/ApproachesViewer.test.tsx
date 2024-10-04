@@ -87,7 +87,7 @@ describe('ApproachesViewer', () => {
         });
 
         await waitFor(async () => {
-            expect(approachApi.getApproachesByPuzzleId).toHaveBeenCalledWith('1');
+            expect(approachApi.getApproachesByPuzzleId).toHaveBeenCalledWith('1', '1');
         });
 
         const toggleButton = screen.getByText('表示');
@@ -141,7 +141,7 @@ describe('ApproachesViewer', () => {
         });
 
         await waitFor(async () => {
-            expect(approachApi.getApproachesByPuzzleId).toHaveBeenCalledWith('1');
+            expect(approachApi.getApproachesByPuzzleId).toHaveBeenCalledWith('1', '1');
         });
 
         const ev = userEvent.setup();

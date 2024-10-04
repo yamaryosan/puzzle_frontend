@@ -148,3 +148,27 @@ export async function searchPuzzles(keyword: string, userId: string) {
     console.log("パズルの検索に成功: ", puzzles);
     return puzzles;
 }
+
+/**
+ * ユーザ登録時にデフォルトのパズルを作成
+ * @param userId ユーザID
+ * @returns Promise<void>
+ */
+export async function createDefaultPuzzles(userId: string) {
+    if (!userId) {
+        console.error("ユーザIDが指定されていません");
+        return;
+    }
+    const response = await fetch("/api/puzzles/default", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("デフォルトのパズルの作成に失敗: ", error);
+    }
+    console.log("デフォルトのパズルの作成に成功");
+}

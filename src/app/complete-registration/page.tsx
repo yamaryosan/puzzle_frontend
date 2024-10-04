@@ -12,7 +12,7 @@ import { Box } from "@mui/material";
 import { HowToRegOutlined, ErrorOutline } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { FirebaseError } from "firebase/app";
-
+import { createDefaultPuzzles } from '@/lib/api/puzzleapi';
 
 /**
  * メールアドレスリンクからの登録完了ページ
@@ -24,6 +24,8 @@ export default function Page() {
     const [displayName, setDisplayName] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [generalError, setGeneralError] = useState<string>("");
+
+    const [isSent, setIsSent] = useState<boolean>(false);
 
     const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [isVerified, setIsVerified] = useState<boolean>(false);
@@ -64,6 +66,7 @@ export default function Page() {
             setGeneralError("メールアドレスが取得できませんでした");
             return;
         }
+        setIsSent(true);
         // メールリンクからのログインか確認
         if (isSignInWithEmailLink(auth, window.location.href)) {
             try {
@@ -82,6 +85,8 @@ export default function Page() {
                     displayName: result.user.displayName,
                 };
                 await createUserInPrisma(firebaseUser);
+                // デフォルトのパズルを登録
+                await createDefaultPuzzles(result.user.uid);
 
                 window.localStorage.removeItem("emailForSignIn");
                 router.push("/?userCreated=true");
@@ -90,6 +95,7 @@ export default function Page() {
                     if (error.code === "auth/invalid-action-code") {
                         setGeneralError("メールアドレスが無効です");
                     }
+                    setIsSent(false);
                 }
             }
         }
@@ -123,7 +129,7 @@ export default function Page() {
                     </ul>
                 </Box>}
                 <Box sx={{ marginTop: "1rem" }}>
-                    <CommonButton onClick={handleSubmit} color="primary">
+                    <CommonButton onClick={handleSubmit} color="primary" disabled={isSent}>
                         <HowToRegOutlined />
                         登録完了
                     </CommonButton>

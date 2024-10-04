@@ -92,8 +92,22 @@ export default function Page() {
                 router.push("/?userCreated=true");
             } catch (error) {
                 if (error instanceof FirebaseError) {
-                    if (error.code === "auth/invalid-action-code") {
-                        setGeneralError("メールアドレスが無効です");
+                    switch (error.code) {
+                        case "auth/invalid-action-code":
+                            setGeneralError("メールアドレスが無効です");
+                            break;
+                        case "auth/expired-action-code":
+                            setGeneralError("リンクの有効期限が切れています");
+                            break;
+                        case "auth/invalid-email":
+                            setGeneralError("メールアドレスが無効です");
+                            break;
+                        case "auth/invalid-action-code":
+                            setGeneralError("リンクが無効です");
+                            break;
+                        default:
+                            setGeneralError("エラーが発生しました");
+                            break;
                     }
                     setIsSent(false);
                 }

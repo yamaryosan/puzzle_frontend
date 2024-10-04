@@ -32,7 +32,6 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
         window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
         if (error instanceof FirebaseError) {
-            console.error(error.code);
             switch (error.code) {
                 case 'auth/missing-email':
                     throw new Error('メールアドレスは必須です');

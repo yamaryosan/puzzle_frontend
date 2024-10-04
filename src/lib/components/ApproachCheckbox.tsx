@@ -23,17 +23,17 @@ export default function ApproachCheckbox({ onChange, puzzle_id, value }: Approac
 
     // 編集前に定石を取得
     useEffect(() => {
-        async function fetchInitialApproaches(id: string): Promise<Approach[] | undefined> {
-            return getApproachesByPuzzleId(id);
-        }
-        fetchInitialApproaches(puzzle_id).then((approaches) => {
-            if (!approaches) {
-                return;
+        async function fetchApproachesByPuzzleId() {
+            try {
+                if (!user) return;
+                const approaches = await getApproachesByPuzzleId(puzzle_id, user.uid ?? '');
+                if (!approaches) return;
+                setCheckedApproachIds(approaches.map(approach => approach.id));
+            } catch (error) {
+                console.error("定石の取得に失敗: ", error);
             }
-            const initialApproachIds = approaches.map(approach => approach.id);
-            console.log("定石を取得しました: ", initialApproachIds);
-            setCheckedApproachIds(initialApproachIds);
-        });
+        }
+        fetchApproachesByPuzzleId();
     }, [puzzle_id]);
 
     useEffect(() => {

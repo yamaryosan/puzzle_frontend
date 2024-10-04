@@ -48,4 +48,5 @@ next-env.d.ts
 .env.production
 
 # public
-/public/images
+/public/images/*
+!/public/images/sample-puzzle-[0-9]*

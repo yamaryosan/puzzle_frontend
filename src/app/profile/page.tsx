@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AccountBoxOutlined, Google } from '@mui/icons-material';
 import GoogleAuthProfileCard from '@/lib/components/GoogleAuthProfileCard';
@@ -12,6 +14,7 @@ import UserDeleteModal from '@/lib/components/UserDeleteModal';
 import CommonButton from '@/lib/components/common/CommonButton';
 import CommonPaper from '@/lib/components/common/CommonPaper';
 import { FirebaseError } from 'firebase/app';
+import MessageModal from '@/lib/components/MessageModal';
 
 type provider = 'email' | 'google';
 
@@ -38,7 +41,19 @@ function checkAuthProvider(user: User): provider {
     throw new Error('未対応の認証方法です');
 }
 
+function SearchParamsWrapper() {
+    const searchParams = useSearchParams();
+    const linked = searchParams.get('linked') === 'true';
+    return (
+        <>
+            {linked && <MessageModal message="Googleアカウントを連携しました" param="linked" />}
+        </>
+    );
+}
+
+
 export default function Page() {
+    const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     // 認証方法
     const [authProvider, setAuthProvider] = useState<provider | null>(null);
@@ -89,6 +104,9 @@ export default function Page() {
         const provider = new GoogleAuthProvider();
         try {
             await linkWithPopup(auth.currentUser!, provider);
+            setAuthProvider('google');
+            router.push('/profile?linked=true');
+            router.refresh();
         } catch (error) {
             if (error instanceof FirebaseError) {
                 switch (error.code) {
@@ -119,6 +137,9 @@ export default function Page() {
 
     return (
         <>
+        <Suspense fallback={null}>
+            <SearchParamsWrapper />
+        </Suspense>
         {isDeleteModalOpen && <UserDeleteModal onButtonClick={setIsDeleteModalOpen} />}
         <CommonPaper>
             <h2>
@@ -126,11 +147,11 @@ export default function Page() {
                 プロフィール
             </h2>
             <Box sx={{ marginTop: "1rem" }}>
-                {authProvider === 'email' && (
-                    <EmailAuthProfileCard user={user} />
-                )}
                 {authProvider === 'google' && (
                     <GoogleAuthProfileCard user={user} />
+                )}
+                {authProvider === 'email' && (
+                    <EmailAuthProfileCard user={user} />
                 )}
             </Box>
         </CommonPaper>

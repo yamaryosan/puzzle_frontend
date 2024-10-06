@@ -56,7 +56,7 @@ export default function PuzzleCard({ puzzle, isActive, onClick }: PuzzleCardProp
             </Box>
             )}
             <Box sx={{
-                maxHeight: isActive ? '1000px' : '0px',
+                maxHeight: isActive ? '6000px' : '0px',
                 overflow: 'hidden',
                 transition: 'max-height 0.5s ease-in-out',
             }}>

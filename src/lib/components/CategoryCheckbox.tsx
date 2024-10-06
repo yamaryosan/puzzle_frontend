@@ -55,17 +55,21 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
 
     // 選択中のカテゴリー一覧を取得
     useEffect(() => {
-        async function fetchInitialCategories(id: string): Promise<Category[] | undefined> {
-            return getCategoriesByPuzzleId(id, userId);
-        }
-        fetchInitialCategories(puzzle_id).then((categories) => {
-            if (!categories) {
-                return;
+        async function fetchAndSetCategories() {
+            try {
+                const categories = await getCategoriesByPuzzleId(puzzle_id, userId);
+                if (!categories) {
+                    return;
+                }
+                const initialCategoryIds = categories.map(category => category.id);
+                console.log("カテゴリーを取得しました: ", initialCategoryIds);
+                setCheckedCategoryIds(initialCategoryIds);
+            } catch (error) {
+                console.error("カテゴリーの取得中にエラーが発生しました:", error);
             }
-            const initialCategoryIds = categories.map(category => category.id);
-            console.log("カテゴリーを取得しました: ", initialCategoryIds);
-            setCheckedCategoryIds(initialCategoryIds);
-        });
+        }
+    
+        fetchAndSetCategories();
     }, [puzzle_id, userId]);
 
     // チェックされたカテゴリーのIDを親コンポーネントに渡す
@@ -173,11 +177,15 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
                         borderRadius: "0.25rem",
                         width: "100%",
                         marginTop: "1rem",
-                        bgcolor: "primary.main",
+                        bgcolor: "primary.light",
                         cursor: "pointer",
                         gap: "0.5rem",
                         display: "flex",
                         justifyContent: "center",
+                        ":hover": {
+                            backgroundColor: "primary.main",
+                            transition: "background-color 0.3s",
+                        }
                     }}
                     aria-label="create"
                     onClick={handleNewCategory}>

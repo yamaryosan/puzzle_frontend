@@ -70,13 +70,13 @@ export default function CheckAnswer({ id } : { id: string }) {
     // 正解時の処理
     const correct = () => {
         sendIsSolved(id, true);
-        router.push("/puzzles");
+        router.push("/puzzles?checkAnswer=true");
     };
 
     // 不正解時の処理
     const incorrect = () => {
         sendIsSolved(id, false);
-        router.push("/puzzles");
+        router.push("/puzzles?checkAnswer=true");
     };
 
     if (!puzzle) {

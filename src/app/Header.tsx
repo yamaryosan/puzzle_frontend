@@ -55,16 +55,22 @@ export default function Header() {
                     alignItems: 'center',
                     }}>
                         <Link href="/">
-                        <Home />
-                        <span>ホーム</span>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <Home />
+                            <span>ホーム</span>
+                        </Box>
                         </Link>
                         <Link href="/categories">
-                        <Category />
-                        <span>カテゴリー</span>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <Category />
+                            <span>カテゴリー</span>
+                        </Box>
                         </Link>
                         <Link href="/favorites">
-                        <Favorite />
-                        <span>お気に入り</span>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <Favorite />
+                            <span>お気に入り</span>
+                        </Box>
                         </Link>
                         <DesktopSearchBox />
                     </Box>

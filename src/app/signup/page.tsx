@@ -152,7 +152,7 @@ export default function Page() {
     // メールを送信
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         if (sendCount > 2) {
-            setError("リンクの送信回数が上限に達しました");
+            setError("リンクの送信回数が上限に達しました。しばらくしてから再度お試しください。");
             setIsDisabled(true);
             return;
         }

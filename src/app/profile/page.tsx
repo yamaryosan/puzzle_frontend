@@ -1,21 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { AccountBoxOutlined } from '@mui/icons-material';
+import { AccountBoxOutlined, Google } from '@mui/icons-material';
 import GoogleAuthProfileCard from '@/lib/components/GoogleAuthProfileCard';
 import EmailAuthProfileCard from '@/lib/components/EmailAuthProfileCard';
 import { useState, useEffect } from 'react';
-import { getAuth, User } from 'firebase/auth';
+import { getAuth, User, linkWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import firebaseApp from '@/app/firebase';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import UserDeleteModal from '@/lib/components/UserDeleteModal';
 import CommonButton from '@/lib/components/common/CommonButton';
 import CommonPaper from '@/lib/components/common/CommonPaper';
+import { FirebaseError } from 'firebase/app';
 
 type provider = 'email' | 'google';
 
 /**
  * 認証方法を判定(メールアドレスかGoogleアカウントか)
+ * 両方の認証がある場合はGoogleアカウントを優先
  * @param user ユーザー
  * @returns 認証方法
  */
@@ -26,15 +28,14 @@ function checkAuthProvider(user: User): provider {
     if (user.providerData.length === 0) {
         throw new Error('認証方法が見つかりません');
     }
-    const provider = user.providerData[0].providerId;
-    switch (provider) {
-        case 'password':
-            return 'email';
-        case 'google.com':
-            return 'google';
-        default:
-            throw new Error('未対応の認証方法です');
+    const providers = user.providerData.map((provider) => provider.providerId);
+    if (providers.includes('google.com')) {
+        return 'google';
     }
+    if (providers.includes('password')) {
+        return 'email';
+    }
+    throw new Error('未対応の認証方法です');
 }
 
 export default function Page() {
@@ -82,6 +83,34 @@ export default function Page() {
             </div>
         );
     }
+    // Googleアカウントとの連携を行う
+    const handleGoogleLink = async () => {
+        const auth = getAuth(firebaseApp);
+        const provider = new GoogleAuthProvider();
+        try {
+            await linkWithPopup(auth.currentUser!, provider);
+        } catch (error) {
+            if (error instanceof FirebaseError) {
+                switch (error.code) {
+                    case 'auth/credential-already-in-use':
+                        console.error('Googleアカウントは既に連携されています');
+                        break;
+                    case 'auth/popup-closed-by-user':
+                        console.error('Google認証がキャンセルされました');
+                        break;
+                    case 'auth/cancelled-popup-request':
+                        console.error('Google認証がキャンセルされました');
+                        break;
+                    case 'auth/popup-blocked':
+                        console.error('ポップアップがブロックされました。ポップアップを許可してください');
+                        break;
+                    default:
+                        console.error('Google認証に失敗しました');
+                        break;
+                }
+            }
+        }
+    }
 
     // 退会ボタンがクリックされたとき
     const handleDeleteButton = () => {
@@ -105,6 +134,14 @@ export default function Page() {
                 )}
             </Box>
         </CommonPaper>
+        <Box sx={{ marginTop: "1rem", width: "100%" }}>
+            {authProvider !== 'google' && (
+                <CommonButton color="secondary" onClick={handleGoogleLink}>
+                    <Google />
+                    Google認証を追加
+                </CommonButton>
+            )}
+        </Box>
         <Box sx={{ marginTop: "10rem", width: "100%" }}>
             <CommonButton color="error" onClick={handleDeleteButton} disabled={isDeleteButtonDisabled}>
                 <AccountBoxOutlined />

@@ -23,6 +23,7 @@ export default function Page() {
     const [email, setEmail] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [passwordConfirm, setPasswordConfirm] = useState<string>("");
     const [generalError, setGeneralError] = useState<string>("");
 
     const [isSent, setIsSent] = useState<boolean>(false);
@@ -55,7 +56,11 @@ export default function Page() {
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         if (!isVerified) {
-            setGeneralError("パスワードに誤りがあります");
+            setGeneralError("パスワードが弱すぎます");
+            return;
+        }
+        if (password !== passwordConfirm) {
+            setGeneralError("パスワードが一致しません");
             return;
         }
         if (displayName.trim() === "") {
@@ -132,6 +137,13 @@ export default function Page() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="パスワード"/>
+                </Box>
+                <Box sx={{ marginTop: "0.5rem" }}>
+                    <CommonInputText
+                        elementType="password"
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                        placeholder="パスワード(確認)"/>
                 </Box>
                 {(passwordErrors.length > 0 && password.length > 0) &&
                 <Box sx={{ color: "error.main", display: "flex", gap: "0.5rem"}}>

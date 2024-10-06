@@ -18,9 +18,11 @@ import { Suspense } from 'react';
 function SearchParamsWrapper() {
     const searchParams = useSearchParams();
     const deleted = searchParams.get('deleted') === 'true';
+    const checkAnswer = searchParams.get('checkAnswer') === 'true';
     return (
         <>
             {deleted && ( <MessageModal message="パズルを削除しました" param="deleted" /> )}
+            {checkAnswer && ( <MessageModal message="パズルの解決状況を更新しました" param="checkAnswer" /> )}
         </>
     );
 }

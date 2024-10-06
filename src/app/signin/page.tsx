@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, Suspense } from 'react';
-import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
+import { Auth, getAdditionalUserInfo, getAuth, signInWithEmailAndPassword, fetchSignInMethodsForEmail, linkWithCredential } from 'firebase/auth';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { createUserInPrisma } from '@/lib/api/userapi';
 import { useSearchParams } from 'next/navigation';
@@ -30,17 +30,15 @@ async function signIn(auth: Auth, email: string, password: string) {
         console.log('ログインに成功しました');
     } catch (error: unknown) {
         if (error instanceof FirebaseError) {
-            // メールアドレスが未入力や形式が正しくない場合
-            if (error.code === 'auth/invalid-email') {
-                throw new Error('メールアドレスを正しく入力してください');
-            }
-            // パスワードが未入力の場合
-            if (error.code === 'auth/missing-password') {
-                throw new Error('パスワードを入力してください');
-            }
-            // メールアドレスが未登録の場合
-            if (error.code === 'auth/user-not-found') {
-                throw new Error('メールアドレスかパスワードが間違っています');
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    throw new Error('メールアドレスを正しく入力してください');
+                case 'auth/missing-password':
+                    throw new Error('パスワードを入力してください');
+                case 'auth/user-not-found':
+                    throw new Error('メールアドレスかパスワードが間違っています');
+                case 'auth/wrong-password':
+                    throw new Error('メールアドレスかパスワードが間違っています');
             }
         }
     }
@@ -56,32 +54,71 @@ async function redirectToTopPage() {
 }
 
 /**
- * Googleアカウントでサインイン(ユーザが存在しない場合は新規登録)
+ * Googleアカウントでサインイン
  * @param auth Auth
- * @returns 認証可否
  */
 async function signInWithGoogle(auth: Auth) {
     try {
         const provider = new GoogleAuthProvider();
-        const result: UserCredential = await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const user = result.user;
+
+        // ユーザが既に存在している場合は通常のサインイン
         const isNewUser = getAdditionalUserInfo(result)?.isNewUser ?? false;
-        // ユーザが既に存在している場合は何もしない
         if (!isNewUser) {
             console.log("Googleアカウントでサインインしました");
             return true;
         }
-        // ユーザが存在しない場合は新規登録
-        await createUserInPrisma({
-            firebaseUid: auth.currentUser!.uid,
-            email: auth.currentUser!.email,
-            displayName: auth.currentUser!.displayName,
-        });
-        // デフォルトのパズルを登録
-        await createDefaultPuzzles(auth.currentUser!.uid);
+
+        // メールアドレス認証の有無を確認
+        const methods = await fetchSignInMethodsForEmail(auth, user.email!);
+
+        // メールアドレス認証が存在しない場合は新規登録
+        if (!methods.includes('password')) {
+            await createUserInPrisma({
+                firebaseUid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+            });
+            await createDefaultPuzzles(user.uid);
+            console.log('Googleアカウントで新規登録しました');
+            return true;
+        }
+        if (!credential) {
+            throw new Error('Google認証に失敗しました');
+        }
+
+        const currentUser = auth.currentUser;
+        // 既存のユーザが存在しない場合は新規登録
+        if (!currentUser) {
+            await createUserInPrisma({
+                firebaseUid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+            });
+            await createDefaultPuzzles(user.uid);
+            console.log('Googleアカウントで新規登録しました');
+            return true;
+        }
+        // メールアドレス認証のユーザが存在する場合はリンク
+        await linkWithCredential(currentUser, credential);
+        console.log('Googleアカウントをリンクしました');
         return true;
     } catch (error) {
         console.error(error);
-        return false;
+        if (error instanceof FirebaseError) {
+            switch (error.code) {
+                case 'auth/popup-closed-by-user':
+                    throw new Error('Google認証がキャンセルされました');
+                case 'auth/cancelled-popup-request':
+                    throw new Error('Google認証がキャンセルされました');
+                case 'auth/popup-blocked':
+                    throw new Error('ポップアップがブロックされました。ポップアップを許可してください');
+                default:
+                    throw new Error('Google認証に失敗しました');
+            }
+        }
     }
 }
 

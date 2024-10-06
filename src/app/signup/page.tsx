@@ -1,6 +1,6 @@
 'use client';
 
-import { Auth, sendSignInLinkToEmail, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { Auth, sendSignInLinkToEmail, signInWithPopup, GoogleAuthProvider, fetchSignInMethodsForEmail, linkWithCredential, getAdditionalUserInfo } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "@/app/firebase";
 import React, { useState } from "react";
@@ -26,15 +26,26 @@ type actionCodeSettings = {
  * @param auth Auth
  * @param actionCodeSettings 送信設定
  */
-async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: actionCodeSettings) {
+async function sendSignUpLink(auth: Auth, email: string, actionCodeSettings: actionCodeSettings) {
     try {
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        // メールアドレスの存在確認
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        const isExisting = methods.length > 0;
+
+        if (isExisting) {
+            console.log('既存ユーザ: メール送信スキップ');
+        } else {
+            await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        }
+
         window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
         console.error(error);
         if (error instanceof FirebaseError) {
             switch (error.code) {
                 case 'auth/missing-email':
+                    throw new Error('メールアドレスは必須です');
+                case 'auth/missing-identifier':
                     throw new Error('メールアドレスは必須です');
                 case 'auth/invalid-email':
                     throw new Error('有効なメールアドレスを入力してください');
@@ -44,6 +55,8 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
                     throw new Error('無効なURLです。管理者にお問い合わせください');
                 case 'auth/quota-exceeded':
                     throw new Error('リクエストの上限に達しました。しばらくしてから再度お試しください');
+                case 'auth/unauthorized-continue-uri':
+                    throw new Error('このURLは許可されていません。管理者にお問い合わせください');
                 default:
                     throw new Error('メールを送信できませんでした');
             }
@@ -58,11 +71,64 @@ async function sendSignInLink(auth: Auth, email: string, actionCodeSettings: act
 async function signUpWithGoogle(auth: Auth) {
     try {
         const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const user = result.user;
+
+        // ユーザが既に存在している場合は何もしない
+        const isNewUser = getAdditionalUserInfo(result)?.isNewUser ?? false;
+        if (!isNewUser) {
+            console.log("Googleアカウントでサインインしました");
+            return true;
+        }
+
+        // メールアドレス認証の有無を確認
+        const methods = await fetchSignInMethodsForEmail(auth, user.email!);
+
+        // メールアドレス認証が存在しない場合は新規登録
+        if (!methods.includes('password')) {
+            await createUserInPrisma({
+                firebaseUid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+            });
+            await createDefaultPuzzles(user.uid);
+            console.log('Googleアカウントで新規登録しました');
+            return true;
+        }
+        if (!credential) {
+            throw new Error('Google認証に失敗しました');
+        }
+
+        const currentUser = auth.currentUser;
+        // 既存のユーザが存在しない場合は新規登録
+        if (!currentUser) {
+            await createUserInPrisma({
+                firebaseUid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+            });
+            await createDefaultPuzzles(user.uid);
+            console.log('Googleアカウントで新規登録しました');
+            return true;
+        }
+        // メールアドレス認証のユーザが存在する場合はリンク
+        await linkWithCredential(currentUser, credential);
+        console.log('Googleアカウントをリンクしました');
         return true;
     } catch (error) {
+        console.error(error);
         if (error instanceof FirebaseError) {
-            return false;
+            switch (error.code) {
+                case 'auth/popup-closed-by-user':
+                    throw new Error('Google認証がキャンセルされました');
+                case 'auth/cancelled-popup-request':
+                    throw new Error('Google認証がキャンセルされました');
+                case 'auth/popup-blocked':
+                    throw new Error('ポップアップがブロックされました。ポップアップを許可してください');
+                default:
+                    throw new Error('Google認証に失敗しました');
+            }
         }
     }
 }
@@ -91,7 +157,7 @@ export default function Page() {
             return;
         }
         try {
-            await sendSignInLink(auth, email, actionCodeSettings);
+            await sendSignUpLink(auth, email, actionCodeSettings);
             setIsMailSent(true);
             setSendCount(sendCount + 1);
         } catch (error) {
@@ -107,12 +173,6 @@ export default function Page() {
         const success = await signUpWithGoogle(auth);
         setIsLoading(false);
         if (success) {
-            await createUserInPrisma({
-                firebaseUid: auth.currentUser!.uid,
-                email: auth.currentUser!.email,
-                displayName: auth.currentUser!.displayName,
-            });
-            await createDefaultPuzzles(auth.currentUser!.uid);
             router.push("/");
         } else {
             alert("Google認証に失敗しました。もう一度お試しください。");
@@ -125,15 +185,14 @@ export default function Page() {
                 <Box component="form">
                     <h2>ユーザ登録</h2>
                     {isMailSent ? (
-                        <p>{email}にメールを送信しました。リンクをクリックして登録を完了してください</p>
+                        <>
+                        <p>アカウントが未登録の場合、メールアドレスに送信されたリンクをクリックして登録を完了させてください。</p>
+                        <p>アカウントをお持ちの場合、<Link href="/signin" className="text-blue-500 hover:underline">こちらからログイン</Link>してください。</p>
+                        </>
                     ) : (
-                        <p>メールアドレスを入力してください</p>
+                        <p>メールアドレスを入力してください。</p>
                     )}
-                    {isMailSent ? (
-                        <CommonInputText value={email} elementType="email" onChange={(e) => setEmail(e.target.value)} disabled/>
-                    ) : (
-                        <CommonInputText value={email} elementType="email" onChange={(e) => setEmail(e.target.value)}/>
-                    )}
+                    <CommonInputText value={email} elementType="email" onChange={(e) => setEmail(e.target.value)} disabled={isMailSent}/>
                     <p className="text-red-500">{error}</p>
                     <Box sx={{ paddingY: '0.5rem' }}>
                         <CommonButton color="primary" onClick={handleSubmit} disabled={isLoading || isDisabled}>

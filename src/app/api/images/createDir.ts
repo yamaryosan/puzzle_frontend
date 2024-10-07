@@ -4,9 +4,10 @@ import fs from 'fs/promises';
  * 画像ディレクトリを作成する
  */
 export const createDir = async (dirPath: string) => {
+    // ディレクトリが存在しない場合は作成
     try {
-        await fs.mkdir(dirPath);
+        await fs.access(dirPath);
     } catch (error) {
-        console.log(error);
+        await fs.mkdir(dirPath, { recursive: true, mode: 0o755 });
     }
 }

@@ -12,6 +12,7 @@ import { useContext } from "react";
 import DescriptionViewer from "@/lib/components/DescriptionViewer";
 import CommonButton from "@/lib/components/common/CommonButton";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
+import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
 
 /**
  * 正解かどうかを送信
@@ -48,6 +49,7 @@ async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | und
 
 export default function CheckAnswer({ id } : { id: string }) {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [puzzle, setPuzzle] = useState<Puzzle | null>();
     const user = useContext(FirebaseUserContext);
 
@@ -58,10 +60,17 @@ export default function CheckAnswer({ id } : { id: string }) {
         async function fetchPuzzle() {
             try {
                 if (!user) return;
-                const puzzle = await getPuzzleById(id, user.uid ?? '') as Puzzle;
+                const puzzle = await getPuzzleById(id, user.uid ?? '');
+                if (!puzzle) {
+                    console.error("パズルが見つかりません");
+                    setIsLoading(false);
+                    return;
+                }
                 setPuzzle(puzzle);
+                setIsLoading(false);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
+                setIsLoading(false);
             }
         }
         fetchPuzzle();
@@ -79,8 +88,12 @@ export default function CheckAnswer({ id } : { id: string }) {
         router.push("/puzzles?checkAnswer=true");
     };
 
-    if (!puzzle) {
+    if (isLoading) {
         return <div>読み込み中...</div>;
+    }
+
+    if (!puzzle) {
+        return <PuzzleNotFound />;
     }
 
     return (

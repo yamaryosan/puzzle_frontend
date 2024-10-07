@@ -21,6 +21,7 @@ import Portal from '@/lib/components/Portal';
 import DeleteModal from '@/lib/components/DeleteModal';
 import { Box } from '@mui/material';
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
+import PuzzleNotFound from '@/lib/components/PuzzleNotFound';
 
 /**
  * 内容を送信
@@ -175,6 +176,7 @@ export default function PuzzleEditForm({ id }: { id: string }) {
             // パズルを取得
             const puzzle = await getPuzzleById(id, user?.uid || '');
             if (!puzzle) {
+                setIsLoading(false);
                 console.error("パズルが見つかりません");
                 return;
             }
@@ -206,6 +208,7 @@ export default function PuzzleEditForm({ id }: { id: string }) {
         async function loadHints() {
             const hints = await getHintsByPuzzleId(id, user?.uid || '');
             if (!hints) {
+                setIsLoading(false);
                 console.error("ヒントが見つかりません");
                 return;
             }
@@ -281,11 +284,15 @@ export default function PuzzleEditForm({ id }: { id: string }) {
     };
 
     if (!Delta) {
-        return <div>Loading...</div>
+        return <div>読み込み</div>
     }
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <div>読み込み中...</div>
+    }
+
+    if (!puzzle) {
+        return <PuzzleNotFound />
     }
 
     return (

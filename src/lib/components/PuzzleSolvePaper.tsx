@@ -18,6 +18,7 @@ import CommonButton from "@/lib/components/common/CommonButton";
 import CategoryShowPart from "@/lib/components/CategoryShowPart";
 import DescriptionViewer from "@/lib/components/DescriptionViewer";
 import Delta from "quill-delta";
+import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
 
 /**
  * 回答を送信
@@ -86,7 +87,12 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
     useEffect(() => {
         async function fetchPuzzle() {
             if (!user) return;
-            const puzzle = await getPuzzleById(id, user.uid ?? '') as Puzzle;
+            const puzzle = await getPuzzleById(id, user.uid ?? '');
+            if (!puzzle) {
+                setIsLoading(false);
+                console.error("パズルが取得できません");
+                return;
+            }
             setPuzzle(puzzle);
             setIsLoading(false);
         }
@@ -112,7 +118,11 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
     }
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div>読み込み中...</div>;
+    }
+
+    if (!puzzle) {
+        return <PuzzleNotFound />;
     }
 
     return (

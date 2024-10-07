@@ -17,6 +17,7 @@ import Delta from 'quill-delta';
 import DescriptionEditor from '@/lib/components/DescriptionEditor';
 import CommonButton from '@/lib/components/common/CommonButton';
 import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
+import ApproachNotFound from '@/lib/components/ApproachNotFound';
 
 type Range = {
     index: number;
@@ -65,7 +66,7 @@ async function send(title: string, id: string, quill: React.RefObject<Quill | nu
 export default function ApproachEditForm({id}: {id: string}) {
     const router = useRouter();
     const [title, setTitle] = useState<string>('');
-    const [, setApproach] = useState<Approach>();
+    const [approach, setApproach] = useState<Approach | null>(null);
 
     const descriptionRef = useRef<Quill | null>(null);
     const [, setRange] = useState<Range | null>(null);
@@ -84,7 +85,12 @@ export default function ApproachEditForm({id}: {id: string}) {
     useEffect(() => {
         async function fetchApproach() {
             if (!user) return;
-            const approach = await getApproach(id, user.uid ?? '') as Approach;
+            const approach = await getApproach(id, user.uid ?? '');
+            if (!approach) {
+                setIsLoading(false);
+                console.error("定石が見つかりません");
+                return;
+            }
             setApproach(approach);
             setTitle(approach.title);
 
@@ -121,7 +127,11 @@ export default function ApproachEditForm({id}: {id: string}) {
     };
     
     if (isLoading) {
-        return <div>Loading...</div>
+        return <div>読み込み中...</div>;
+    }
+
+    if (!approach) {
+        return <ApproachNotFound />;
     }
 
     return (

@@ -1,20 +1,17 @@
-'use client';
-
 import Link from "next/link";
 import CommonButton from "@/lib/components/common/CommonButton";
 import { UndoOutlined } from "@mui/icons-material";
 
-export default function NotFound() {
+export default function ApproachNotFound() {
     return (
         <>
-        <h2>404 Not Found</h2>
-        <p>ページが見つかりません。</p>
-        <Link href="/">
+        <p>定石が見つかりません。</p>
+        <Link href="/approaches">
             <CommonButton color="primary" onClick={() => {}}>
             <UndoOutlined />
-            <span>ホームへ</span>
+            <span>定石一覧へ</span>
             </CommonButton>
         </Link>
         </>
-    );
+    )
 }

@@ -1,20 +1,17 @@
-'use client';
-
 import Link from "next/link";
 import CommonButton from "@/lib/components/common/CommonButton";
 import { UndoOutlined } from "@mui/icons-material";
 
-export default function NotFound() {
+export default function PuzzleNotFound() {
     return (
         <>
-        <h2>404 Not Found</h2>
-        <p>ページが見つかりません。</p>
-        <Link href="/">
+        <p>パズルが見つかりません。</p>
+        <Link href="/puzzles">
             <CommonButton color="primary" onClick={() => {}}>
             <UndoOutlined />
-            <span>ホームへ</span>
+            <span>パズル一覧へ</span>
             </CommonButton>
         </Link>
         </>
-    );
+    )
 }

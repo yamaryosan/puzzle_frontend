@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
         // 画像ディレクトリを作成
         await createDir(path.dirname(filePath));
         // ファイルを保存
-        await writeFile(filePath, Buffer.from(buffer));
+        await writeFile(filePath, Buffer.from(buffer), { mode: 0o644 });
         console.log(`Image saved: ${filename}`);
         // URLパスを生成
         const url = `/images/${filename}`;

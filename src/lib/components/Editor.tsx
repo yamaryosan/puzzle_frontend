@@ -58,13 +58,20 @@ function setupToolbarImageUploader(quill: ExtendedQuill, imageHandler: ImageHand
  * @returns {Promise<string>} 画像のURL
  */
 const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('image', file);
-    const response = await fetch('/api/images', {
-        method: 'POST',
-        body: formData,
-    });
-    return response.text();
+    try {
+        const formData = new FormData();
+        formData.append('image', file);
+        const response = await fetch('/api/images', {
+            method: 'POST',
+            body: formData,
+        });
+        const imageUrl = await response.text();
+        console.log("画像のアップロードに成功しました: ", imageUrl);
+        return imageUrl;
+    } catch (error) {
+        console.error("画像のアップロードに失敗しました: ", error);
+        return '';
+    }
 };
 
 /**画像挿入処理

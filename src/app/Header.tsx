@@ -12,7 +12,6 @@ export default function Header() {
     const deviceType = useContext(DeviceTypeContext);
     return (
         <header>
-            <p>デバイスの種類: {deviceType}</p>
             <FirebaseUserProvider>
                 {deviceType==="mobile" && (
                     <Box sx={{ 

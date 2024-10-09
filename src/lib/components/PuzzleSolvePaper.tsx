@@ -77,6 +77,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
     const [, setLastChange] = useState<Delta | null>(null);
 
     const answerRef = useRef<Quill | null>(null);
+    const [userAnswerDelta, setUserAnswerDelta] = useState<Delta>();
 
     const [categories, setCategories] = useState<Category[] | null>(null);
     const user = useContext(FirebaseUserContext);
@@ -85,18 +86,29 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
 
     // パズルを取得
     useEffect(() => {
-        async function fetchPuzzle() {
-            if (!user) return;
-            const puzzle = await getPuzzleById(id, user.uid ?? '');
+        async function loadQuill() {
+            // パズルを取得
+            const puzzle = await getPuzzleById(id, user?.uid ?? '');
             if (!puzzle) {
                 setIsLoading(false);
                 console.error("パズルが取得できません");
                 return;
             }
+            console.log("パズルを取得しました: ", puzzle);
             setPuzzle(puzzle);
+            const quillModule = await import('quill');
+            const Delta = quillModule.default.import('delta');
+            const quill = new quillModule.default(document.createElement('div'));
+            if (!puzzle.user_answer) {
+                setUserAnswerDelta(new Delta());
+                setIsLoading(false);
+                return;
+            }
+            const userAnswerDelta = quill.clipboard.convert({ html: puzzle.user_answer });
+            setUserAnswerDelta(new Delta(userAnswerDelta.ops));
             setIsLoading(false);
         }
-        fetchPuzzle();
+        loadQuill();
     }, [id, user]);
 
     // カテゴリーを取得
@@ -140,7 +152,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
             <Box sx={{ paddingY: '0.5rem' }}>
                 <h4>解答を入力</h4>
                 <Editor
-                defaultValue={new Delta()}
+                defaultValue={userAnswerDelta || new Delta()}
                 onSelectionChange={setRange}
                 onTextChange={setLastChange}
                 ref={answerRef} />

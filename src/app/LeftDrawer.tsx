@@ -77,7 +77,7 @@ export default function LeftDrawer() {
         {deviceType === 'mobile' && (
             <>
                 <Box onClick={handleOpen} sx={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: '10%',
                     left: '0',
                     display: 'flex',

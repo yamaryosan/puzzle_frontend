@@ -23,7 +23,7 @@ export default function SearchDrawer() {
         {deviceType === 'mobile' && (
             <>
                 <Box onClick={handleOpenSearchDrawer} sx={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: '25%',
                     left: '0',
                     display: 'flex',

@@ -18,6 +18,7 @@
     "@prisma/client": "^5.20.0",
     "@types/nodemailer": "^6.4.16",
     "@types/quill": "^2.0.14",
+    "aws-sdk": "^2.1691.0",
     "firebase": "^10.12.2",
     "next": "14.2.4",
     "nodemailer": "^6.9.15",

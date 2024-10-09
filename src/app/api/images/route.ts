@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
-import { createDir } from './createDir';
+import s3 from '@/lib/s3';
 
 /**
  * 画像のアップロード
@@ -14,21 +12,24 @@ export async function POST(req: NextRequest) {
         if (!file) {
             return new Response('No image found', { status: 400 });
         }
-        // 画像ファイル名を生成
-        const filename = `${Date.now()}-${file.name}`;
+        // 画像ファイル名を生成 タイムスタンプ+ランダム文字列
+        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.png`;
         console.log(`Uploading image: ${filename}`);
-        // ファイルパスを生成
-        const filePath = path.join(process.cwd(), 'public', 'images', filename);
-        console.log(`Saving image to: ${filePath}`);
         // ファイルをバッファに変換
         const buffer = await file.arrayBuffer();
-        // 画像ディレクトリを作成
-        await createDir(path.dirname(filePath));
-        // ファイルを保存
-        await writeFile(filePath, Buffer.from(buffer), { mode: 0o644 });
-        console.log(`Image saved: ${filename}`);
-        // URLパスを生成
-        const url = `/images/${filename}`;
+        // S3にアップロード
+        const params = {
+            Bucket: process.env.AWS_BUCKET!,
+            Key: filename,
+            Body: Buffer.from(buffer),
+            ContentType: file.type,
+        };
+        const result = await s3.upload(params).promise();
+        if (!result.Location) {
+            throw new Error('Failed to upload image');
+        }
+        const url = result.Location;
+        console.log('Uploaded:', result.Location);
         // 画像のURLをテキストで返す
         return new NextResponse(url, {
             status: 200,

@@ -39,6 +39,8 @@ async function signIn(auth: Auth, email: string, password: string) {
                     throw new Error('メールアドレスかパスワードが間違っています');
                 case 'auth/wrong-password':
                     throw new Error('メールアドレスかパスワードが間違っています');
+                default:
+                    throw new Error('ログインに失敗しました');
             }
         }
     }

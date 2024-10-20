@@ -67,6 +67,9 @@ export async function updateUserInPrisma(firebaseUser: FirebaseUser) {
  */
 export async function deleteUserInPrisma(firebaseUid: string) {
     try {
+        // 削除前にFirebaseと同期
+        await syncUserWithFirebase(firebaseUid);
+        // Prismaで削除
         const response = await fetch(`/api/users/${firebaseUid}`, {
             method: "DELETE",
         });
@@ -79,6 +82,34 @@ export async function deleteUserInPrisma(firebaseUid: string) {
         return deletedUser as Promise<User>;
     } catch (error) {
         console.error("Prismaでのユーザ削除に失敗: ", error);
+        throw error;
+    }
+}
+
+/**
+ * ユーザをFirebaseと同期(レコードが存在しない場合は作成)
+ * 削除時のレコードの不整合を防ぐため
+ * @param firebaseUid FirebaseユーザID
+ * @returns 同期したユーザ
+ */
+export async function syncUserWithFirebase(firebaseUid: string) {
+    try {
+        const response = await fetch(`/api/users/${firebaseUid}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ firebaseUid }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            console.error("Firebaseとのユーザ同期に失敗: ", error);
+        }
+        const syncedUser = await response.json();
+        console.log("Firebaseとのユーザ同期に成功: ", syncedUser);
+        return syncedUser as Promise<User>;
+    } catch (error) {
+        console.error("Firebaseとのユーザ同期に失敗: ", error);
         throw error;
     }
 }

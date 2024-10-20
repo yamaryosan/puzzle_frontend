@@ -77,11 +77,11 @@ export default function Page() {
         return () => unsubscribe();
     }, [user]);
 
-    // 3秒後に退会ボタンを有効化
+    // 2秒後に退会ボタンを有効化
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsDeleteButtonDisabled(false);
-        }, 3000);
+        }, 2000);
         return () => clearTimeout(timer);
     }, []);
 

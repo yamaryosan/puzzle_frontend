@@ -8,6 +8,45 @@ type FirebaseUser = {
 }
 
 /**
+ * ユーザを作成
+ * @param req リクエスト
+ * @param params パラメータ
+ */
+export async function POST(req: NextRequest, { params }: { params: { firebaseUid: string } }) {
+    try {
+        // リクエストボディが空でないかを確認
+        if (!req.body) {
+            return NextResponse.json({ error: "Request body is empty" }, { status: 400 });
+        }
+
+        const firebaseUid = params.firebaseUid;
+        const firebaseUser: FirebaseUser = await req.json();
+
+        // ユーザが存在しない場合は作成、存在する場合は更新
+        const user = await prisma.user.upsert({
+            where: { firebaseUid },
+            update: {
+                email: firebaseUser.email ?? "",
+                name: firebaseUser.displayName ?? "",
+            },
+            create: {
+                firebaseUid: firebaseUser.firebaseUid,
+                email: firebaseUser.email ?? "",
+                name: firebaseUser.displayName ?? "",
+            },
+        });
+
+        return NextResponse.json(user, { status: 201 });
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+        }
+    }
+}
+
+/**
  * ユーザを更新
  * @param req リクエスト
  * @param params パラメータ

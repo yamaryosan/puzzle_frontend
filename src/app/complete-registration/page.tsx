@@ -98,9 +98,6 @@ export default function Page() {
             } catch (error) {
                 if (error instanceof FirebaseError) {
                     switch (error.code) {
-                        case "auth/invalid-action-code":
-                            setGeneralError("メールアドレスが無効です");
-                            break;
                         case "auth/expired-action-code":
                             setGeneralError("リンクの有効期限が切れています");
                             break;

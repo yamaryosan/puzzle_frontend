@@ -18,6 +18,7 @@ import {
     Logout,
     Login,
     ArrowRight,
+    StorageOutlined,
 } from "@mui/icons-material";
 import { useState } from "react";
 import Link from "next/link";
@@ -33,6 +34,7 @@ const baseMenu = [
 ];
 
 const authMenu = [
+    { title: "データ管理", icon: StorageOutlined, href: "/data" },
     { title: "プロフィール", icon: AccountCircle, href: "/profile" },
     { title: "ログアウト", icon: Logout, href: "/signout" },
 ];

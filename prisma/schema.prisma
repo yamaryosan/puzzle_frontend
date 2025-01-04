@@ -8,22 +8,23 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-provider = "postgresql"
-url      = env("POSTGRE_DATABASE_URL")
-}
+// PostgreSQLの接続情報(ローカル環境からDBに接続する場合)
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("POSTGRE_DATABASE_URL")
+// }
 
-// MySQLの接続情報 
+// MySQLの接続情報(ローカル環境からローカルDBに接続する場合)
 //datasource db {
 //  provider = "mysql"
 //  url      = env("DATABASE_URL")
 //}
 
-// sqliteの接続情報
-// datasource db {
-//  provider = "sqlite"
-//  url      = env("DATABASE_URL")
-// }
+// sqliteの接続情報(ローカル環境からローカルDBに接続する場合)
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
 
 // ユーザーテーブル(FirebaseのUIDを主キーに設定)
 model User {

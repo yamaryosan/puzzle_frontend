@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import {
     StorageOutlined,
     CloudUploadOutlined,
@@ -8,7 +8,13 @@ import {
 } from "@mui/icons-material";
 import CommonButton from "@/lib/components/common/CommonButton";
 
+import { exportData } from "@/lib/api/dataApi";
+import { useContext } from "react";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+
 export default function Page() {
+    const user = useContext(FirebaseUserContext);
+
     return (
         <>
             <h2
@@ -25,7 +31,12 @@ export default function Page() {
                     alignItems: "center",
                 }}
             >
-                <CommonButton color="primary" onClick={() => {}}>
+                <CommonButton
+                    color="primary"
+                    onClick={() => {
+                        exportData(user?.uid ?? "");
+                    }}
+                >
                     <CloudDownloadOutlined />
                     データをダウンロード(エクスポート)
                 </CommonButton>

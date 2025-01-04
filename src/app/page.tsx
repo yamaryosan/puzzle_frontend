@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { Puzzle } from "@prisma/client";
@@ -18,8 +18,18 @@ function SearchParamsWrapper() {
     const userCreated = searchParams.get("userCreated") === "true";
     return (
         <>
-            {passwordReset && ( <MessageModal message="パスワードのリセットが完了しました。" param="passwordReset" /> )}
-            {userCreated && ( <MessageModal message="ユーザー登録が完了しました。" param="userCreated" /> )}
+            {passwordReset && (
+                <MessageModal
+                    message="パスワードのリセットが完了しました。"
+                    param="passwordReset"
+                />
+            )}
+            {userCreated && (
+                <MessageModal
+                    message="ユーザー登録が完了しました。"
+                    param="userCreated"
+                />
+            )}
         </>
     );
 }
@@ -33,7 +43,7 @@ export default function Page() {
         async function fetchPuzzles() {
             if (!user) return;
             try {
-                const puzzles = await getPuzzles(user.uid) 
+                const puzzles = await getPuzzles(user.uid);
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);

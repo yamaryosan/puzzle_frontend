@@ -9,7 +9,7 @@ const auth = getAuth(firebaseApp);
 
 // 開発環境の場合、エミュレータに接続
 if (process.env.NODE_ENV === "development") {
-  connectAuthEmulator(auth, "http://localhost:9099");
+    connectAuthEmulator(auth, "http://localhost:9099");
 }
 
 export default firebaseApp;

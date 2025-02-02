@@ -6,7 +6,10 @@ import prisma from "@/lib/prismaclient";
  * @param req リクエスト
  * @param params パラメータ
  */
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
 
@@ -15,24 +18,30 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
 
-        const {userId} = await req.json() as {userId: string};
+        const { userId } = (await req.json()) as { userId: string };
 
         // ユーザIDが指定されていない場合はエラー
         if (!userId) {
-            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+            return NextResponse.json(
+                { error: "User ID is required" },
+                { status: 400 }
+            );
         }
 
         // パズルが存在しない場合はエラー
-        const puzzle = await prisma.puzzle.findUnique({
+        const puzzle = await prisma.puzzles.findUnique({
             where: { id },
         });
         if (!puzzle) {
-            return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+            return NextResponse.json(
+                { error: "Puzzle not found" },
+                { status: 404 }
+            );
         }
 
         // お気に入り登録/解除を切り替え
         const favorite = !puzzle.is_favorite;
-        await prisma.puzzle.update({
+        await prisma.puzzles.update({
             where: { id, user_id: userId },
             data: {
                 is_favorite: favorite,
@@ -42,9 +51,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         return NextResponse.json({ favorite });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

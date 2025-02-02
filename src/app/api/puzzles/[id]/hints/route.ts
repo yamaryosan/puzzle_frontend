@@ -18,7 +18,7 @@ export async function GET(
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
         // パズルが存在しない場合はエラー
-        const puzzle = await prisma.puzzle.findUnique({
+        const puzzle = await prisma.puzzles.findUnique({
             where: { id },
         });
         if (!puzzle) {
@@ -28,7 +28,7 @@ export async function GET(
             );
         }
         // ヒントを取得
-        const hints = await prisma.hint.findMany({
+        const hints = await prisma.hints.findMany({
             where: { puzzle_id: id },
         });
         return NextResponse.json(hints);
@@ -66,7 +66,7 @@ export async function POST(
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
         // パズルが存在しない場合はエラー
-        const puzzle = await prisma.puzzle.findUnique({
+        const puzzle = await prisma.puzzles.findUnique({
             where: { id },
         });
         // ユーザIDが指定されていない場合はエラー
@@ -87,7 +87,7 @@ export async function POST(
         // ヒントを追加
         const { hintHtmls } = await req.json();
         for (const hintHtml of hintHtmls) {
-            await prisma.hint.create({
+            await prisma.hints.create({
                 data: {
                     puzzle_id: id,
                     user_id: userId,
@@ -138,7 +138,7 @@ export async function PUT(
             );
         }
         // パズルが存在しない場合はエラー
-        const puzzle = await prisma.puzzle.findUnique({
+        const puzzle = await prisma.puzzles.findUnique({
             where: { id },
         });
         if (!puzzle) {
@@ -150,11 +150,11 @@ export async function PUT(
 
         // ヒントを更新
         const { hintHtmls } = await req.json();
-        await prisma.hint.deleteMany({
+        await prisma.hints.deleteMany({
             where: { puzzle_id: id, user_id: userId },
         });
         for (const hintHtml of hintHtmls) {
-            await prisma.hint.create({
+            await prisma.hints.create({
                 data: {
                     puzzle_id: id,
                     user_id: userId,

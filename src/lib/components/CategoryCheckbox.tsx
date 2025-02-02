@@ -6,7 +6,7 @@ import {
     createCategory,
     getCategoriesByPuzzleId,
 } from "@/lib/api/categoryapi";
-import { Category } from "@prisma/client";
+import { categories } from "@prisma/client";
 import { Box, Button, Input } from "@mui/material";
 import { CreateNewFolderOutlined } from "@mui/icons-material";
 import Checkbox from "@mui/material/Checkbox";
@@ -24,7 +24,7 @@ async function create(name: string, userId: string) {
         return;
     }
     const newCategory = await createCategory(name, userId);
-    return newCategory as Category;
+    return newCategory as categories;
 }
 
 type CategoryCheckboxProps = {
@@ -40,7 +40,7 @@ export default function CategoryCheckbox({
     puzzle_id,
     value,
 }: CategoryCheckboxProps) {
-    const [categories, setCategories] = useState<Category[] | null>(null);
+    const [categories, setCategories] = useState<categories[] | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
     const [checkedCategoryIds, setCheckedCategoryIds] =
         useState<number[]>(value);

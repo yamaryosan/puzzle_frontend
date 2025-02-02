@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Category } from "@prisma/client";
+import { categories } from "@prisma/client";
 import CategoryCard from "@/lib/components/CategoryCard";
 import { getCategories } from "@/lib/api/categoryapi";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
@@ -10,7 +10,7 @@ import { useContext } from "react";
 
 export default function Categories() {
     const user = useContext(FirebaseUserContext);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<categories[]>([]);
 
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);

@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
-import { Puzzle, Hint } from "@prisma/client";
+import { puzzles, hints } from "@prisma/client";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import getHintsByPuzzleId from "@/lib/api/hintapi";
 import Quill from "quill";
@@ -45,7 +45,7 @@ async function send(
     hintQuills: React.RefObject<Quill | null>[],
     difficulty: number,
     userId: string
-): Promise<Puzzle | undefined> {
+): Promise<puzzles | undefined> {
     // IDが空の場合はエラー
     if (!id) {
         console.error("IDが空です");
@@ -163,8 +163,8 @@ export default function PuzzleEditForm({ id }: { id: string }) {
     const user = useContext(FirebaseUserContext);
     const router = useRouter();
 
-    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [hints, setHints] = useState<Hint[]>([]);
+    const [puzzle, setPuzzle] = useState<puzzles | null>(null);
+    const [hints, setHints] = useState<hints[]>([]);
 
     const [title, setTitle] = useState<string>("");
 

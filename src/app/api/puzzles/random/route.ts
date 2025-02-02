@@ -17,17 +17,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
     try {
         // パズルをランダムに取得
-        const puzzles = await prisma.puzzle.findMany({
+        const puzzles = await prisma.puzzles.findMany({
             where: { user_id },
-            orderBy: { id: 'desc' },
+            orderBy: { id: "desc" },
             take: parseInt(count),
         });
         return NextResponse.json(puzzles);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

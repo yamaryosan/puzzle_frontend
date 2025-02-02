@@ -1,4 +1,4 @@
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 
 /**
  * パズル一覧を取得
@@ -11,7 +11,7 @@ export async function getPuzzles(userId: string) {
         const error = await response.json();
         console.error("パズルの取得に失敗: ", error);
     }
-    const puzzles = (await response.json()) as Puzzle[];
+    const puzzles = (await response.json()) as puzzles[];
     console.log("パズルの取得に成功: ", puzzles);
     return puzzles;
 }
@@ -30,7 +30,7 @@ export async function getRandomPuzzles(userId: string, count: string) {
         const error = await response.json();
         console.error("ランダムなパズルの取得に失敗: ", error);
     }
-    const puzzles = (await response.json()) as Puzzle[];
+    const puzzles = (await response.json()) as puzzles[];
     console.log("ランダムなパズルの取得に成功: ", puzzles);
     return puzzles;
 }
@@ -59,7 +59,7 @@ export async function getPuzzleById(id: string, userId: string) {
         console.error("パズルが見つかりません");
         return null;
     }
-    const puzzle = (await response.json()) as Puzzle;
+    const puzzle = (await response.json()) as puzzles;
     console.log("パズルの取得に成功: ", puzzle);
     return puzzle;
 }
@@ -114,7 +114,7 @@ export async function getFavoritePuzzles(userId: string) {
         const error = await response.json();
         console.error("お気に入りのパズルの取得に失敗: ", error);
     }
-    const puzzles = (await response.json()) as Puzzle[];
+    const puzzles = (await response.json()) as puzzles[];
     console.log("お気に入りのパズルの取得に成功: ", puzzles);
     return puzzles;
 }
@@ -144,7 +144,7 @@ export async function searchPuzzles(keyword: string, userId: string) {
         const error = await response.json();
         console.error("パズルの検索に失敗: ", error);
     }
-    const puzzles = (await response.json()) as Puzzle[];
+    const puzzles = (await response.json()) as puzzles[];
     console.log("パズルの検索に成功: ", puzzles);
     return puzzles;
 }

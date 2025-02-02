@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import Editor from "@/lib/components/Editor";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import Quill from "quill";
-import { Category } from "@prisma/client";
+import { categories } from "@prisma/client";
 import { getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
 import { useRouter } from "next/navigation";
 import { Box, Paper } from "@mui/material";
@@ -29,7 +29,7 @@ import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
 async function send(
     id: string,
     answerRef: React.RefObject<Quill | null>
-): Promise<Puzzle | undefined> {
+): Promise<puzzles | undefined> {
     // IDが空の場合はエラー
     if (!id) {
         console.error("IDが空です");
@@ -63,7 +63,7 @@ async function send(
     }
     const puzzle = await response.json();
     console.log("回答の送信に成功: ", puzzle);
-    return puzzle as Puzzle;
+    return puzzle as puzzles;
 }
 
 type Range = {
@@ -74,7 +74,7 @@ type Range = {
 export default function PuzzleSolvePaper({ id }: { id: string }) {
     const router = useRouter();
 
-    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+    const [puzzle, setPuzzle] = useState<puzzles | null>(null);
 
     const [, setRange] = useState<Range | null>(null);
     const [, setLastChange] = useState<Delta | null>(null);
@@ -82,7 +82,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
     const answerRef = useRef<Quill | null>(null);
     const [userAnswerDelta, setUserAnswerDelta] = useState<Delta>();
 
-    const [categories, setCategories] = useState<Category[] | null>(null);
+    const [categories, setCategories] = useState<categories[] | null>(null);
     const user = useContext(FirebaseUserContext);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +125,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
             const categories = (await getCategoriesByPuzzleId(
                 id,
                 user.uid ?? ""
-            )) as Category[];
+            )) as categories[];
             setCategories(categories);
         }
         fetchCategories();

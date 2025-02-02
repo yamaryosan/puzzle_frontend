@@ -2,14 +2,14 @@
 
 import { Box, Card } from "@mui/material";
 import PuzzleInfo from "@/lib/components/PuzzleInfo";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import FavoriteButton from "@/lib/components/FavoriteButton";
 import CompletionStatusIcon from "@/lib/components/CompletionStatusIcon";
 import { useContext } from "react";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
 type PuzzleCardProps = {
-    puzzle: Puzzle;
+    puzzle: puzzles;
     isActive: boolean;
     onClick: (e: React.MouseEvent) => void;
 };

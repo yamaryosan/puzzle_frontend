@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Category } from "@prisma/client";
+import { categories } from "@prisma/client";
 
 /**
  * カテゴリー一覧を取得
@@ -14,13 +14,21 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         if (!user_id) {
             throw new Error("ユーザIDが指定されていません");
         }
-        const categories: Category[] = await prisma.category.findMany({ where: { user_id } });
+        const categories: categories[] = await prisma.categories.findMany({
+            where: { user_id },
+        });
         return NextResponse.json(categories);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }
@@ -35,26 +43,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         // カテゴリー名が空の場合は作成しない
         if (name === "") {
-            return NextResponse.json({ error: "Name is empty" }, { status: 400 });
+            return NextResponse.json(
+                { error: "Name is empty" },
+                { status: 400 }
+            );
         }
         // カテゴリー名が重複している場合は作成しない
-        const existingCategory = await prisma.category.findFirst(
-            { where: { name, user_id: userId } }
-        );
+        const existingCategory = await prisma.categories.findFirst({
+            where: { name, user_id: userId },
+        });
         if (existingCategory) {
-            return NextResponse.json({ error: "Name is already exists" }, { status: 400 });
+            return NextResponse.json(
+                { error: "Name is already exists" },
+                { status: 400 }
+            );
         }
 
-        const category: Category = await prisma.category.create({
-            data: { name, user_id: userId }
+        const category: categories = await prisma.categories.create({
+            data: { name, user_id: userId },
         });
 
         return NextResponse.json(category, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

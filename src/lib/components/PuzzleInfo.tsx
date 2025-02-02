@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { EmojiObjects, Edit } from "@mui/icons-material";
 import Link from "next/link";
 import DifficultViewer from "@/lib/components/DifficultyViewer";
@@ -7,7 +7,7 @@ import DescriptionViewer from "@/lib/components/DescriptionViewer";
 import CommonButton from "@/lib/components/common/CommonButton";
 
 type PuzzleInfoProps = {
-    puzzle: Puzzle;
+    puzzle: puzzles;
 };
 
 /**

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getApproaches } from "../api/approachApi";
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
 import { Box } from "@mui/material";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
@@ -20,7 +20,7 @@ export default function ApproachCheckbox({
     value,
 }: ApproachCheckboxProps) {
     const user = useContext(FirebaseUserContext);
-    const [approaches, setApproaches] = useState<Approach[] | null>(null);
+    const [approaches, setApproaches] = useState<approaches[] | null>(null);
     const [checkedApproachIds, setCheckedApproachIds] =
         useState<number[]>(value);
 

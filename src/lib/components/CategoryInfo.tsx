@@ -1,4 +1,4 @@
-import { Category, Puzzle } from "@prisma/client";
+import { categories, puzzles } from "@prisma/client";
 import Link from "next/link";
 import { Button, Box } from "@mui/material";
 import { Edit } from "@mui/icons-material";
@@ -10,7 +10,7 @@ import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 
 type CategoryInfoProps = {
-    category: Category;
+    category: categories;
     isActive: boolean;
 };
 
@@ -40,7 +40,7 @@ export default function CategoryInfo({
         category.name
     );
     const [isEdit, setIsEdit] = useState<boolean>(false);
-    const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+    const [puzzles, setPuzzles] = useState<puzzles[]>([]);
 
     // レンダリングのたびにisEditをfalseにする
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function CategoryInfo({
                 const data = (await fetchPuzzlesByCategoryId(
                     category.id.toString(),
                     user.uid ?? ""
-                )) as Puzzle[];
+                )) as puzzles[];
                 setPuzzles(data);
             } catch (error) {
                 console.error(

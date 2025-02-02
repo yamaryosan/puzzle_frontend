@@ -42,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
     try {
         // パズルの登録
-        const puzzles = await prisma.puzzle.createMany({
+        const puzzles = await prisma.puzzles.createMany({
             data: defaultPuzzles.map((puzzle) => {
                 return {
                     user_id: userId,
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             }),
         });
         // 登録したパズルのIDを取得
-        const puzzleIds = await prisma.puzzle.findMany({
+        const puzzleIds = await prisma.puzzles.findMany({
             where: {
                 user_id: userId,
             },
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             },
         });
         // ヒントの登録
-        await prisma.hint.createMany({
+        await prisma.hints.createMany({
             data: [
                 {
                     user_id: userId,
@@ -113,14 +113,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             ],
         });
         // カテゴリーの登録
-        await prisma.category.createMany({
+        await prisma.categories.createMany({
             data: [
                 { user_id: userId, name: "謎解き" },
                 { user_id: userId, name: "頭の体操" },
             ],
         });
         // 登録したカテゴリーのIDを取得
-        const categoryIds = await prisma.category.findMany({
+        const categoryIds = await prisma.categories.findMany({
             where: {
                 user_id: userId,
             },
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             },
         });
         // カテゴリーとパズルの紐付け
-        await prisma.puzzleCategory.createMany({
+        await prisma.puzzle_categories.createMany({
             data: [
                 { puzzle_id: puzzleIds[0].id, category_id: categoryIds[0].id },
                 { puzzle_id: puzzleIds[1].id, category_id: categoryIds[0].id },
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         });
 
         // 定石の登録
-        await prisma.approach.createMany({
+        await prisma.approaches.createMany({
             data: [
                 {
                     user_id: userId,
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         });
 
         // パズルと定石の紐付け
-        const approachIds = await prisma.approach.findMany({
+        const approachIds = await prisma.approaches.findMany({
             where: {
                 user_id: userId,
             },
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 id: true,
             },
         });
-        await prisma.puzzleApproach.createMany({
+        await prisma.puzzle_approaches.createMany({
             data: [
                 { puzzle_id: puzzleIds[1].id, approach_id: approachIds[0].id },
                 { puzzle_id: puzzleIds[2].id, approach_id: approachIds[1].id },

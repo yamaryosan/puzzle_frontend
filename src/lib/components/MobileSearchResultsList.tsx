@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { Box, TextField, Button } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
 import { List, ListItem, ListItemText } from "@mui/material";
 import Link from "next/link";
@@ -18,7 +18,7 @@ type props = {
  */
 export default function MobileSearchResultsList({ onClose }: props) {
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<Puzzle[]>([]);
+    const [searchResults, setSearchResults] = useState<puzzles[]>([]);
 
     const user = useContext(FirebaseUserContext);
     const router = useRouter();
@@ -34,7 +34,7 @@ export default function MobileSearchResultsList({ onClose }: props) {
                 const puzzles = (await searchPuzzles(
                     searchQuery,
                     user.uid
-                )) as Puzzle[];
+                )) as puzzles[];
                 setSearchResults(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);

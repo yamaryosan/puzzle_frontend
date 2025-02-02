@@ -8,13 +8,19 @@ import prisma from "@/lib/prismaclient";
 export async function POST(req: NextRequest) {
     const { search, userId } = await req.json();
     if (!search) {
-        return NextResponse.json({ error: "検索ワードが指定されていません" }, { status: 400 });
+        return NextResponse.json(
+            { error: "検索ワードが指定されていません" },
+            { status: 400 }
+        );
     }
     if (!userId) {
-        return NextResponse.json({ error: "ユーザIDが指定されていません" }, { status: 400 });
+        return NextResponse.json(
+            { error: "ユーザIDが指定されていません" },
+            { status: 400 }
+        );
     }
 
-    const puzzles = await prisma.puzzle.findMany({
+    const puzzles = await prisma.puzzles.findMany({
         where: {
             user_id: userId,
             OR: [

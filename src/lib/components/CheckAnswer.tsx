@@ -1,7 +1,7 @@
 "use client";
 
 import Viewer from "@/lib/components/Viewer";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
 async function sendIsSolved(
     id: string,
     isSolved: boolean
-): Promise<Puzzle | undefined> {
+): Promise<puzzles | undefined> {
     // IDが空の場合はエラー
     if (!id) {
         console.error("IDが空です");
@@ -45,7 +45,7 @@ async function sendIsSolved(
         const error = await response.json();
         console.error("パズルの更新に失敗: ", error);
     }
-    const puzzle = (await response.json()) as Puzzle;
+    const puzzle = (await response.json()) as puzzles;
     console.log("パズルの更新に成功: ", puzzle);
     return puzzle;
 }
@@ -53,7 +53,7 @@ async function sendIsSolved(
 export default function CheckAnswer({ id }: { id: string }) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [puzzle, setPuzzle] = useState<Puzzle | null>();
+    const [puzzle, setPuzzle] = useState<puzzles | null>();
     const user = useContext(FirebaseUserContext);
 
     const deviceType = useContext(DeviceTypeContext);

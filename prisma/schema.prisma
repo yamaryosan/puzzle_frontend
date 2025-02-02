@@ -27,16 +27,16 @@ datasource db {
 // }
 
 // ユーザーテーブル(FirebaseのUIDを主キーに設定)
-model User {
-  firebaseUid   String   @id
+model users {
+  firebase_uid   String   @id
   email         String   @unique
   name          String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
 
 // パズルテーブル
-model Puzzle {
+model puzzles {
   id            Int      @id @default(autoincrement())
   title         String
   description   String
@@ -46,68 +46,68 @@ model Puzzle {
   difficulty    Int     // 難易度
   is_favorite   Boolean @default(false) // お気に入り
   is_solved     Boolean @default(false) // 解いたかどうか
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-  PuzzleCategory PuzzleCategory[]
-  Hint Hint[]
-  PuzzleApproach PuzzleApproach[]
+  puzzle_categories puzzle_categories[]
+  hints hints[]
+  puzzle_approaches puzzle_approaches[]
 }
 
 // カテゴリーテーブル
-model Category {
+model categories {
   id            Int      @id @default(autoincrement())
   name          String // カテゴリー名
   user_id       String // ユーザーID(FirebaseのUID)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-  PuzzleCategory PuzzleCategory[]
+  puzzle_categories puzzle_categories[]
 }
 
 // パズルとカテゴリーの中間テーブル
-model PuzzleCategory {
+model puzzle_categories {
   puzzle_id    Int
-  puzzle       Puzzle @relation(fields: [puzzle_id], references: [id])
+  puzzle       puzzles @relation(fields: [puzzle_id], references: [id])
   category_id   Int
-  category     Category @relation(fields: [category_id], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  category     categories @relation(fields: [category_id], references: [id])
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   @@id([puzzle_id, category_id])
 }
 
 // ヒントテーブル
-model Hint {
+model hints {
   id            Int      @id @default(autoincrement())
   puzzle_id     Int
-  puzzle        Puzzle @relation(fields: [puzzle_id], references: [id])
+  puzzle        puzzles @relation(fields: [puzzle_id], references: [id])
   content       String
   user_id       String // 第3正規化には反するが、カスケード削除の効率化のために追加
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
 
 // 定石テーブル
-model Approach {
+model approaches {
   id            Int      @id @default(autoincrement())
   title         String
   content       String
   user_id       String // ユーザーID(FirebaseのUID)  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-  PuzzleApproach PuzzleApproach[]
+  puzzle_approaches puzzle_approaches[]
 }
 
 // 定石とパズルの中間テーブル
-model PuzzleApproach {
+model puzzle_approaches {
   puzzle_id    Int
-  puzzle       Puzzle @relation(fields: [puzzle_id], references: [id])
+  puzzle       puzzles @relation(fields: [puzzle_id], references: [id])
   approach_id  Int
-  approach     Approach @relation(fields: [approach_id], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  approach     approaches @relation(fields: [approach_id], references: [id])
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   @@id([puzzle_id, approach_id])
 }

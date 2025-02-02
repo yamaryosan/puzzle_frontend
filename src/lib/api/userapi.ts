@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { users } from "@prisma/client";
 
 type FirebaseUser = {
     firebaseUid: string;
@@ -26,7 +26,7 @@ export async function createUserInPrisma(firebaseUser: FirebaseUser) {
         }
         const user = await response.json();
         console.log("Prismaでのユーザ更新に成功: ", user);
-        return user as Promise<User>;
+        return user as Promise<users>;
     } catch (error) {
         console.error("Prismaでのユーザ作成に失敗: ", error);
         throw error;
@@ -53,7 +53,7 @@ export async function updateUserInPrisma(firebaseUser: FirebaseUser) {
         }
         const updatedUser = await response.json();
         console.log("Prismaでのユーザ更新に成功: ", updatedUser);
-        return updatedUser as Promise<User>;
+        return updatedUser as Promise<users>;
     } catch (error) {
         console.error("Prismaでのユーザ更新に失敗: ", error);
         throw error;
@@ -79,7 +79,7 @@ export async function deleteUserInPrisma(firebaseUid: string) {
         }
         const deletedUser = await response.json();
         console.log("Prismaでのユーザ削除に成功: ", deletedUser);
-        return deletedUser as Promise<User>;
+        return deletedUser as Promise<users>;
     } catch (error) {
         console.error("Prismaでのユーザ削除に失敗: ", error);
         throw error;
@@ -107,7 +107,7 @@ export async function syncUserWithFirebase(firebaseUid: string) {
         }
         const syncedUser = await response.json();
         console.log("Firebaseとのユーザ同期に成功: ", syncedUser);
-        return syncedUser as Promise<User>;
+        return syncedUser as Promise<users>;
     } catch (error) {
         console.error("Firebaseとのユーザ同期に失敗: ", error);
         throw error;

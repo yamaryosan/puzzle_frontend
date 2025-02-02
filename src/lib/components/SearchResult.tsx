@@ -1,4 +1,4 @@
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { List } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import PuzzleCard from "@/lib/components/PuzzleCard";
@@ -6,7 +6,7 @@ import RandomPuzzles from "@/lib/components/RandomPuzzles";
 
 type SearchResultProps = {
     decodedQuery: string;
-    puzzles: Puzzle[];
+    puzzles: puzzles[];
     activeCardId: number | null;
     handleCardClick: (id: number) => void;
 };

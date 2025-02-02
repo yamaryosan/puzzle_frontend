@@ -2,7 +2,7 @@
 
 import { getApproach, getPuzzlesByApproachId } from "@/lib/api/approachApi";
 import { useEffect, useState } from "react";
-import { Approach, Puzzle } from "@prisma/client";
+import { approaches, puzzles } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
 import { Box } from "@mui/material";
@@ -18,8 +18,8 @@ import PuzzleCards from "@/lib/components/PuzzleCards";
 
 export default function ApproachShowPaper({ id }: { id: string }) {
     const user = useContext(FirebaseUserContext);
-    const [approach, setApproach] = useState<Approach | null>(null);
-    const [puzzles, setPuzzles] = useState<Puzzle[] | null>(null);
+    const [approach, setApproach] = useState<approaches | null>(null);
+    const [puzzles, setPuzzles] = useState<puzzles[] | null>(null);
 
     const searchParams = useSearchParams();
     const showCreatedModal = searchParams.get("created") === "true";

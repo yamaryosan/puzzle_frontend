@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import Quill from "quill";
 import Delta from "quill-delta";
 import TitleEditor from "@/lib/components/TitleEditor";
@@ -36,7 +36,7 @@ async function sendContent(
     hintRefs: React.RefObject<Quill | null>[],
     difficulty: number,
     userId: string
-): Promise<Puzzle | undefined> {
+): Promise<puzzles | undefined> {
     // タイトルが空の場合はUntitledとする
     if (!title) {
         title = "Untitled";

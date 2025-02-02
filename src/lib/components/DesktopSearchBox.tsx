@@ -5,7 +5,7 @@ import { Button, Box } from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import { InputBase } from "@mui/material";
 import { searchPuzzles } from "@/lib/api/puzzleapi";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import ResultSlider from "@/lib/components/ResultSlider";
 import Link from "next/link";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
@@ -17,7 +17,7 @@ import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
  */
 export default function DesktopSearchBox() {
     const [searchText, setSearchText] = useState("");
-    const [searchResults, setSearchResults] = useState<Puzzle[]>([]);
+    const [searchResults, setSearchResults] = useState<puzzles[]>([]);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const searchBoxRef = useRef<HTMLInputElement>(null);
 
@@ -36,7 +36,7 @@ export default function DesktopSearchBox() {
                 const puzzles = (await searchPuzzles(
                     searchText,
                     user.uid
-                )) as Puzzle[];
+                )) as puzzles[];
                 setSearchResults(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);

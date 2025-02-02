@@ -3,7 +3,7 @@ import { Box, Tabs, Tab, Button } from "@mui/material";
 import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
 import { getApproachesByPuzzleId } from "@/lib/api/approachApi";
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 
@@ -17,7 +17,7 @@ type ApproachesViewerProps = {
  */
 export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
     const [show, setShow] = useState(false);
-    const [approaches, setApproaches] = useState<Approach[] | null>(null);
+    const [approaches, setApproaches] = useState<approaches[] | null>(null);
     const [value, setValue] = useState(0);
 
     const user = useContext(FirebaseUserContext);
@@ -29,7 +29,7 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
             const approaches = (await getApproachesByPuzzleId(
                 puzzleId,
                 user.uid ?? ""
-            )) as Approach[];
+            )) as approaches[];
             setApproaches(approaches);
         }
         fetchapproaches();

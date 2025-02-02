@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 
 type puzzleRequest = {
     title: string;
@@ -56,10 +56,10 @@ export async function GET(
         }
 
         // パズルとそのカテゴリーを取得
-        const puzzleWithCategories = (await prisma.puzzle.findUnique({
+        const puzzleWithCategories = (await prisma.puzzles.findUnique({
             where: { id: id, user_id: userId },
             include: {
-                PuzzleCategory: {
+                puzzle_categories: {
                     include: {
                         category: true,
                     },
@@ -116,7 +116,7 @@ export async function PUT(
         } = puzzleContent;
 
         // パズルを更新
-        const puzzle: Puzzle = await prisma.puzzle.update({
+        const puzzle: puzzles = await prisma.puzzles.update({
             where: { id: id },
             data: {
                 title: title,
@@ -127,11 +127,11 @@ export async function PUT(
         });
 
         // カテゴリーを更新 (カテゴリー・パズル中間テーブルのデータを一旦削除してから再登録)
-        await prisma.puzzleCategory.deleteMany({
+        await prisma.puzzle_categories.deleteMany({
             where: { puzzle_id: id },
         });
         for (const categoryId of categoryIds) {
-            await prisma.puzzleCategory.create({
+            await prisma.puzzle_categories.create({
                 data: {
                     puzzle_id: id,
                     category_id: categoryId,
@@ -140,11 +140,11 @@ export async function PUT(
         }
 
         // 定石を更新 (定石・パズル中間テーブルのデータを一旦削除してから再登録)
-        await prisma.puzzleApproach.deleteMany({
+        await prisma.puzzle_approaches.deleteMany({
             where: { puzzle_id: id },
         });
         for (const approachId of approachIds) {
-            await prisma.puzzleApproach.create({
+            await prisma.puzzle_approaches.create({
                 data: {
                     puzzle_id: id,
                     approach_id: approachId,
@@ -184,22 +184,22 @@ export async function DELETE(
         }
 
         // パズル・カテゴリー中間テーブルのデータを削除
-        await prisma.puzzleCategory.deleteMany({
+        await prisma.puzzle_categories.deleteMany({
             where: { puzzle_id: id },
         });
 
         // パズル・定石中間テーブルのデータを削除
-        await prisma.puzzleApproach.deleteMany({
+        await prisma.puzzle_approaches.deleteMany({
             where: { puzzle_id: id },
         });
 
         // ヒントテーブルのデータを削除
-        await prisma.hint.deleteMany({
+        await prisma.hints.deleteMany({
             where: { puzzle_id: id },
         });
 
         // パズルを削除
-        await prisma.puzzle.delete({
+        await prisma.puzzles.delete({
             where: { id: id },
         });
 

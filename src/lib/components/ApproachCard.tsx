@@ -1,9 +1,9 @@
 import { Card } from "@mui/material";
 import ApproachInfo from "@/lib/components/ApproachInfo";
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 
 type ApproachCardProps = {
-    approach: Approach;
+    approach: approaches;
     isActive: boolean;
     onClick: () => void;
 };

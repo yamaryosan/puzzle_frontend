@@ -1,4 +1,4 @@
-import { Approach, Puzzle } from "@prisma/client";
+import { approaches, puzzles } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzlesByApproachId } from "@/lib/api/approachApi";
 import { Button, Box } from "@mui/material";
@@ -9,7 +9,7 @@ import { useContext } from "react";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 
 type ApproachInfoProps = {
-    approach: Approach;
+    approach: approaches;
     isActive: boolean;
 };
 
@@ -17,7 +17,7 @@ export default function ApproachInfo({
     approach,
     isActive,
 }: ApproachInfoProps) {
-    const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+    const [puzzles, setPuzzles] = useState<puzzles[]>([]);
     const user = useContext(FirebaseUserContext);
 
     const deviceType = useContext(DeviceTypeContext);
@@ -30,7 +30,7 @@ export default function ApproachInfo({
                 const data = (await getPuzzlesByApproachId(
                     approach.id.toString(),
                     user.uid ?? ""
-                )) as Puzzle[];
+                )) as puzzles[];
                 setPuzzles(data);
             } catch (error) {
                 console.error("定石に紐づくパズル一覧の取得に失敗: ", error);

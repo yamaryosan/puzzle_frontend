@@ -1,4 +1,4 @@
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import prisma from "@/lib/prismaclient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,7 +7,10 @@ import { NextRequest, NextResponse } from "next/server";
  * @param params パラメータ
  * @returns Promise<NextResponse>
  */
-export async function GET(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
         // IDが数字でない、または0以下の場合はエラー
@@ -15,9 +18,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
         // カテゴリーに紐づくパズルを取得
-        const puzzles = await prisma.puzzle.findMany({
+        const puzzles = await prisma.puzzles.findMany({
             where: {
-                PuzzleCategory: {
+                puzzle_categories: {
                     some: {
                         category_id: id,
                     },
@@ -27,9 +30,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         return NextResponse.json(puzzles);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

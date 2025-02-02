@@ -1,12 +1,12 @@
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { Box, Grow, List, ListItem, ListItemText, Paper } from "@mui/material";
+import { Grow, List, ListItem, ListItemText, Paper } from "@mui/material";
 import Link from "next/link";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 
 type ResultSliderProps = {
-    result: Puzzle[];
+    result: puzzles[];
 };
 
 export default function ResultSlider({ result }: ResultSliderProps) {

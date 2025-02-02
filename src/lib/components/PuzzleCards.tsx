@@ -1,8 +1,8 @@
 import PuzzleCard from "@/lib/components/PuzzleCard";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 
 type props = {
-    puzzles: Puzzle[];
+    puzzles: puzzles[];
     activeCardId: number | null;
     handleCardClick: (id: number) => void;
 };

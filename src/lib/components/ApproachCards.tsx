@@ -1,8 +1,8 @@
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 import ApproachCard from "@/lib/components/ApproachCard";
 
 type ApproachCardsProps = {
-    approaches: Approach[];
+    approaches: approaches[];
     activeCardId: number | null;
     handleCardClick: (id: number) => void;
 };

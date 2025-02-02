@@ -1,10 +1,10 @@
 import Box from "@mui/material/Box";
-import { Category } from "@prisma/client";
+import { categories } from "@prisma/client";
 
 export default function CategoryShowPart({
     categories,
 }: {
-    categories: Category[];
+    categories: categories[];
 }) {
     return (
         <Box sx={{ display: "flex", alignItems: "center", paddingY: "0.5rem" }}>

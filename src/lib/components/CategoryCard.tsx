@@ -1,9 +1,9 @@
-import { Category } from "@prisma/client";
+import { categories } from "@prisma/client";
 import { Card } from "@mui/material";
 import CategoryInfo from "@/lib/components/CategoryInfo";
 
 type CategoryCardProps = {
-    category: Category;
+    category: categories;
     isActive: boolean;
     onClick: () => void;
 };

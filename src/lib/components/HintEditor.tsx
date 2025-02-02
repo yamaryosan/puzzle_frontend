@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { MutableRefObject, useState } from "react";
 import Editor from "@/lib/components/Editor";
 import Quill from "quill";
 import DeltaClass from "quill-delta";

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { getApproach } from "@/lib/api/approachApi";
 import Quill from "quill";
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 import { Box } from "@mui/material";
 import { Edit, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
@@ -61,7 +61,7 @@ async function send(
         }
         console.log("定石を更新しました");
         const approach = await response.json();
-        return approach as Approach;
+        return approach as approaches;
     } catch (error) {
         console.error("定石の更新に失敗: ", error);
     }
@@ -70,7 +70,7 @@ async function send(
 export default function ApproachEditForm({ id }: { id: string }) {
     const router = useRouter();
     const [title, setTitle] = useState<string>("");
-    const [approach, setApproach] = useState<Approach | null>(null);
+    const [approach, setApproach] = useState<approaches | null>(null);
 
     const descriptionRef = useRef<Quill | null>(null);
     const [, setRange] = useState<Range | null>(null);

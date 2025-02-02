@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from "fs/promises";
 
 /**
  * 画像ディレクトリを作成する
@@ -10,4 +10,4 @@ export const createDir = async (dirPath: string) => {
     } catch (error) {
         await fs.mkdir(dirPath, { recursive: true, mode: 0o755 });
     }
-}
+};

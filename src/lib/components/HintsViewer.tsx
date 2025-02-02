@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Box, Tabs, Tab, Button } from "@mui/material";
 import TabPanel from "@/lib/components/TabPanel";
 import Viewer from "@/lib/components/Viewer";
 import getHintsByPuzzleId from "@/lib/api/hintapi";
-import { Hint } from "@prisma/client";
+import { hints } from "@prisma/client";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 type HintsViewerProps = {
     puzzleId: string;
@@ -16,7 +16,7 @@ type HintsViewerProps = {
  * @returns
  */
 export default function HintsViewer({ puzzleId }: HintsViewerProps) {
-    const [hints, setHints] = useState<Hint[] | null>(null);
+    const [hints, setHints] = useState<hints[] | null>(null);
     const [value, setValue] = useState(0);
     const [show, setShow] = useState(false);
 
@@ -29,7 +29,7 @@ export default function HintsViewer({ puzzleId }: HintsViewerProps) {
             const hints = (await getHintsByPuzzleId(
                 puzzleId,
                 user.uid
-            )) as Hint[];
+            )) as hints[];
             setHints(hints);
         }
         fetchHints();

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Puzzle, Category } from "@prisma/client";
+import { puzzles, categories } from "@prisma/client";
 import Link from "next/link";
 import DeleteModal from "@/lib/components/DeleteModal";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
@@ -24,8 +24,8 @@ import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 export default function PuzzleShowPaper({ id }: { id: string }) {
     const user = useContext(FirebaseUserContext);
 
-    const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [puzzle, setPuzzle] = useState<puzzles | null>(null);
+    const [categories, setCategories] = useState<categories[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +51,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                 const puzzle = (await getPuzzleById(
                     id,
                     user.uid ?? ""
-                )) as Puzzle;
+                )) as puzzles;
                 setPuzzle(puzzle);
                 setIsLoading(false);
             } catch (error) {
@@ -69,7 +69,7 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                 const categories = (await getCategoriesByPuzzleId(
                     id,
                     user.uid ?? ""
-                )) as Category[];
+                )) as categories[];
                 setCategories(categories ?? []);
             } catch (error) {
                 console.error("カテゴリーの取得に失敗: ", error);

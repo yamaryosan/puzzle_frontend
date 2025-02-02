@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { getApproaches } from "@/lib/api/approachApi";
 import { useEffect, useState } from "react";
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 import { AddCircleOutline, QuizOutlined } from "@mui/icons-material";
 import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
@@ -14,7 +14,7 @@ import CommonButton from "@/lib/components/common/CommonButton";
 
 export default function Approaches() {
     const user = useContext(FirebaseUserContext);
-    const [approaches, setApproaches] = useState<Approach[]>([]);
+    const [approaches, setApproaches] = useState<approaches[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
 

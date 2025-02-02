@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 import { AddCircleOutline, Upload } from "@mui/icons-material";
 import TitleEditor from "@/lib/components/TitleEditor";
 import { useRouter } from "next/navigation";
-import { Approach } from "@prisma/client";
+import { approaches } from "@prisma/client";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 import Delta from "quill-delta";
@@ -57,7 +57,7 @@ async function send(
         }
         console.log("定石を作成しました");
         const approach = await response.json();
-        return approach as Approach;
+        return approach as approaches;
     } catch (error) {
         console.error("定石の作成に失敗: ", error);
     }

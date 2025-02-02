@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getPuzzles } from "@/lib/api/puzzleapi";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { Sort, Shuffle, AddCircleOutline } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { useSearchParams } from "next/navigation";
@@ -36,7 +36,7 @@ function SearchParamsWrapper() {
 
 export default function Puzzles() {
     const user = useContext(FirebaseUserContext);
-    const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+    const [puzzles, setPuzzles] = useState<puzzles[]>([]);
     const [desc, setDesc] = useState(false);
 
     // アクティブなカードのID

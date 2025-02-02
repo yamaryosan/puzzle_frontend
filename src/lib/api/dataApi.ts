@@ -1,19 +1,19 @@
 import {
-    Approach,
-    Puzzle,
-    Category,
-    Hint,
-    PuzzleCategory,
-    PuzzleApproach,
+    approaches,
+    puzzles,
+    categories,
+    hints,
+    puzzle_categories,
+    puzzle_approaches,
 } from "@prisma/client";
 
 type Data = {
-    puzzles: Puzzle[];
-    categories: Category[];
-    approaches: Approach[];
-    hints: Hint[];
-    puzzleCategories: PuzzleCategory[];
-    puzzleApproaches: PuzzleApproach[];
+    puzzles: puzzles[];
+    categories: categories[];
+    approaches: approaches[];
+    hints: hints[];
+    puzzleCategories: puzzle_categories[];
+    puzzleApproaches: puzzle_approaches[];
 };
 
 /**

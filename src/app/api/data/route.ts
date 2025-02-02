@@ -191,24 +191,28 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             data.puzzleApproaches as puzzle_approaches[];
 
         // 全ユーザデータの最大IDを取得
-        const maxPuzzleId = await prisma.$queryRaw<
-            { Auto_increment: number }[]
-        >`
+        const maxPuzzleId = Number(
+            (
+                await prisma.$queryRaw<{ nextval: bigint }[]>`
             SELECT nextval(pg_get_serial_sequence('puzzles', 'id'))
-        `;
-        const maxCategoryId = await prisma.$queryRaw<
-            { Auto_increment: number }[]
-        >`
+        `
+            )[0].nextval
+        );
+        // カテゴリの最大IDを取得(Postgresから[ { nextval: 19n } ]という形で返ってくる)
+        const maxCategoryId = Number(
+            (
+                await prisma.$queryRaw<{ nextval: bigint }[]>`
             SELECT nextval(pg_get_serial_sequence('categories', 'id'))
-        `;
-        const maxApproachId = await prisma.$queryRaw<
-            { Auto_increment: number }[]
-        >`
+        `
+            )[0].nextval
+        );
+        const maxApproachId = Number(
+            (
+                await prisma.$queryRaw<{ nextval: bigint }[]>`
             SELECT nextval(pg_get_serial_sequence('approaches', 'id'))
-        `;
-        console.log(maxPuzzleId);
-        console.log(maxCategoryId);
-        console.log(maxApproachId);
+        `
+            )[0].nextval
+        );
         if (!maxPuzzleId) {
             throw new Error("全ユーザデータの最大パズルIDが取得できません");
         }
@@ -224,19 +228,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const oldApproachIds = importedApproaches.map((a) => a.id);
 
         // マッピングリストを作成
-        const puzzleMapping = createIdMapping(
-            oldPuzzleIds,
-            maxPuzzleId[0].Auto_increment
-        );
-        const categoryMapping = createIdMapping(
-            oldCategoryIds,
-            maxCategoryId[0].Auto_increment
-        );
-        const approachMapping = createIdMapping(
-            oldApproachIds,
-            maxApproachId[0].Auto_increment
-        );
+        const puzzleMapping = createIdMapping(oldPuzzleIds, maxPuzzleId);
+        const categoryMapping = createIdMapping(oldCategoryIds, maxCategoryId);
+        const approachMapping = createIdMapping(oldApproachIds, maxApproachId);
 
+        // マッピングリストにNaNがある場合はエラーを返す
+        if (
+            puzzleMapping.includes(NaN) ||
+            categoryMapping.includes(NaN) ||
+            approachMapping.includes(NaN)
+        ) {
+            throw new Error("マッピングリストにNaNが含まれています");
+        }
         // パズルテーブル用データを作成
         const savedPuzzles = importedPuzzles.map((puzzle: Puzzle) => ({
             title: puzzle.title,

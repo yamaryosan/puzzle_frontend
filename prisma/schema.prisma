@@ -83,6 +83,7 @@ model Hint {
   puzzle_id     Int
   puzzle        Puzzle @relation(fields: [puzzle_id], references: [id])
   content       String
+  user_id       String // 第3正規化には反するが、カスケード削除の効率化のために追加
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

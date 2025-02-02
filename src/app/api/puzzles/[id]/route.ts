@@ -4,6 +4,7 @@ import { puzzles } from "@prisma/client";
 
 type puzzleRequest = {
     title: string;
+    source: string;
     categoryIds: number[];
     approachIds: number[];
     descriptionHtml: string;
@@ -14,6 +15,7 @@ type puzzleRequest = {
 type PuzzleWithCategories = {
     id: number;
     title: string;
+    source: string;
     description: string;
     solution: string;
     user_answer: string;
@@ -108,6 +110,7 @@ export async function PUT(
         const puzzleContent: puzzleRequest = await req.json();
         const {
             title,
+            source,
             categoryIds,
             approachIds,
             descriptionHtml,
@@ -120,6 +123,7 @@ export async function PUT(
             where: { id: id },
             data: {
                 title: title,
+                source: source,
                 description: descriptionHtml,
                 solution: solutionHtml,
                 difficulty: difficulty,

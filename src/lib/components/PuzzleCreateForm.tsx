@@ -15,10 +15,11 @@ import ApproachCheckbox from "@/lib/components/ApproachCheckbox";
 import DifficultEditor from "@/lib/components/DifficultyEditor";
 import { Upload } from "@mui/icons-material";
 import CommonButton from "@/lib/components/common/CommonButton";
-
+import SourceEditor from "@/lib/components/SourceEditor";
 /**
  * 内容を送信
  * @param title タイトル
+ * @param source 出典
  * @param categoryIds カテゴリーID
  * @param approachIds 定石ID
  * @param descriptionRef 本文のQuillの参照
@@ -29,6 +30,7 @@ import CommonButton from "@/lib/components/common/CommonButton";
  */
 async function sendContent(
     title: string,
+    source: string,
     categoryIds: number[],
     approachIds: number[],
     descriptionRef: React.RefObject<Quill | null>,
@@ -40,6 +42,10 @@ async function sendContent(
     // タイトルが空の場合はUntitledとする
     if (!title) {
         title = "Untitled";
+    }
+    // 出典が空の場合は空文字とする
+    if (!source) {
+        source = "";
     }
     // Quillの参照が取得できない場合はエラー
     if (!descriptionRef.current || !solutionRef.current) {
@@ -64,6 +70,7 @@ async function sendContent(
         },
         body: JSON.stringify({
             title,
+            source,
             descriptionHtml,
             solutionHtml,
             difficulty,
@@ -170,6 +177,8 @@ export default function PuzzleCreateForm() {
     const [approachIds, setApproachIds] = useState<number[]>([]);
     const [difficulty, setDifficulty] = useState<number>(1);
 
+    const [source, setSource] = useState<string>("");
+
     useEffect(() => {
         // Deltaクラスを取得
         async function loadQuill() {
@@ -211,6 +220,7 @@ export default function PuzzleCreateForm() {
 
         const puzzle = await sendContent(
             title,
+            source,
             checkedCategories,
             approachIds,
             descriptionRef,
@@ -227,6 +237,8 @@ export default function PuzzleCreateForm() {
     return (
         <>
             <TitleEditor title={title} setTitle={setTitle} />
+
+            <SourceEditor source={source} setSource={setSource} />
 
             <DescriptionEditor
                 containerRef={descriptionRef}

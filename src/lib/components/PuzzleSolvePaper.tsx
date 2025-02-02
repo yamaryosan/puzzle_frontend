@@ -151,6 +151,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
         <>
             <Paper sx={{ padding: "1rem" }}>
                 <h2>「{puzzle?.title}」の解答画面</h2>
+                <h3>出典: {puzzle?.source}</h3>
                 <CategoryShowPart categories={categories ?? []} />
 
                 <DescriptionViewer

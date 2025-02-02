@@ -48,6 +48,7 @@ model puzzles {
   is_solved     Boolean @default(false) // 解いたかどうか
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  source         String // 出典
 
   puzzle_categories puzzle_categories[]
   hints hints[]

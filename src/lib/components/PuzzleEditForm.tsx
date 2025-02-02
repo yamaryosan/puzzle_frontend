@@ -22,6 +22,7 @@ import DeleteModal from "@/lib/components/DeleteModal";
 import { Box } from "@mui/material";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
+import SourceEditor from "@/lib/components/SourceEditor";
 
 /**
  * 内容を送信
@@ -44,6 +45,7 @@ async function send(
     solutionRef: React.RefObject<Quill | null>,
     hintQuills: React.RefObject<Quill | null>[],
     difficulty: number,
+    source: string,
     userId: string
 ): Promise<puzzles | undefined> {
     // IDが空の場合はエラー
@@ -59,6 +61,10 @@ async function send(
     // タイトルが空の場合はUntitledとする
     if (!title) {
         title = "Untitled";
+    }
+    // 出典が空の場合は空文字とする
+    if (!source) {
+        source = "";
     }
     // Quillの参照が取得できない場合はエラー
     if (!descriptionRef.current || !solutionRef.current) {
@@ -82,6 +88,7 @@ async function send(
             solutionHtml,
             difficulty,
             is_favorite,
+            source,
         }),
     });
     if (!response.ok) {
@@ -185,7 +192,7 @@ export default function PuzzleEditForm({ id }: { id: string }) {
     const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
     const [approachIds, setApproachIds] = useState<number[]>([]);
     const [difficulty, setDifficulty] = useState<number>(0);
-
+    const [source, setSource] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -204,6 +211,7 @@ export default function PuzzleEditForm({ id }: { id: string }) {
             console.log("パズルを取得しました: ", puzzle);
             setPuzzle(puzzle);
             setTitle(puzzle.title);
+            setSource(puzzle.source);
             setDifficulty(puzzle.difficulty);
             // 初期値を設定
             const quillModule = await import("quill");
@@ -318,6 +326,7 @@ export default function PuzzleEditForm({ id }: { id: string }) {
             solutionRef,
             hintRefs,
             difficulty,
+            source,
             user?.uid || ""
         );
         if (puzzle) {
@@ -355,7 +364,7 @@ export default function PuzzleEditForm({ id }: { id: string }) {
                 </Portal>
             )}
             <TitleEditor title={title} setTitle={setTitle} />
-
+            <SourceEditor source={source} setSource={setSource} />
             <DescriptionEditor
                 defaultValue={descriptionDelta}
                 containerRef={descriptionRef}

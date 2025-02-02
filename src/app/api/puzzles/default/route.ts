@@ -10,6 +10,7 @@ const defaultPuzzles = [
         difficulty: 2,
         is_favorite: true,
         is_solved: true,
+        source: "オリジナル",
     },
     {
         title: "謎解き2",
@@ -19,6 +20,7 @@ const defaultPuzzles = [
         difficulty: 1,
         is_favorite: false,
         is_solved: false,
+        source: "オリジナル",
     },
     {
         title: "元に戻ってきた探検家",
@@ -28,6 +30,7 @@ const defaultPuzzles = [
         difficulty: 3,
         is_favorite: false,
         is_solved: false,
+        source: "多湖輝 - 頭の体操1",
     },
 ];
 
@@ -53,6 +56,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                     difficulty: puzzle.difficulty,
                     is_favorite: puzzle.is_favorite,
                     is_solved: puzzle.is_solved,
+                    source: puzzle.source,
                 };
             }),
         });

@@ -11,6 +11,7 @@ import {
 type Puzzle = {
     id: number;
     title: string;
+    source: string;
     description: string;
     solution: string;
     user_answer: string;
@@ -36,30 +37,6 @@ type Puzzle = {
             updated_at: Date;
         };
     }[];
-};
-
-type ImportedCategory = {
-    id: number;
-    name: string;
-    created_at: Date;
-    updated_at: Date;
-};
-
-type ImportedApproach = {
-    id: number;
-    title: string;
-    content: string;
-    created_at: Date;
-    updated_at: Date;
-};
-
-type ImportedHint = {
-    id: number;
-    content: string;
-    created_at: Date;
-    updated_at: Date;
-    puzzle_id: number;
-    user_id: string;
 };
 
 /**
@@ -243,6 +220,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         // パズルテーブル用データを作成
         const savedPuzzles = importedPuzzles.map((puzzle: Puzzle) => ({
             title: puzzle.title,
+            source: puzzle.source,
             description: puzzle.description,
             user_answer: puzzle.user_answer,
             solution: puzzle.solution,

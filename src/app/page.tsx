@@ -17,6 +17,7 @@ function SearchParamsWrapper() {
     const passwordReset = searchParams.get("passwordReset") === "true";
     const userCreated = searchParams.get("userCreated") === "true";
     const deleted = searchParams.get("deleted") === "true";
+    const allDataDeleted = searchParams.get("allDataDeleted") === "true";
     return (
         <>
             {passwordReset && (
@@ -32,7 +33,13 @@ function SearchParamsWrapper() {
                 />
             )}
             {deleted && (
-                <MessageModal message="データを削除しました" param="deleted" />
+                <MessageModal message="パズルを削除しました" param="deleted" />
+            )}
+            {allDataDeleted && (
+                <MessageModal
+                    message="データを削除しました"
+                    param="allDataDeleted"
+                />
             )}
         </>
     );

@@ -46,7 +46,7 @@ export default function AllDataDeleteModal({
     const handleDelete = async () => {
         onButtonClick(false);
         await deleteData(user?.uid ?? "");
-        router.push("/?deleted=true");
+        router.push("/?allDataDeleted=true");
     };
 
     return (

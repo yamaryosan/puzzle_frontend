@@ -4,9 +4,10 @@ import {
     StorageOutlined,
     CloudUploadOutlined,
     CloudDownloadOutlined,
+    DeleteForeverOutlined,
 } from "@mui/icons-material";
 import CommonButton from "@/lib/components/common/CommonButton";
-import { exportData, importData } from "@/lib/api/dataApi";
+import { exportData, importData, deleteData } from "@/lib/api/dataApi";
 import { useContext, useState, useRef } from "react";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 
@@ -80,6 +81,15 @@ export default function Page() {
                     データをアップロード(インポート)
                 </CommonButton>
             </label>
+            <CommonButton
+                color="error"
+                onClick={() => {
+                    deleteData(user?.uid ?? "");
+                }}
+            >
+                <DeleteForeverOutlined />
+                データ全削除
+            </CommonButton>
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {successMessage && (
                 <p style={{ color: "green" }}>{successMessage}</p>

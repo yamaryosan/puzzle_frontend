@@ -96,3 +96,20 @@ export async function importData(userId: string, dataFile: File) {
         console.error("データのインポートに失敗: ", error);
     }
 }
+
+/**
+ * データ全削除
+ * @param userId ユーザID
+ * @returns Promise<void>
+ */
+export async function deleteData(userId: string) {
+    const response = await fetch(`/api/data?userId=${userId}`, {
+        method: "DELETE",
+    });
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("データの削除に失敗: ", error);
+        return;
+    }
+    console.log("データの削除に成功: ", userId);
+}

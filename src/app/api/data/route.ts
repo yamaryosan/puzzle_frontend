@@ -44,6 +44,7 @@ type ImportedHint = {
     created_at: Date;
     updated_at: Date;
     puzzle_id: number;
+    user_id: string;
 };
 
 /**
@@ -100,24 +101,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             );
         }
     }
-}
-
-/**
- * 元のパズルとインポートされるパズルをマージ
- * @param originalPuzzles 元のパズル
- * @param importedPuzzles インポートされるパズル
- * @returns マージされたパズル
- */
-function mergePuzzles(
-    originalPuzzles: PuzzleWithCategories[],
-    importedPuzzles: PuzzleWithCategories[]
-): PuzzleWithCategories[] {
-    return originalPuzzles.map((originalPuzzle: PuzzleWithCategories) => {
-        const importedPuzzle = importedPuzzles.find(
-            (puzzle: PuzzleWithCategories) => puzzle.id === originalPuzzle.id
-        );
-        return { ...originalPuzzle, ...importedPuzzle };
-    });
 }
 
 /**
@@ -184,6 +167,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             created_at: hint.created_at,
             updated_at: hint.updated_at,
             puzzle_id: hint.puzzle_id,
+            user_id: userId,
         }));
         await prisma.hint.createMany({
             data: updatedHints,
@@ -217,4 +201,37 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             );
         }
     }
+}
+
+/**
+ * ユーザに紐づく全データを削除
+ * @returns Promise
+ */
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+    if (!userId) {
+        return NextResponse.json(
+            { error: "ユーザIDが指定されていません" },
+            { status: 400 }
+        );
+    }
+    // ユーザに紐づくパズルIDを取得
+    const puzzleIds = await prisma.puzzle.findMany({
+        where: { user_id: userId },
+        select: { id: true }, // IDのみを取得
+    });
+    // パズルIDをもとにパズル・定石中間テーブルのレコードを削除
+    await prisma.puzzleApproach.deleteMany({
+        where: { puzzle_id: { in: puzzleIds.map((p) => p.id) } }, // IDの配列を使用
+    });
+    // パズルIDをもとにパズル・カテゴリーテーブルのレコードを削除
+    await prisma.puzzleCategory.deleteMany({
+        where: { puzzle_id: { in: puzzleIds.map((p) => p.id) } }, // IDの配列を使用
+    });
+    await prisma.category.deleteMany({ where: { user_id: userId } });
+    await prisma.approach.deleteMany({ where: { user_id: userId } });
+    await prisma.hint.deleteMany({ where: { user_id: userId } });
+    await prisma.puzzle.deleteMany({ where: { user_id: userId } });
+    return NextResponse.json({ message: "データの削除に成功" });
 }

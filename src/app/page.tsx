@@ -16,6 +16,7 @@ function SearchParamsWrapper() {
     const searchParams = useSearchParams();
     const passwordReset = searchParams.get("passwordReset") === "true";
     const userCreated = searchParams.get("userCreated") === "true";
+    const deleted = searchParams.get("deleted") === "true";
     return (
         <>
             {passwordReset && (
@@ -29,6 +30,9 @@ function SearchParamsWrapper() {
                     message="ユーザー登録が完了しました。"
                     param="userCreated"
                 />
+            )}
+            {deleted && (
+                <MessageModal message="データを削除しました" param="deleted" />
             )}
         </>
     );

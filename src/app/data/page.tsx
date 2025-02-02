@@ -7,9 +7,10 @@ import {
     DeleteForeverOutlined,
 } from "@mui/icons-material";
 import CommonButton from "@/lib/components/common/CommonButton";
-import { exportData, importData, deleteData } from "@/lib/api/dataApi";
+import { exportData, importData } from "@/lib/api/dataApi";
 import { useContext, useState, useRef } from "react";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import AllDataDeleteModal from "@/lib/components/AllDataDeleteModal";
 
 export default function Page() {
     const user = useContext(FirebaseUserContext);
@@ -17,6 +18,8 @@ export default function Page() {
     const [isImporting, setIsImporting] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [isAllDataDeleteModalOpen, setIsAllDataDeleteModalOpen] =
+        useState(false);
 
     const handleFileChange = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -84,12 +87,17 @@ export default function Page() {
             <CommonButton
                 color="error"
                 onClick={() => {
-                    deleteData(user?.uid ?? "");
+                    setIsAllDataDeleteModalOpen(true);
                 }}
             >
                 <DeleteForeverOutlined />
                 データ全削除
             </CommonButton>
+            {isAllDataDeleteModalOpen && (
+                <AllDataDeleteModal
+                    onButtonClick={setIsAllDataDeleteModalOpen}
+                />
+            )}
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {successMessage && (
                 <p style={{ color: "green" }}>{successMessage}</p>

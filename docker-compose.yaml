@@ -1,46 +1,39 @@
-version: '3.8'
+version: "3.8"
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mysql
-      - firebase
+    postgres:
+        build:
+            context: ./docker/postgres
+            dockerfile: Dockerfile.postgres
+        container_name: postgres
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "12345:5432"
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: prismadb
-      MYSQL_USER: prismauser
-      MYSQL_PASSWORD: userpassword
-    volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-
-  firebase:
-    container_name: firebase
-    build:
-      context: .
-      dockerfile: ./Dockerfile.firebase
-    volumes:
-      - ./package.json:/usr/src/app/package.json
-      - ./node_modules/:/usr/src/app/node_modules
-      - ./.firebaserc:/usr/src/app/.firebaserc
-      - ./firebase.json:/usr/src/app/firebase.json
-    ports:
-      - 9099:9099 # Firebase Authentication
-      - 8080:8080 # Cloud Firestore
-      - 5002:5002 # Firebase Hosting
-      - 9199:9199 # Cloud Storage
-      - 4000:4000 # Emulator Suite UI
-      - 9150:9150 # Firestore Emulator UI websocket
-    working_dir: /usr/src/app
-    tty: true
-    environment:
-      - FIREBASE_TOKEN=${FIREBASE_TOKEN}
+    firebase:
+        container_name: firebase
+        build:
+            context: ./docker/firebase
+            dockerfile: Dockerfile.firebase
+        volumes:
+            - ./package.json:/usr/src/app/package.json
+            - ./node_modules/:/usr/src/app/node_modules
+            - ./.firebaserc:/usr/src/app/.firebaserc
+            - ./firebase.json:/usr/src/app/firebase.json
+        ports:
+            - 9099:9099 # Firebase Authentication
+            - 8080:8080 # Cloud Firestore
+            - 5002:5002 # Firebase Hosting
+            - 9199:9199 # Cloud Storage
+            - 4000:4000 # Emulator Suite UI
+            - 9150:9150 # Firestore Emulator UI websocket
+        working_dir: /usr/src/app
+        tty: true
+        environment:
+            - FIREBASE_TOKEN=${FIREBASE_TOKEN}
 volumes:
-  mysql_data:
+    postgres_data:

@@ -9,10 +9,10 @@ generator client {
 }
 
 // PostgreSQLの接続情報(ローカル環境からDBに接続する場合)
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("POSTGRE_DATABASE_URL")
-// }
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRE_DATABASE_URL")
+}
 
 // MySQLの接続情報(ローカル環境からローカルDBに接続する場合)
 //datasource db {
@@ -21,10 +21,10 @@ generator client {
 //}
 
 // sqliteの接続情報(ローカル環境からローカルDBに接続する場合)
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
+// datasource db {
+//   provider = "sqlite"
+//   url      = env("DATABASE_URL")
+// }
 
 // ユーザーテーブル(FirebaseのUIDを主キーに設定)
 model User {

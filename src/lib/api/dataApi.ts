@@ -1,14 +1,23 @@
-import { Approach, Puzzle, Category, Hint } from "@prisma/client";
+import {
+    Approach,
+    Puzzle,
+    Category,
+    Hint,
+    PuzzleCategory,
+    PuzzleApproach,
+} from "@prisma/client";
 
 type Data = {
     puzzles: Puzzle[];
     categories: Category[];
     approaches: Approach[];
     hints: Hint[];
+    puzzleCategories: PuzzleCategory[];
+    puzzleApproaches: PuzzleApproach[];
 };
 
 /**
- * データ(パズル、カテゴリ、定石、ヒント)を取得する
+ * データ(パズル、カテゴリ、定石、ヒント、パズルカテゴリ、パズル定石)をエクスポートする
  * @param userId ユーザID
  * @returns Promise<Data>
  */

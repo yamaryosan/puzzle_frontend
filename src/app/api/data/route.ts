@@ -1,8 +1,14 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Approach, Puzzle, Category, Hint } from "@prisma/client";
+import {
+    Approach,
+    Category,
+    Hint,
+    PuzzleCategory,
+    PuzzleApproach,
+} from "@prisma/client";
 
-type PuzzleWithCategories = {
+type Puzzle = {
     id: number;
     title: string;
     description: string;
@@ -17,6 +23,15 @@ type PuzzleWithCategories = {
         category: {
             id: number;
             name: string;
+            created_at: Date;
+            updated_at: Date;
+        };
+    }[];
+    PuzzleApproach: {
+        approach: {
+            id: number;
+            title: string;
+            content: string;
             created_at: Date;
             updated_at: Date;
         };
@@ -48,7 +63,7 @@ type ImportedHint = {
 };
 
 /**
- * ユーザに紐づく全データ(パズル、カテゴリ、定石、ヒント)を取得
+ * ユーザに紐づく全データ(パズル、カテゴリ、定石、ヒント)をエクスポート
  * @returns Promise
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
@@ -87,7 +102,32 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             },
         });
 
-        return NextResponse.json({ puzzles, categories, approaches, hints });
+        const puzzleCategories: PuzzleCategory[] =
+            await prisma.puzzleCategory.findMany({
+                where: {
+                    puzzle: {
+                        user_id,
+                    },
+                },
+            });
+
+        const puzzleApproaches: PuzzleApproach[] =
+            await prisma.puzzleApproach.findMany({
+                where: {
+                    puzzle: {
+                        user_id,
+                    },
+                },
+            });
+
+        return NextResponse.json({
+            puzzles,
+            categories,
+            approaches,
+            hints,
+            puzzleCategories,
+            puzzleApproaches,
+        });
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json(
@@ -104,89 +144,195 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 }
 
 /**
- * ユーザに紐づく全データ(パズル、カテゴリ、定石、ヒント)をインポート
+ * IDマッピングを作成
+ * @param oldIds 旧IDリスト
+ * @param maxId 全ユーザデータの最大ID
+ * @returns マッピングリスト
+ */
+const createIdMapping = (oldIds: number[], maxId: number): number[] => {
+    return Array.from({ length: oldIds.length }, (_, i) => maxId + i + 1);
+};
+
+/**
+ * 旧IDを新IDに変換
+ * @param oldId 旧ID
+ * @param oldIds 旧IDリスト
+ * @param mapping マッピングリスト
+ * @returns 新ID
+ */
+const convertId = (
+    oldId: number,
+    oldIds: number[],
+    mapping: number[]
+): number => {
+    // 旧IDリストの中の旧IDのインデックスを取得
+    const index = oldIds.indexOf(oldId);
+    if (index === -1) {
+        throw new Error("旧IDが見つかりません");
+    }
+    return mapping[index];
+};
+
+/**
+ * ユーザに紐づく全データをインポート
  * @returns Promise
  */
 export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
         const { userId, data } = await req.json();
         // データをインポート
-        const importedPuzzles = data.puzzles as PuzzleWithCategories[];
+        const importedPuzzles = data.puzzles as Puzzle[];
+        const importedCategories = data.categories as Category[];
+        const importedApproaches = data.approaches as Approach[];
+        const importedHints = data.hints as Hint[];
+        const importedPuzzleCategories =
+            data.puzzleCategories as PuzzleCategory[];
+        const importedPuzzleApproaches =
+            data.puzzleApproaches as PuzzleApproach[];
 
-        // パズルテーブル用データを作成(PuzzleCategoryは別途保存)
-        const savedPuzzles = importedPuzzles.map(
-            (puzzle: PuzzleWithCategories) => ({
-                title: puzzle.title,
-                description: puzzle.description,
-                user_answer: puzzle.user_answer,
-                solution: puzzle.solution,
-                user_id: userId,
-                difficulty: puzzle.difficulty,
-                is_favorite: puzzle.is_favorite,
-                is_solved: puzzle.is_solved,
-                createdAt: puzzle.created_at,
-                updatedAt: puzzle.updated_at,
-            })
+        // 全ユーザデータの最大IDを取得
+        const maxPuzzleId = await prisma.puzzle.findFirst({
+            orderBy: { id: "desc" },
+            select: { id: true },
+        });
+        const maxCategoryId = await prisma.category.findFirst({
+            orderBy: { id: "desc" },
+            select: { id: true },
+        });
+        const maxApproachId = await prisma.approach.findFirst({
+            orderBy: { id: "desc" },
+            select: { id: true },
+        });
+        if (!maxPuzzleId) {
+            throw new Error("全ユーザデータの最大パズルIDが取得できません");
+        }
+        if (!maxCategoryId) {
+            throw new Error("全ユーザデータの最大カテゴリIDが取得できません");
+        }
+        if (!maxApproachId) {
+            throw new Error("全ユーザデータの最大定石IDが取得できません");
+        }
+        // 旧IDリストを作成
+        const oldPuzzleIds = importedPuzzles.map((p) => p.id);
+        const oldCategoryIds = importedCategories.map((c) => c.id);
+        const oldApproachIds = importedApproaches.map((a) => a.id);
+
+        // マッピングリストを作成
+        const puzzleMapping = createIdMapping(oldPuzzleIds, maxPuzzleId.id);
+        const categoryMapping = createIdMapping(
+            oldCategoryIds,
+            maxCategoryId.id
         );
+        const approachMapping = createIdMapping(
+            oldApproachIds,
+            maxApproachId.id
+        );
+
+        // パズルテーブル用データを作成
+        const savedPuzzles = importedPuzzles.map((puzzle: Puzzle) => ({
+            title: puzzle.title,
+            description: puzzle.description,
+            user_answer: puzzle.user_answer,
+            solution: puzzle.solution,
+            user_id: userId,
+            difficulty: puzzle.difficulty,
+            is_favorite: puzzle.is_favorite,
+            is_solved: puzzle.is_solved,
+            createdAt: puzzle.created_at,
+            updatedAt: puzzle.updated_at,
+        }));
 
         // パズルテーブルに保存
         await prisma.puzzle.createMany({
             data: savedPuzzles,
         });
 
-        const categories = data.categories as ImportedCategory[];
-        const updatedCategories = categories.map(
-            (category: ImportedCategory) => ({
+        // カテゴリテーブル用データを作成
+        const savedCategories = importedCategories.map(
+            (category: Category) => ({
                 name: category.name,
-                created_at: category.created_at,
-                updated_at: category.updated_at,
+                createdAt: category.createdAt,
+                updatedAt: category.updatedAt,
                 user_id: userId,
             })
         );
+
+        // カテゴリテーブルに保存
         await prisma.category.createMany({
-            data: updatedCategories,
+            data: savedCategories,
         });
 
-        const approaches = data.approaches as ImportedApproach[];
-        const updatedApproaches = approaches.map(
-            (approach: ImportedApproach) => ({
+        // 定石テーブル用データを作成
+        const savedApproaches = importedApproaches.map(
+            (approach: Approach) => ({
                 title: approach.title,
                 content: approach.content,
-                created_at: approach.created_at,
-                updated_at: approach.updated_at,
+                createdAt: approach.createdAt,
+                updatedAt: approach.updatedAt,
                 user_id: userId,
             })
         );
+
+        // 定石テーブルに保存
         await prisma.approach.createMany({
-            data: updatedApproaches,
+            data: savedApproaches,
         });
 
-        const hints = data.hints as ImportedHint[];
-        const updatedHints = hints.map((hint: ImportedHint) => ({
+        // ヒントテーブル用データを作成
+        const savedHints = importedHints.map((hint: Hint) => ({
             content: hint.content,
-            created_at: hint.created_at,
-            updated_at: hint.updated_at,
-            puzzle_id: hint.puzzle_id,
+            createdAt: hint.createdAt,
+            updatedAt: hint.updatedAt,
+            puzzle_id: convertId(hint.puzzle_id, oldPuzzleIds, puzzleMapping),
             user_id: userId,
         }));
+
+        // ヒントテーブルに保存
         await prisma.hint.createMany({
-            data: updatedHints,
+            data: savedHints,
         });
 
-        const puzzleCategories = importedPuzzles
-            .map((puzzle: PuzzleWithCategories) =>
-                puzzle.PuzzleCategory.map(
-                    (puzzleCategory: { category: { id: number } }) => ({
-                        puzzle_id: puzzle.id,
-                        category_id: puzzleCategory.category.id,
-                    })
-                )
-            )
-            .flat(); // 配列を平坦化
+        // パズル・カテゴリーテーブル用データを作成
+        const savedPuzzleCategories = importedPuzzleCategories.map(
+            (puzzleCategory: PuzzleCategory) => ({
+                puzzle_id: convertId(
+                    puzzleCategory.puzzle_id,
+                    oldPuzzleIds,
+                    puzzleMapping
+                ),
+                category_id: convertId(
+                    puzzleCategory.category_id,
+                    oldCategoryIds,
+                    categoryMapping
+                ),
+            })
+        );
+
+        // パズル・カテゴリーテーブルに保存
         await prisma.puzzleCategory.createMany({
-            data: puzzleCategories,
+            data: savedPuzzleCategories,
         });
 
+        // パズル・定石テーブル用データを作成
+        const savedPuzzleApproaches = importedPuzzleApproaches.map(
+            (puzzleApproach: PuzzleApproach) => ({
+                puzzle_id: convertId(
+                    puzzleApproach.puzzle_id,
+                    oldPuzzleIds,
+                    puzzleMapping
+                ),
+                approach_id: convertId(
+                    puzzleApproach.approach_id,
+                    oldApproachIds,
+                    approachMapping
+                ),
+            })
+        );
+
+        // パズル・定石テーブルに保存
+        await prisma.puzzleApproach.createMany({
+            data: savedPuzzleApproaches,
+        });
         return NextResponse.json({ message: "データのインポートに成功" });
     } catch (error) {
         if (error instanceof Error) {

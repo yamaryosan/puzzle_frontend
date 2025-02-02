@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismaclient";
 
 const defaultPuzzles = [
@@ -9,7 +9,7 @@ const defaultPuzzles = [
         solution: "リスク",
         difficulty: 2,
         is_favorite: true,
-        is_solved: true
+        is_solved: true,
     },
     {
         title: "謎解き2",
@@ -18,7 +18,7 @@ const defaultPuzzles = [
         solution: "クイズ",
         difficulty: 1,
         is_favorite: false,
-        is_solved: false
+        is_solved: false,
     },
     {
         title: "元に戻ってきた探検家",
@@ -27,7 +27,7 @@ const defaultPuzzles = [
         solution: `<p>あり得る。この小屋はちょうど地球の南極点にあったのだ。我々はふだん、地球が球体であることを認識せず、メルカトル図法の世界で生きているので、こうした問題を不思議に思うことがある。</p>`,
         difficulty: 3,
         is_favorite: false,
-        is_solved: false
+        is_solved: false,
     },
 ];
 
@@ -35,7 +35,7 @@ const defaultPuzzles = [
  * ユーザ登録完了後にデフォルトでパズルを登録する
  * @param req リクエスト
  */
-export async function POST(req: NextRequest): Promise<NextResponse>{
+export async function POST(req: NextRequest): Promise<NextResponse> {
     const { userId } = await req.json();
     if (!userId) {
         throw new Error("ユーザIDが指定されていません");
@@ -68,14 +68,48 @@ export async function POST(req: NextRequest): Promise<NextResponse>{
         // ヒントの登録
         await prisma.hint.createMany({
             data: [
-                { puzzle_id: puzzleIds[0].id, content: "それぞれの熟語の読みを考えてみよう" },
-                { puzzle_id: puzzleIds[0].id, content: "それぞれの熟語の文字数を考えてみよう" },
-                { puzzle_id: puzzleIds[1].id, content: "正方形しかないが、これに似たものをどこかで見たことがあるはずだ" },
-                { puzzle_id: puzzleIds[1].id, content: "身の回りにある、7つで1セットのものといえば…？" },
-                { puzzle_id: puzzleIds[1].id, content: "カレンダーを見てみよう" },
-                { puzzle_id: puzzleIds[2].id, content: "地球は球体である。地球儀を見ながら考えよう" },
-                { puzzle_id: puzzleIds[2].id, content: "小屋の場所が特殊である。ただし日本には存在しない。" },
-                { puzzle_id: puzzleIds[2].id, content: "小屋は南の、とても寒い場所にある。" },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[0].id,
+                    content: "それぞれの熟語の読みを考えてみよう",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[0].id,
+                    content: "それぞれの熟語の文字数を考えてみよう",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[1].id,
+                    content:
+                        "正方形しかないが、これに似たものをどこかで見たことがあるはずだ",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[1].id,
+                    content: "身の回りにある、7つで1セットのものといえば…？",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[1].id,
+                    content: "カレンダーを見てみよう",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[2].id,
+                    content: "地球は球体である。地球儀を見ながら考えよう",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[2].id,
+                    content:
+                        "小屋の場所が特殊である。ただし日本には存在しない。",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[2].id,
+                    content: "小屋は南の、とても寒い場所にある。",
+                },
             ],
         });
         // カテゴリーの登録
@@ -106,8 +140,16 @@ export async function POST(req: NextRequest): Promise<NextResponse>{
         // 定石の登録
         await prisma.approach.createMany({
             data: [
-                { user_id: userId, title: "文字のない謎解き問題の考え方", content: `<p>問題に文字がない場合、いくつのセットで構成されているかを考えよう。以下は典型例である。</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>4つ:東西南北, 春夏秋冬, トランプのスート(ハート, クローバー, ダイヤ, スペードなど)</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>5つ: 指, 五感</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>7つ: カレンダー, 虹の色, 音階</li></ol>`},
-                { user_id: userId, title: "地図上の移動に関する問題のコツ", content: `<p>地図上の移動に関する頭の体操の問題は、以下の点に着目するとよい。</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>ある特別な場所でのみ通用する条件である(南極点,北極点,赤道)</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>特殊な天体現象を利用する(日食, 月食等)</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>特殊な形の天体である(ドーナツ型惑星)</li></ol><p>総じて、我々が普段使うデカルト座標的な地図から抜け出して柔軟に考える必要がある。</p>` }
+                {
+                    user_id: userId,
+                    title: "文字のない謎解き問題の考え方",
+                    content: `<p>問題に文字がない場合、いくつのセットで構成されているかを考えよう。以下は典型例である。</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>4つ:東西南北, 春夏秋冬, トランプのスート(ハート, クローバー, ダイヤ, スペードなど)</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>5つ: 指, 五感</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>7つ: カレンダー, 虹の色, 音階</li></ol>`,
+                },
+                {
+                    user_id: userId,
+                    title: "地図上の移動に関する問題のコツ",
+                    content: `<p>地図上の移動に関する頭の体操の問題は、以下の点に着目するとよい。</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>ある特別な場所でのみ通用する条件である(南極点,北極点,赤道)</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>特殊な天体現象を利用する(日食, 月食等)</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>特殊な形の天体である(ドーナツ型惑星)</li></ol><p>総じて、我々が普段使うデカルト座標的な地図から抜け出して柔軟に考える必要がある。</p>`,
+                },
             ],
         });
 
@@ -130,9 +172,15 @@ export async function POST(req: NextRequest): Promise<NextResponse>{
         return NextResponse.json(puzzles);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

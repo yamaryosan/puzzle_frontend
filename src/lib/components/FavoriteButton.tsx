@@ -11,7 +11,11 @@ type FavoriteButtonProps = {
     puzzleId: string;
 };
 
-export default function FavoriteButton({ initialChecked, onChange, puzzleId }: FavoriteButtonProps) {
+export default function FavoriteButton({
+    initialChecked,
+    onChange,
+    puzzleId,
+}: FavoriteButtonProps) {
     const [checked, setChecked] = useState(initialChecked);
     const user = useContext(FirebaseUserContext);
 
@@ -28,16 +32,16 @@ export default function FavoriteButton({ initialChecked, onChange, puzzleId }: F
         <FormControlLabel
             control={
                 <Checkbox
-                icon={<FavoriteBorder sx={{ color: "grey.300" }}/>}
-                checkedIcon={<Favorite />}
-                checked={checked}
-                onClick={handleChange}
-                name="favorite"
-                color="error"
-                size="large"
+                    icon={<FavoriteBorder sx={{ color: "grey.300" }} />}
+                    checkedIcon={<Favorite />}
+                    checked={checked}
+                    onClick={handleChange}
+                    name="favorite"
+                    color="error"
+                    size="large"
                 />
             }
-            label={checked ? '解除' : '登録'}
+            label={checked ? "解除" : "登録"}
         />
-      );
+    );
 }

@@ -9,8 +9,8 @@ import { useContext, useState } from "react";
 type TargetType = "puzzle" | "approach";
 
 type DeleteModalProps = {
-    target: TargetType,
-    id: string,
+    target: TargetType;
+    id: string;
     onButtonClick: (isDelete: boolean) => void;
 };
 
@@ -20,7 +20,11 @@ type DeleteModalProps = {
  * @param id 削除対象のID
  * @param onButtonClick ボタンがクリックされたときの処理
  */
-export default function DeleteModal({ target, id, onButtonClick }: DeleteModalProps) {
+export default function DeleteModal({
+    target,
+    id,
+    onButtonClick,
+}: DeleteModalProps) {
     const router = useRouter();
 
     const [isDeleteButtonDisabled, setIsDeleteButtonDisabled] = useState(true);
@@ -62,58 +66,65 @@ export default function DeleteModal({ target, id, onButtonClick }: DeleteModalPr
 
     return (
         <>
-        <Box
-        sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 2,
-        }}>
             <Box
-            sx={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                backgroundColor: "white",
-                padding: "3rem",
-                width: deviceType === "mobile" ? "90%" : "50%",
-                zIndex: 2,
-                boxShadow: 24,
-                borderRadius: 2,
-                textAlign: "center",
-            }}
+                sx={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    zIndex: 2,
+                }}
             >
-                <Box sx={{ marginBottom: "1rem" }}>
-                    <p>本当に削除しますか？</p>
-                </Box>
-                <Box sx={{scale: "1.5"}}>
-                    <Button
+                <Box
                     sx={{
-                        marginRight: "1rem",
-                        backgroundColor: "success.light",
-                        color: "white",
-                        ":hover": {
-                            backgroundColor: "success.dark",
-                        },
+                        position: "fixed",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        backgroundColor: "white",
+                        padding: "3rem",
+                        width: deviceType === "mobile" ? "90%" : "50%",
+                        zIndex: 2,
+                        boxShadow: 24,
+                        borderRadius: 2,
+                        textAlign: "center",
                     }}
-                    onClick={() => onButtonClick(false)}>いいえ</Button>
-                    <Button
-                    sx={{
-                        backgroundColor: "error.light",
-                        color: "white",
-                        ":hover": {
-                            backgroundColor: "error.dark",
-                        },
-                    }}
-                    disabled={isDeleteButtonDisabled}
-                    onClick={() => handleDelete()}>はい</Button>
+                >
+                    <Box sx={{ marginBottom: "1rem" }}>
+                        <p>本当に削除しますか？</p>
+                    </Box>
+                    <Box sx={{ scale: "1.5" }}>
+                        <Button
+                            sx={{
+                                marginRight: "1rem",
+                                backgroundColor: "success.light",
+                                color: "white",
+                                ":hover": {
+                                    backgroundColor: "success.dark",
+                                },
+                            }}
+                            onClick={() => onButtonClick(false)}
+                        >
+                            いいえ
+                        </Button>
+                        <Button
+                            sx={{
+                                backgroundColor: "error.light",
+                                color: "white",
+                                ":hover": {
+                                    backgroundColor: "error.dark",
+                                },
+                            }}
+                            disabled={isDeleteButtonDisabled}
+                            onClick={() => handleDelete()}
+                        >
+                            はい
+                        </Button>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
         </>
     );
 }

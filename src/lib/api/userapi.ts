@@ -4,7 +4,7 @@ type FirebaseUser = {
     firebaseUid: string;
     email: string | null;
     displayName: string | null;
-}
+};
 
 /**
  * Prismaにユーザを登録(API)
@@ -114,13 +114,14 @@ export async function syncUserWithFirebase(firebaseUid: string) {
     }
 }
 
-
 /**
  * パスワードの強度をチェック
  * @param password パスワード
  * @returns エラーメッセージの配列, 真偽値
  */
-export async function checkPasswordStrength(password: string): Promise<{ messages: string[], isVerified: boolean }> {
+export async function checkPasswordStrength(
+    password: string
+): Promise<{ messages: string[]; isVerified: boolean }> {
     const minLength = 10;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
@@ -128,7 +129,7 @@ export async function checkPasswordStrength(password: string): Promise<{ message
     const hasNonalphas = /\W/.test(password);
 
     let messages: string[] = [];
-  
+
     if (password.length < minLength) {
         messages.push("10文字以上 ");
     }

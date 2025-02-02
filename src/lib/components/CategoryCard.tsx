@@ -8,18 +8,23 @@ type CategoryCardProps = {
     onClick: () => void;
 };
 
-export default function CategoryCard({ category, isActive, onClick }: CategoryCardProps) {
-    
+export default function CategoryCard({
+    category,
+    isActive,
+    onClick,
+}: CategoryCardProps) {
     return (
-        <Card variant="outlined"
+        <Card
+            variant="outlined"
             sx={{
                 marginY: 1,
                 padding: "1rem",
                 cursor: "pointer",
                 backgroundColor: isActive ? "#f0f0f0" : "white",
             }}
-            onClick={onClick}>
-                <CategoryInfo category={category} isActive={isActive} />
+            onClick={onClick}
+        >
+            <CategoryInfo category={category} isActive={isActive} />
         </Card>
     );
 }

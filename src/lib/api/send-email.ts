@@ -1,14 +1,18 @@
-export default async function sendEmail(username: string, email: string, content: string) {
+export default async function sendEmail(
+    username: string,
+    email: string,
+    content: string
+) {
     if (!username || !email || !content) {
         console.error("未入力の項目があります");
         throw new Error("未入力の項目があります");
     }
-    const response = await fetch('/api/send-email', {
-        method: 'POST',
+    const response = await fetch("/api/send-email", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, content })
+        body: JSON.stringify({ username, email, content }),
     });
     if (!response.ok) {
         const error = await response.json();

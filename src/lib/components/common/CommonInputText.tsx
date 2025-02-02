@@ -6,29 +6,45 @@ type Props = {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     elementId?: string;
-    name? : string;
+    name?: string;
     elementType?: elementTypes;
     placeholder?: string;
     disabled?: boolean;
 };
 
-export default function CommonInputText({ value, onChange, elementId, name, elementType, placeholder, disabled }: Props) {
+export default function CommonInputText({
+    value,
+    onChange,
+    elementId,
+    name,
+    elementType,
+    placeholder,
+    disabled,
+}: Props) {
     return (
         <Box
-        sx={{
-            input: {
-                width: '100%',
-                padding: '0.5rem',
-                fontSize: '1rem',
-                border: '1px solid #ccc',
-                borderRadius: '0.25rem',
-                ":disabled": {
-                    backgroundColor: '#f0f0f0',
+            sx={{
+                input: {
+                    width: "100%",
+                    padding: "0.5rem",
+                    fontSize: "1rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "0.25rem",
+                    ":disabled": {
+                        backgroundColor: "#f0f0f0",
+                    },
                 },
-            },
-        }}
+            }}
         >
-            <input type={elementType} id={elementId} name={name} placeholder={placeholder} value={value} onChange={onChange} disabled={disabled}/>
+            <input
+                type={elementType}
+                id={elementId}
+                name={name}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+                disabled={disabled}
+            />
         </Box>
-    )
+    );
 }

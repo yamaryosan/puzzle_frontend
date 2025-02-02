@@ -1,22 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { getApproach, getPuzzlesByApproachId } from '@/lib/api/approachApi';
-import { useEffect, useState } from 'react';
-import { Approach, Puzzle } from '@prisma/client';
-import Viewer from '@/lib/components/Viewer';
-import { useSearchParams } from 'next/navigation';
-import MessageModal from '@/lib/components/MessageModal';
-import { Box } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
-import DeleteModal from '@/lib/components/DeleteModal';
-import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
-import { useContext } from 'react';
-import CommonButton from '@/lib/components/common/CommonButton';
-import DescriptionViewer from '@/lib/components/DescriptionViewer';
-import DeviceTypeContext from '@/lib/context/DeviceTypeContext';
-import PuzzleCards from '@/lib/components/PuzzleCards';
+import { getApproach, getPuzzlesByApproachId } from "@/lib/api/approachApi";
+import { useEffect, useState } from "react";
+import { Approach, Puzzle } from "@prisma/client";
+import { useSearchParams } from "next/navigation";
+import MessageModal from "@/lib/components/MessageModal";
+import { Box } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import DeleteModal from "@/lib/components/DeleteModal";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
+import CommonButton from "@/lib/components/common/CommonButton";
+import DescriptionViewer from "@/lib/components/DescriptionViewer";
+import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
+import PuzzleCards from "@/lib/components/PuzzleCards";
 
 export default function ApproachShowPaper({ id }: { id: string }) {
     const user = useContext(FirebaseUserContext);
@@ -24,9 +22,9 @@ export default function ApproachShowPaper({ id }: { id: string }) {
     const [puzzles, setPuzzles] = useState<Puzzle[] | null>(null);
 
     const searchParams = useSearchParams();
-    const showCreatedModal = searchParams.get('created') === 'true';
-    const showEditedModal = searchParams.get('edited') === 'true';
-    
+    const showCreatedModal = searchParams.get("created") === "true";
+    const showEditedModal = searchParams.get("edited") === "true";
+
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
 
@@ -39,7 +37,7 @@ export default function ApproachShowPaper({ id }: { id: string }) {
     useEffect(() => {
         async function fetchApproach() {
             if (!user) return;
-            const approach = await getApproach(id, user.uid ?? '');
+            const approach = await getApproach(id, user.uid ?? "");
             if (!approach) {
                 return;
             }
@@ -52,7 +50,7 @@ export default function ApproachShowPaper({ id }: { id: string }) {
     useEffect(() => {
         async function fetchPuzzles() {
             if (!user) return;
-            const puzzles = await getPuzzlesByApproachId(id, user.uid ?? '');
+            const puzzles = await getPuzzlesByApproachId(id, user.uid ?? "");
             if (!puzzles) {
                 return;
             }
@@ -82,64 +80,98 @@ export default function ApproachShowPaper({ id }: { id: string }) {
 
     return (
         <>
-        {showCreatedModal && (
-            <MessageModal message="定石を作成しました" param="created" />
-        )}
-        {showEditedModal && (
-            <MessageModal message="定石を編集しました" param="edited" />
-        )}
-        {isDeleteModalOpen && (
-            <DeleteModal target="approach" id={id} onButtonClick={toggleDeleteModal} />
-        )}
-        <div>
-            <h2>{approach.title}</h2>
-
-            <DescriptionViewer descriptionHtml={approach.content} />
-            
-            {puzzles?.length === 0 ? <p style={{ fontSize: "0.8rem" }}>この定石に紐づくパズルはありません</p> : ( 
+            {showCreatedModal && (
+                <MessageModal message="定石を作成しました" param="created" />
+            )}
+            {showEditedModal && (
+                <MessageModal message="定石を編集しました" param="edited" />
+            )}
+            {isDeleteModalOpen && (
+                <DeleteModal
+                    target="approach"
+                    id={id}
+                    onButtonClick={toggleDeleteModal}
+                />
+            )}
             <div>
-                <p>この定石に紐づくパズル</p>
-                <PuzzleCards puzzles={puzzles ?? []} activeCardId={activeCardId} handleCardClick={handleCardClick} />
+                <h2>{approach.title}</h2>
+
+                <DescriptionViewer descriptionHtml={approach.content} />
+
+                {puzzles?.length === 0 ? (
+                    <p style={{ fontSize: "0.8rem" }}>
+                        この定石に紐づくパズルはありません
+                    </p>
+                ) : (
+                    <div>
+                        <p>この定石に紐づくパズル</p>
+                        <PuzzleCards
+                            puzzles={puzzles ?? []}
+                            activeCardId={activeCardId}
+                            handleCardClick={handleCardClick}
+                        />
+                    </div>
+                )}
+
+                {deviceType === "mobile" && (
+                    <Box
+                        sx={{
+                            paddingY: "0.5rem",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            gap: "2rem",
+                            width: "100%",
+                        }}
+                    >
+                        <CommonButton
+                            color="secondary"
+                            onClick={handleSendButton}
+                            width="100%"
+                        >
+                            <Edit />
+                            <span>編集</span>
+                        </CommonButton>
+                        <CommonButton
+                            color="error"
+                            onClick={toggleDeleteModal}
+                            width="100%"
+                        >
+                            <Delete />
+                            <span>削除</span>
+                        </CommonButton>
+                    </Box>
+                )}
+
+                {deviceType === "desktop" && (
+                    <Box
+                        sx={{
+                            paddingY: "0.5rem",
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            width: "100%",
+                        }}
+                    >
+                        <CommonButton
+                            color="error"
+                            onClick={toggleDeleteModal}
+                            width="45%"
+                        >
+                            <Delete />
+                            <span>削除</span>
+                        </CommonButton>
+                        <CommonButton
+                            color="secondary"
+                            onClick={handleSendButton}
+                            width="45%"
+                        >
+                            <Edit />
+                            <span>編集</span>
+                        </CommonButton>
+                    </Box>
+                )}
             </div>
-            )}
-
-            {deviceType === 'mobile' && (
-            <Box sx={{ 
-                paddingY: '0.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: '2rem',
-                width: '100%'}}>
-                <CommonButton color="secondary" onClick={handleSendButton} width='100%'>
-                    <Edit />
-                    <span>編集</span>
-                </CommonButton>
-                <CommonButton color="error" onClick={toggleDeleteModal} width='100%'>
-                    <Delete />
-                    <span>削除</span>
-                </CommonButton>
-            </Box>
-            )}
-
-            {deviceType === 'desktop' && (
-                <Box sx={{ 
-                    paddingY: '0.5rem',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    width: '100%'}}>
-                    <CommonButton color="error" onClick={toggleDeleteModal} width='45%'>
-                        <Delete />
-                        <span>削除</span>
-                    </CommonButton>
-                    <CommonButton color="secondary" onClick={handleSendButton} width='45%'>
-                        <Edit />
-                        <span>編集</span>
-                    </CommonButton>
-                </Box>
-            )}
-        </div>
         </>
     );
 }

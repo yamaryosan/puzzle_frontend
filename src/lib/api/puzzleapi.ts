@@ -11,7 +11,7 @@ export async function getPuzzles(userId: string) {
         const error = await response.json();
         console.error("パズルの取得に失敗: ", error);
     }
-    const puzzles = await response.json() as Puzzle[];
+    const puzzles = (await response.json()) as Puzzle[];
     console.log("パズルの取得に成功: ", puzzles);
     return puzzles;
 }
@@ -23,12 +23,14 @@ export async function getPuzzles(userId: string) {
  * @returns Promise<Puzzles>
  */
 export async function getRandomPuzzles(userId: string, count: string) {
-    const response = await fetch(`/api/puzzles/random?userId=${userId}&count=${count}`);
+    const response = await fetch(
+        `/api/puzzles/random?userId=${userId}&count=${count}`
+    );
     if (!response.ok) {
         const error = await response.json();
         console.error("ランダムなパズルの取得に失敗: ", error);
     }
-    const puzzles = await response.json() as Puzzle[];
+    const puzzles = (await response.json()) as Puzzle[];
     console.log("ランダムなパズルの取得に成功: ", puzzles);
     return puzzles;
 }
@@ -57,7 +59,7 @@ export async function getPuzzleById(id: string, userId: string) {
         console.error("パズルが見つかりません");
         return null;
     }
-    const puzzle = await response.json() as Puzzle;
+    const puzzle = (await response.json()) as Puzzle;
     console.log("パズルの取得に成功: ", puzzle);
     return puzzle;
 }
@@ -112,7 +114,7 @@ export async function getFavoritePuzzles(userId: string) {
         const error = await response.json();
         console.error("お気に入りのパズルの取得に失敗: ", error);
     }
-    const puzzles = await response.json() as Puzzle[];
+    const puzzles = (await response.json()) as Puzzle[];
     console.log("お気に入りのパズルの取得に成功: ", puzzles);
     return puzzles;
 }
@@ -131,20 +133,18 @@ export async function searchPuzzles(keyword: string, userId: string) {
     if (!userId) {
         return;
     }
-    const response = await fetch("/api/puzzles/search",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ search: keyword, userId }),
-        }
-    );
+    const response = await fetch("/api/puzzles/search", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ search: keyword, userId }),
+    });
     if (!response.ok) {
         const error = await response.json();
         console.error("パズルの検索に失敗: ", error);
     }
-    const puzzles = await response.json() as Puzzle[];
+    const puzzles = (await response.json()) as Puzzle[];
     console.log("パズルの検索に成功: ", puzzles);
     return puzzles;
 }

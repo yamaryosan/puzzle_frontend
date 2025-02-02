@@ -31,7 +31,10 @@ export default function MobileSearchResultsList({ onClose }: props) {
                 return;
             }
             try {
-                const puzzles = await searchPuzzles(searchQuery, user.uid) as Puzzle[];
+                const puzzles = (await searchPuzzles(
+                    searchQuery,
+                    user.uid
+                )) as Puzzle[];
                 setSearchResults(puzzles);
             } catch (error) {
                 console.error("検索に失敗: ", error);
@@ -50,34 +53,43 @@ export default function MobileSearchResultsList({ onClose }: props) {
     const handleClickPuzzleLink = () => {
         setSearchQuery("");
         onClose();
-    }
+    };
 
     return (
-        <Box sx={{
-            padding: '0.5rem',
-        }}>
+        <Box
+            sx={{
+                padding: "0.5rem",
+            }}
+        >
             <form onSubmit={handleSearch}>
                 <TextField
                     label="検索"
                     variant="outlined"
                     fullWidth
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}/>
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
                 <Button
                     type="submit"
                     variant="contained"
                     color="primary"
                     onClick={handleSearch}
-                    sx={{ marginTop: '1rem', width: "100%", height: "3rem" }}>
+                    sx={{ marginTop: "1rem", width: "100%", height: "3rem" }}
+                >
                     <Search />
                 </Button>
-                <Box sx={{
-                    backgroundColor: "white",
-                    top: "100%",
-                    left: "0",
-                    width: "100%" }}>
+                <Box
+                    sx={{
+                        backgroundColor: "white",
+                        top: "100%",
+                        left: "0",
+                        width: "100%",
+                    }}
+                >
                     <p>
-                        {searchResults.length === 0 ? "検索結果はありません" : `${searchResults.length}件の検索結果`}
+                        {searchResults.length === 0
+                            ? "検索結果はありません"
+                            : `${searchResults.length}件の検索結果`}
                     </p>
                     <List>
                         {searchResults?.slice(0, 5).map((puzzle) => (
@@ -87,13 +99,14 @@ export default function MobileSearchResultsList({ onClose }: props) {
                                 onClick={handleClickPuzzleLink}
                                 href={`/puzzles/${puzzle.id}`}
                                 sx={{
-                                    textDecoration: 'none',
-                                    color: 'inherit',
-                                    borderBottom: '1px solid #e0e0e0',
-                                    '&:active': {
-                                    backgroundColor: 'primary.light',
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                    borderBottom: "1px solid #e0e0e0",
+                                    "&:active": {
+                                        backgroundColor: "primary.light",
                                     },
-                                }}>
+                                }}
+                            >
                                 <ListItemText primary={puzzle.title} />
                             </ListItem>
                         ))}

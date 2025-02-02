@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { Puzzle } from "@prisma/client";
@@ -24,9 +24,12 @@ import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
  * 回答を送信
  * @param id パズルID
  * @param answerRef 回答のQuillの参照
- * @returns 
+ * @returns
  */
-async function send(id: string, answerRef: React.RefObject<Quill | null>): Promise<Puzzle | undefined> {
+async function send(
+    id: string,
+    answerRef: React.RefObject<Quill | null>
+): Promise<Puzzle | undefined> {
     // IDが空の場合はエラー
     if (!id) {
         console.error("IDが空です");
@@ -88,7 +91,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
     useEffect(() => {
         async function loadQuill() {
             // パズルを取得
-            const puzzle = await getPuzzleById(id, user?.uid ?? '');
+            const puzzle = await getPuzzleById(id, user?.uid ?? "");
             if (!puzzle) {
                 setIsLoading(false);
                 console.error("パズルが取得できません");
@@ -96,15 +99,19 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
             }
             console.log("パズルを取得しました: ", puzzle);
             setPuzzle(puzzle);
-            const quillModule = await import('quill');
-            const Delta = quillModule.default.import('delta');
-            const quill = new quillModule.default(document.createElement('div'));
+            const quillModule = await import("quill");
+            const Delta = quillModule.default.import("delta");
+            const quill = new quillModule.default(
+                document.createElement("div")
+            );
             if (!puzzle.user_answer) {
                 setUserAnswerDelta(new Delta());
                 setIsLoading(false);
                 return;
             }
-            const userAnswerDelta = quill.clipboard.convert({ html: puzzle.user_answer });
+            const userAnswerDelta = quill.clipboard.convert({
+                html: puzzle.user_answer,
+            });
             setUserAnswerDelta(new Delta(userAnswerDelta.ops));
             setIsLoading(false);
         }
@@ -115,7 +122,10 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
     useEffect(() => {
         async function fetchCategories() {
             if (!user) return;
-            const categories = await getCategoriesByPuzzleId(id, user.uid ?? '') as Category[];
+            const categories = (await getCategoriesByPuzzleId(
+                id,
+                user.uid ?? ""
+            )) as Category[];
             setCategories(categories);
         }
         fetchCategories();
@@ -127,7 +137,7 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
         if (puzzle) {
             router.push(`/puzzles/${id}/check-answer`);
         }
-    }
+    };
 
     if (isLoading) {
         return <div>読み込み中...</div>;
@@ -139,30 +149,37 @@ export default function PuzzleSolvePaper({ id }: { id: string }) {
 
     return (
         <>
-        <Paper sx={{ padding: "1rem" }}>
-            <h2>「{puzzle?.title}」の解答画面</h2>
-            <CategoryShowPart categories={categories ?? []} />
-     
-            <DescriptionViewer descriptionHtml={puzzle?.description ?? ""} />
+            <Paper sx={{ padding: "1rem" }}>
+                <h2>「{puzzle?.title}」の解答画面</h2>
+                <CategoryShowPart categories={categories ?? []} />
 
-            <HintsViewer puzzleId={id} />
-            
-            <ApproachesViewer puzzleId={id} />
+                <DescriptionViewer
+                    descriptionHtml={puzzle?.description ?? ""}
+                />
 
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <h4>解答を入力</h4>
-                <Editor
-                defaultValue={userAnswerDelta || new Delta()}
-                onSelectionChange={setRange}
-                onTextChange={setLastChange}
-                ref={answerRef} />
-            </Box>
+                <HintsViewer puzzleId={id} />
 
-            <CommonButton color="secondary" onClick={() => handleSend()} width="100%">
-                <Send />
-                <span>解答を送信</span>
-            </CommonButton>
-        </Paper>
+                <ApproachesViewer puzzleId={id} />
+
+                <Box sx={{ paddingY: "0.5rem" }}>
+                    <h4>解答を入力</h4>
+                    <Editor
+                        defaultValue={userAnswerDelta || new Delta()}
+                        onSelectionChange={setRange}
+                        onTextChange={setLastChange}
+                        ref={answerRef}
+                    />
+                </Box>
+
+                <CommonButton
+                    color="secondary"
+                    onClick={() => handleSend()}
+                    width="100%"
+                >
+                    <Send />
+                    <span>解答を送信</span>
+                </CommonButton>
+            </Paper>
         </>
-    )
+    );
 }

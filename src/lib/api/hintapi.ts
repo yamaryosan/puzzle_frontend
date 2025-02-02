@@ -6,7 +6,10 @@ import { Hint } from "@prisma/client";
  * @param userId ユーザID
  * @returns Promise<Hint[]>
  */
-export default async function getHintsByPuzzleId(id: string, userId: string): Promise<Hint[] | undefined> {
+export default async function getHintsByPuzzleId(
+    id: string,
+    userId: string
+): Promise<Hint[] | undefined> {
     try {
         if (!id) {
             console.error("パズルIDが指定されていません");

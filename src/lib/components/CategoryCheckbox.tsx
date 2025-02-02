@@ -1,7 +1,11 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState, useContext} from "react";
-import { getCategories, createCategory, getCategoriesByPuzzleId } from "@/lib/api/categoryapi";
+import { useCallback, useEffect, useState, useContext } from "react";
+import {
+    getCategories,
+    createCategory,
+    getCategoriesByPuzzleId,
+} from "@/lib/api/categoryapi";
 import { Category } from "@prisma/client";
 import { Box, Button, Input } from "@mui/material";
 import { CreateNewFolderOutlined } from "@mui/icons-material";
@@ -28,12 +32,18 @@ type CategoryCheckboxProps = {
     onChange: (categoryIds: number[]) => void;
     puzzle_id: string;
     value: number[];
-}
+};
 
-export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }: CategoryCheckboxProps) {
+export default function CategoryCheckbox({
+    userId,
+    onChange,
+    puzzle_id,
+    value,
+}: CategoryCheckboxProps) {
     const [categories, setCategories] = useState<Category[] | null>(null);
     const [newCategory, setNewCategory] = useState<string>("");
-    const [checkedCategoryIds, setCheckedCategoryIds] = useState<number[]>(value);
+    const [checkedCategoryIds, setCheckedCategoryIds] =
+        useState<number[]>(value);
 
     const deviceType = useContext(DeviceTypeContext);
 
@@ -57,18 +67,26 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
     useEffect(() => {
         async function fetchAndSetCategories() {
             try {
-                const categories = await getCategoriesByPuzzleId(puzzle_id, userId);
+                const categories = await getCategoriesByPuzzleId(
+                    puzzle_id,
+                    userId
+                );
                 if (!categories) {
                     return;
                 }
-                const initialCategoryIds = categories.map(category => category.id);
+                const initialCategoryIds = categories.map(
+                    (category) => category.id
+                );
                 console.log("カテゴリーを取得しました: ", initialCategoryIds);
                 setCheckedCategoryIds(initialCategoryIds);
             } catch (error) {
-                console.error("カテゴリーの取得中にエラーが発生しました:", error);
+                console.error(
+                    "カテゴリーの取得中にエラーが発生しました:",
+                    error
+                );
             }
         }
-    
+
         fetchAndSetCategories();
     }, [puzzle_id, userId]);
 
@@ -91,111 +109,157 @@ export default function CategoryCheckbox({ userId, onChange, puzzle_id, value }:
             const categories = await fetchCategories();
             setCategories(categories);
             // 新しいカテゴリーにチェックを入れる
-            setCheckedCategoryIds(prev => [...prev, createdCategory.id]);
+            setCheckedCategoryIds((prev) => [...prev, createdCategory.id]);
         } catch (error) {
             console.error("カテゴリーの作成に失敗: ", error);
         }
-    }
+    };
 
     // チェックボックスの状態を変更(チェックされている場合は削除、チェックされていない場合は追加)
     const handleCheckboxChange = (categoryId: number) => {
-        setCheckedCategoryIds(prev => 
+        setCheckedCategoryIds((prev) =>
             prev.includes(categoryId)
-                ? prev.filter(id => id !== categoryId)
+                ? prev.filter((id) => id !== categoryId)
                 : [...prev, categoryId]
         );
-    }
+    };
 
     return (
         <>
-        <Box sx={{ paddingY: '0.5rem' }}>
-            <h3>カテゴリー</h3>
-            <Box sx={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "0.25rem", fontSize: `${deviceType === "mobile" ? "1.5rem" : "2rem"}` }}>
-                {categories?.length === 0 && <p>カテゴリーを作成しましょう</p>}
-                <Box sx={{ display: "grid", gap: "1rem", gridTemplateColumns: `${deviceType === "mobile" ? "1fr" : "1fr 1fr"}` }}>
-                {categories?.map((category) => (
-                    <div key={category.id}>
-                        <Checkbox
-                            checked={checkedCategoryIds.includes(category.id)}
-                            id={category.id.toString()}
-                            onChange={() => handleCheckboxChange(category.id)}
-                            size={deviceType === "mobile" ? "large" : "medium"}
-                            sx={{
-                                color: "primary.main",
-                                "&.Mui-checked": {
-                                    color: "primary.main",
-                                }
-                            }}
-                        />
-                        <label htmlFor={category.id.toString()} className="cursor-pointer">{category.name}</label>
-                    </div>
-                ))}
-                </Box>
-
-                {deviceType === "desktop" && (
-                    <Box sx={{ display: "flex", flexDirection: "row", paddingTop: "1rem", gap: "1rem" }}>
-                    <Input
-                        type="text"
-                        role="textbox"
-                        placeholder="新規カテゴリー"
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        sx={{ padding: "0.5rem", fontSize: "1rem", width: "100%" }}
-                    />
-                    <Button
+            <Box sx={{ paddingY: "0.5rem" }}>
+                <h3>カテゴリー</h3>
+                <Box
                     sx={{
-                        color: "black",
-                        padding: "0.5rem 1rem",
+                        padding: "1rem",
+                        border: "1px solid #ccc",
                         borderRadius: "0.25rem",
-                        cursor: "pointer",
-                        ":hover": {
-                            backgroundColor: "secondary.light",
-                            transition: "background-color 0.3s",
-                        }
+                        fontSize: `${deviceType === "mobile" ? "1.5rem" : "2rem"}`,
                     }}
-                    aria-label="create"
-                    onClick={handleNewCategory}>
-                        <CreateNewFolderOutlined />
-                    </Button>
+                >
+                    {categories?.length === 0 && (
+                        <p>カテゴリーを作成しましょう</p>
+                    )}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gap: "1rem",
+                            gridTemplateColumns: `${deviceType === "mobile" ? "1fr" : "1fr 1fr"}`,
+                        }}
+                    >
+                        {categories?.map((category) => (
+                            <div key={category.id}>
+                                <Checkbox
+                                    checked={checkedCategoryIds.includes(
+                                        category.id
+                                    )}
+                                    id={category.id.toString()}
+                                    onChange={() =>
+                                        handleCheckboxChange(category.id)
+                                    }
+                                    size={
+                                        deviceType === "mobile"
+                                            ? "large"
+                                            : "medium"
+                                    }
+                                    sx={{
+                                        color: "primary.main",
+                                        "&.Mui-checked": {
+                                            color: "primary.main",
+                                        },
+                                    }}
+                                />
+                                <label
+                                    htmlFor={category.id.toString()}
+                                    className="cursor-pointer"
+                                >
+                                    {category.name}
+                                </label>
+                            </div>
+                        ))}
                     </Box>
-                )}
-                {deviceType === "mobile" && (
-                    <>
-                    <Input
-                        type="text"
-                        role="textbox"
-                        placeholder="新規カテゴリー"
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        sx={{ padding: "0.5rem", fontSize: "1rem", width: "100%", marginTop: "2rem" }}
-                    />
-                    <Button
-                    sx={{
-                        color: "white",
-                        fontSize: "1.2rem",
-                        padding: "0.5rem 1rem",
-                        borderRadius: "0.25rem",
-                        width: "100%",
-                        marginTop: "1rem",
-                        bgcolor: "primary.light",
-                        cursor: "pointer",
-                        gap: "0.5rem",
-                        display: "flex",
-                        justifyContent: "center",
-                        ":hover": {
-                            backgroundColor: "primary.main",
-                            transition: "background-color 0.3s",
-                        }
-                    }}
-                    aria-label="create"
-                    onClick={handleNewCategory}>
-                        <CreateNewFolderOutlined />
-                        <span>作成</span>
-                    </Button>
-                    </>
-                )}
+
+                    {deviceType === "desktop" && (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                paddingTop: "1rem",
+                                gap: "1rem",
+                            }}
+                        >
+                            <Input
+                                type="text"
+                                role="textbox"
+                                placeholder="新規カテゴリー"
+                                value={newCategory}
+                                onChange={(e) => setNewCategory(e.target.value)}
+                                sx={{
+                                    padding: "0.5rem",
+                                    fontSize: "1rem",
+                                    width: "100%",
+                                }}
+                            />
+                            <Button
+                                sx={{
+                                    color: "black",
+                                    padding: "0.5rem 1rem",
+                                    borderRadius: "0.25rem",
+                                    cursor: "pointer",
+                                    ":hover": {
+                                        backgroundColor: "secondary.light",
+                                        transition: "background-color 0.3s",
+                                    },
+                                }}
+                                aria-label="create"
+                                onClick={handleNewCategory}
+                            >
+                                <CreateNewFolderOutlined />
+                            </Button>
+                        </Box>
+                    )}
+                    {deviceType === "mobile" && (
+                        <>
+                            <Input
+                                type="text"
+                                role="textbox"
+                                placeholder="新規カテゴリー"
+                                value={newCategory}
+                                onChange={(e) => setNewCategory(e.target.value)}
+                                sx={{
+                                    padding: "0.5rem",
+                                    fontSize: "1rem",
+                                    width: "100%",
+                                    marginTop: "2rem",
+                                }}
+                            />
+                            <Button
+                                sx={{
+                                    color: "white",
+                                    fontSize: "1.2rem",
+                                    padding: "0.5rem 1rem",
+                                    borderRadius: "0.25rem",
+                                    width: "100%",
+                                    marginTop: "1rem",
+                                    bgcolor: "primary.light",
+                                    cursor: "pointer",
+                                    gap: "0.5rem",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    ":hover": {
+                                        backgroundColor: "primary.main",
+                                        transition: "background-color 0.3s",
+                                    },
+                                }}
+                                aria-label="create"
+                                onClick={handleNewCategory}
+                            >
+                                <CreateNewFolderOutlined />
+                                <span>作成</span>
+                            </Button>
+                        </>
+                    )}
+                </Box>
             </Box>
-        </Box>
         </>
     );
 }

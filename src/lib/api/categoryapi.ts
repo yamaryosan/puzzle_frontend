@@ -11,7 +11,7 @@ export async function getCategories(userId: string) {
         const error = await response.json();
         console.error("カテゴリーの取得に失敗: ", error);
     }
-    const categories = await response.json() as Category[];
+    const categories = (await response.json()) as Category[];
     console.log("カテゴリーの取得に成功: ", categories);
     return categories;
 }
@@ -80,7 +80,9 @@ export async function fetchPuzzlesByCategoryId(id: string, userId: string) {
             console.error("ユーザIDが取得できません");
             return;
         }
-        const response = await fetch(`/api/categories/${id}/puzzles?userId=${userId}`);
+        const response = await fetch(
+            `/api/categories/${id}/puzzles?userId=${userId}`
+        );
         if (!response.ok) {
             const error = await response.json();
             console.error("パズルの取得に失敗: ", error);
@@ -97,7 +99,10 @@ export async function fetchPuzzlesByCategoryId(id: string, userId: string) {
  * @param id カテゴリーID
  * @param name カテゴリー名
  */
-export async function updateCategory(id: string, name: string): Promise<Category> {
+export async function updateCategory(
+    id: string,
+    name: string
+): Promise<Category> {
     const response = await fetch(`/api/categories/${id}`, {
         method: "PUT",
         headers: {

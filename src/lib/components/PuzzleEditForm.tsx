@@ -15,7 +15,7 @@ import HintsEditor from "@/lib/components/HintsEditor";
 import CategoryCheckbox from "@/lib/components/CategoryCheckbox";
 import ApproachCheckbox from "@/lib/components/ApproachCheckbox";
 import DifficultEditor from "@/lib/components/DifficultyEditor";
-import { Upload, Clear, Delete } from "@mui/icons-material";
+import { Upload, Delete } from "@mui/icons-material";
 import CommonButton from "@/lib/components/common/CommonButton";
 import Portal from "@/lib/components/Portal";
 import DeleteModal from "@/lib/components/DeleteModal";

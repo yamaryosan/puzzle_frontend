@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## ローカル環境での起動方法(SQLite)
 
-## Getting Started
+- firebaseをemulatorで起動
+- 開発用サーバを立ち上げてホットリロード
+- データベースはsqliteで起動
 
-First, run the development server:
+1. .envを開き、`NEXT_PUBLIC_FIREBASE_ENV`を`development`に変更
+2. schema.prismaを開き、`datasource db`の`provider`を`sqlite`に変更
+3. 以下のコマンドを実行
 
 ```bash
+npm run generate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ローカル環境での起動方法その2(PostgreSQL)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- firebaseをemulatorで起動
+- 開発用サーバを立ち上げてホットリロード
+- データベースはPostgreSQLローカルコンテナで起動
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. .envを開き、`NEXT_PUBLIC_FIREBASE_ENV`を`development`に変更
+2. schema.prismaを開き、`datasource db`の`provider`を`postgresql`に変更
+3. .envを開き、`POSTGRE_DATABASE_URL`を`postgresql://yama:mypassword@localhost:12345/mydb`に変更。
+   また、`POSTGRES_USER``POSTGRES_PASSWORD`と`POSTGRES_DB`のコメントアウトを外す
+4. /prisma/migrationsを削除
+5. 以下のコマンドを実行してPostgreSQLローカルコンテナを起動
 
-## Learn More
+```bash
+docker compose up -d postgres
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. 以下のコマンドを実行してデータベースを作成
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run generate
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+[参考](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/limitations-and-known-issues#you-cannot-automatically-switch-database-providers)
 
-## Deploy on Vercel
+## ローカル環境での起動方法その3(本番環境DBへの接続)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- firebaseをemulatorで起動
+- 開発用サーバを立ち上げてホットリロード
+- データベースはRender.comのPostgreSQLで起動
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. .envを開き、`NEXT_PUBLIC_FIREBASE_ENV`を`development`に変更
+2. schema.prismaを開き、`datasource db`の`provider`を`postgresql`に変更
+3. .envを開き、`POSTGRE_DATABASE_URL`を`postgresql://yama:VM...`に変更
+4. 以下のコマンドを実行して本番環境のDBに接続
+
+```bash
+npm run generate
+npm run dev
+```
+
+※ TablePlus等ツールでDBに接続可能
+
+- Host: `dpg-xxx-a.oregon-postgres.render.com`
+- Port: `5432`
+- Database: `puzzle_app_db`
+- User: `yama`
+- Password: `VxxxS`
+
+## ローカル環境での起動方法その3(本番環境DBへの接続)
+
+- firebaseをemulatorで起動
+- 開発用サーバを立ち上げてホットリロード
+- データベースはRender.comのPostgreSQLで起動
+
+1. .envを開く
+2. `NEXT_PUBLIC_FIREBASE_ENV`を`production`に変更
+3. 以下のコマンドを実行
+
+```bash
+npm run deploy
+```
+
+## 本番環境へのデプロイ方法
+
+```bash
+npm run deploy -- --only hosting
+```

@@ -1,19 +1,52 @@
 "use client";
 
-import { Box } from "@mui/material";
 import {
     StorageOutlined,
     CloudUploadOutlined,
     CloudDownloadOutlined,
+    DeleteForeverOutlined,
 } from "@mui/icons-material";
 import CommonButton from "@/lib/components/common/CommonButton";
-
-import { exportData } from "@/lib/api/dataApi";
-import { useContext } from "react";
+import { exportData, importData } from "@/lib/api/dataApi";
+import { useContext, useState, useRef } from "react";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import AllDataDeleteModal from "@/lib/components/AllDataDeleteModal";
 
 export default function Page() {
     const user = useContext(FirebaseUserContext);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isImporting, setIsImporting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [isAllDataDeleteModalOpen, setIsAllDataDeleteModalOpen] =
+        useState(false);
+
+    const handleFileChange = async (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            setErrorMessage("ファイルが選択されていません");
+            return;
+        }
+        if (!user?.uid) {
+            setErrorMessage("ユーザIDが取得できません");
+            return;
+        }
+        try {
+            setIsImporting(true);
+            await importData(user?.uid ?? "", file);
+            setSuccessMessage("データのインポートに成功しました");
+        } catch (error) {
+            setErrorMessage("データのインポートに失敗しました");
+        } finally {
+            setIsImporting(false);
+            // ファイル入力をクリア
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+    };
 
     return (
         <>
@@ -23,28 +56,52 @@ export default function Page() {
                 <StorageOutlined />
                 データ管理
             </h2>
-            <Box
-                sx={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    flexDirection: "column",
-                    alignItems: "center",
+            <CommonButton
+                color="primary"
+                onClick={() => {
+                    exportData(user?.uid ?? "");
                 }}
             >
+                <CloudDownloadOutlined />
+                データをダウンロード(エクスポート)
+            </CommonButton>
+            <input
+                id="file-input-import"
+                type="file"
+                ref={fileInputRef}
+                accept=".json"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+            />
+            <label htmlFor="file-input-import">
                 <CommonButton
-                    color="primary"
-                    onClick={() => {
-                        exportData(user?.uid ?? "");
-                    }}
+                    color="secondary"
+                    component="span"
+                    onClick={() => {}}
+                    disabled={isImporting}
                 >
-                    <CloudDownloadOutlined />
-                    データをダウンロード(エクスポート)
-                </CommonButton>
-                <CommonButton color="secondary" onClick={() => {}}>
                     <CloudUploadOutlined />
                     データをアップロード(インポート)
                 </CommonButton>
-            </Box>
+            </label>
+            <CommonButton
+                color="error"
+                onClick={() => {
+                    setIsAllDataDeleteModalOpen(true);
+                }}
+            >
+                <DeleteForeverOutlined />
+                データ全削除
+            </CommonButton>
+            {isAllDataDeleteModalOpen && (
+                <AllDataDeleteModal
+                    onButtonClick={setIsAllDataDeleteModalOpen}
+                />
+            )}
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+            {successMessage && (
+                <p style={{ color: "green" }}>{successMessage}</p>
+            )}
         </>
     );
 }

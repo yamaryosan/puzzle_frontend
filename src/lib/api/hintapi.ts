@@ -1,4 +1,4 @@
-import { Hint } from "@prisma/client";
+import { hints } from "@prisma/client";
 
 /**
  * パズルIDを指定してヒントを取得
@@ -6,7 +6,10 @@ import { Hint } from "@prisma/client";
  * @param userId ユーザID
  * @returns Promise<Hint[]>
  */
-export default async function getHintsByPuzzleId(id: string, userId: string): Promise<Hint[] | undefined> {
+export default async function getHintsByPuzzleId(
+    id: string,
+    userId: string
+): Promise<hints[] | undefined> {
     try {
         if (!id) {
             console.error("パズルIDが指定されていません");
@@ -24,7 +27,7 @@ export default async function getHintsByPuzzleId(id: string, userId: string): Pr
         }
         const hints = await response.json();
         console.log("ヒントの取得に成功: ", hints);
-        return hints as Hint[];
+        return hints as hints[];
     } catch (error) {
         console.error("ヒントの取得に失敗: ", error);
     }

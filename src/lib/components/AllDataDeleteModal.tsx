@@ -1,34 +1,25 @@
-import { deletePuzzle } from "@/lib/api/puzzleapi";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button } from "@mui/material";
-import { deleteApproach } from "@/lib/api/approachApi";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 import { useContext, useState } from "react";
+import { deleteData } from "@/lib/api/dataApi";
+import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
+import { useRouter } from "next/navigation";
 
-type TargetType = "puzzle" | "approach";
-
-type DeleteModalProps = {
-    target: TargetType;
-    id: string;
+type AllDataDeleteModalProps = {
     onButtonClick: (isDelete: boolean) => void;
 };
 
 /**
- * 削除確認モーダル
- * @param target 削除対象
- * @param id 削除対象のID
+ * 全データ削除確認モーダル
  * @param onButtonClick ボタンがクリックされたときの処理
  */
-export default function DeleteModal({
-    target,
-    id,
+export default function AllDataDeleteModal({
     onButtonClick,
-}: DeleteModalProps) {
+}: AllDataDeleteModalProps) {
+    const user = useContext(FirebaseUserContext);
     const router = useRouter();
-
     const [isDeleteButtonDisabled, setIsDeleteButtonDisabled] = useState(true);
-
     const deviceType = useContext(DeviceTypeContext);
 
     // エスケープキーが押されたらモーダルを閉じる
@@ -44,7 +35,7 @@ export default function DeleteModal({
         };
     }, [onButtonClick]);
 
-    // 2秒後に退会ボタンを有効化
+    // 2秒後に削除ボタンを有効化
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsDeleteButtonDisabled(false);
@@ -53,15 +44,9 @@ export default function DeleteModal({
     }, []);
 
     const handleDelete = async () => {
-        if (target === "puzzle") {
-            await deletePuzzle(id);
-            onButtonClick(true);
-            router.push("/puzzles?deleted=true");
-        } else if (target === "approach") {
-            await deleteApproach(id);
-            onButtonClick(true);
-            router.push("/approaches?deleted=true");
-        }
+        onButtonClick(false);
+        await deleteData(user?.uid ?? "");
+        router.push("/?allDataDeleted=true");
     };
 
     return (
@@ -118,7 +103,9 @@ export default function DeleteModal({
                                 },
                             }}
                             disabled={isDeleteButtonDisabled}
-                            onClick={() => handleDelete()}
+                            onClick={() => {
+                                handleDelete();
+                            }}
                         >
                             はい
                         </Button>

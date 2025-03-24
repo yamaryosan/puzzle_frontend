@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismaclient";
 import { NextResponse, NextRequest } from "next/server";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 
 type puzzleRequest = {
     title: string;
@@ -8,7 +8,8 @@ type puzzleRequest = {
     solutionHtml: string;
     difficulty: number;
     userId: string;
-}
+    source: string;
+};
 
 /**
  * パズル一覧を取得
@@ -23,22 +24,28 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             throw new Error("ユーザIDが指定されていません");
         }
 
-        const puzzles: Puzzle[] = await prisma.puzzle.findMany({
+        const puzzles: puzzles[] = await prisma.puzzles.findMany({
             where: { user_id },
             include: {
-                PuzzleCategory: {
+                puzzle_categories: {
                     include: {
-                        category: true
-                    }
-                }
-            }
+                        category: true,
+                    },
+                },
+            },
         });
         return NextResponse.json(puzzles);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }
@@ -49,10 +56,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
         const puzzleContent: puzzleRequest = await req.json();
-        const { title, descriptionHtml, solutionHtml, difficulty, userId } = puzzleContent;
+        const {
+            title,
+            descriptionHtml,
+            solutionHtml,
+            difficulty,
+            userId,
+            source,
+        } = puzzleContent;
 
         // パズルを作成
-        const puzzle: Puzzle = await prisma.puzzle.create({
+        const puzzle: puzzles = await prisma.puzzles.create({
             data: {
                 title: title,
                 description: descriptionHtml,
@@ -60,15 +74,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 solution: solutionHtml,
                 difficulty: difficulty,
                 user_id: userId,
+                source: source,
             },
         });
 
         return NextResponse.json(puzzle, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

@@ -1,4 +1,4 @@
-import Rating from '@mui/material/Rating';
+import Rating from "@mui/material/Rating";
 
 type DifficultyViewerProps = {
     value: number;
@@ -7,7 +7,12 @@ type DifficultyViewerProps = {
 export default function DifficultViewer({ value }: DifficultyViewerProps) {
     return (
         <>
-        <Rating name="difficulty" value={value} readOnly sx={{ fontSize: '2rem' }}/>
+            <Rating
+                name="difficulty"
+                value={value}
+                readOnly
+                sx={{ fontSize: "2rem" }}
+            />
         </>
     );
 }

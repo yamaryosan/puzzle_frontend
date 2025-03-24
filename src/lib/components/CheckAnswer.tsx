@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Viewer from "@/lib/components/Viewer";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { getPuzzleById } from "@/lib/api/puzzleapi";
 import { useRouter } from "next/navigation";
@@ -18,9 +18,12 @@ import PuzzleNotFound from "@/lib/components/PuzzleNotFound";
  * 正解かどうかを送信
  * @param id パズルID
  * @param isSolved 正解かどうか
- * @returns 
+ * @returns
  */
-async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | undefined> {
+async function sendIsSolved(
+    id: string,
+    isSolved: boolean
+): Promise<puzzles | undefined> {
     // IDが空の場合はエラー
     if (!id) {
         console.error("IDが空です");
@@ -36,21 +39,21 @@ async function sendIsSolved(id: string, isSolved: boolean): Promise<Puzzle | und
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({isSolved})
+        body: JSON.stringify({ isSolved }),
     });
     if (!response.ok) {
         const error = await response.json();
         console.error("パズルの更新に失敗: ", error);
     }
-    const puzzle = await response.json() as Puzzle;
+    const puzzle = (await response.json()) as puzzles;
     console.log("パズルの更新に成功: ", puzzle);
     return puzzle;
 }
 
-export default function CheckAnswer({ id } : { id: string }) {
+export default function CheckAnswer({ id }: { id: string }) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [puzzle, setPuzzle] = useState<Puzzle | null>();
+    const [puzzle, setPuzzle] = useState<puzzles | null>();
     const user = useContext(FirebaseUserContext);
 
     const deviceType = useContext(DeviceTypeContext);
@@ -60,7 +63,7 @@ export default function CheckAnswer({ id } : { id: string }) {
         async function fetchPuzzle() {
             try {
                 if (!user) return;
-                const puzzle = await getPuzzleById(id, user.uid ?? '');
+                const puzzle = await getPuzzleById(id, user.uid ?? "");
                 if (!puzzle) {
                     console.error("パズルが見つかりません");
                     setIsLoading(false);
@@ -98,57 +101,86 @@ export default function CheckAnswer({ id } : { id: string }) {
 
     return (
         <>
-        <Box sx={{  display: 'flex', flexDirection: 'column', width: '100%', padding: '1rem' }}>
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <Rule />
-                <span>答え合わせ</span>
-            </h2>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    padding: "1rem",
+                }}
+            >
+                <h2
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem",
+                    }}
+                >
+                    <Rule />
+                    <span>答え合わせ</span>
+                </h2>
 
-            <DescriptionViewer descriptionHtml={puzzle?.description ?? ""} />
+                <DescriptionViewer
+                    descriptionHtml={puzzle?.description ?? ""}
+                />
 
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <h4>あなたの解答</h4>
-                <Viewer defaultHtml={puzzle?.user_answer ?? ""} />
-            </Box>
-            <Box sx={{ paddingY: '0.5rem' }}>
-                <h4>正答</h4>
-                <Viewer defaultHtml={puzzle?.solution ?? ""} />
-            </Box>
+                <Box sx={{ paddingY: "0.5rem" }}>
+                    <h4>あなたの解答</h4>
+                    <Viewer defaultHtml={puzzle?.user_answer ?? ""} />
+                </Box>
+                <Box sx={{ paddingY: "0.5rem" }}>
+                    <h4>正答</h4>
+                    <Viewer defaultHtml={puzzle?.solution ?? ""} />
+                </Box>
 
-            {deviceType === 'mobile' && (
-            <Box sx={{ 
-                paddingY: '0.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                width: '100%'}}>
-                <CommonButton color="success" onClick={correct}>
-                    <Check />
-                    正解！
-                </CommonButton>
-                <CommonButton color="error" onClick={incorrect}>
-                    <Clear />
-                    不正解...
-                </CommonButton>
+                {deviceType === "mobile" && (
+                    <Box
+                        sx={{
+                            paddingY: "0.5rem",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            width: "100%",
+                        }}
+                    >
+                        <CommonButton color="success" onClick={correct}>
+                            <Check />
+                            正解！
+                        </CommonButton>
+                        <CommonButton color="error" onClick={incorrect}>
+                            <Clear />
+                            不正解...
+                        </CommonButton>
+                    </Box>
+                )}
+                {deviceType === "desktop" && (
+                    <Box
+                        sx={{
+                            paddingY: "0.5rem",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "100%",
+                        }}
+                    >
+                        <CommonButton
+                            color="error"
+                            onClick={incorrect}
+                            width="45%"
+                        >
+                            <Clear />
+                            不正解...
+                        </CommonButton>
+                        <CommonButton
+                            color="success"
+                            onClick={correct}
+                            width="45%"
+                        >
+                            <Check />
+                            正解！
+                        </CommonButton>
+                    </Box>
+                )}
             </Box>
-            )}
-            {deviceType === 'desktop' && (
-            <Box sx={{ 
-                paddingY: '0.5rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%'}}>
-                <CommonButton color="error" onClick={incorrect} width="45%">
-                    <Clear />
-                    不正解...
-                </CommonButton>
-                <CommonButton color="success" onClick={correct} width="45%">
-                    <Check />
-                    正解！
-                </CommonButton>
-            </Box>
-            )}
-        </Box>
         </>
-    )
+    );
 }

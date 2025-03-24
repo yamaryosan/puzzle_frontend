@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Category } from '@prisma/client';
-import CategoryCard from '@/lib/components/CategoryCard';
-import { getCategories } from '@/lib/api/categoryapi';
-import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
-import CategoryIcon from '@mui/icons-material/Category';
-import { useContext } from 'react';
+import { useEffect, useState } from "react";
+import { categories } from "@prisma/client";
+import CategoryCard from "@/lib/components/CategoryCard";
+import { getCategories } from "@/lib/api/categoryapi";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import CategoryIcon from "@mui/icons-material/Category";
+import { useContext } from "react";
 
 export default function Categories() {
     const user = useContext(FirebaseUserContext);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<categories[]>([]);
 
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
@@ -19,7 +19,7 @@ export default function Categories() {
     useEffect(() => {
         async function fetchCategories() {
             if (!user) return;
-            const categories = await getCategories(user.uid ?? '');
+            const categories = await getCategories(user.uid ?? "");
             setCategories(categories || []);
         }
         fetchCategories();
@@ -37,15 +37,21 @@ export default function Categories() {
 
     return (
         <>
-        <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
-            <CategoryIcon />
-            カテゴリー一覧
-        </h2>
-        {categories.map((category) => (
-            <div key={category.id}>
-                <CategoryCard category={category} isActive={category.id === activeCardId} onClick={() => handleCardClick(category.id)}  />
-            </div>
-        ))}
+            <h2
+                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+                <CategoryIcon />
+                カテゴリー一覧
+            </h2>
+            {categories.map((category) => (
+                <div key={category.id}>
+                    <CategoryCard
+                        category={category}
+                        isActive={category.id === activeCardId}
+                        onClick={() => handleCardClick(category.id)}
+                    />
+                </div>
+            ))}
         </>
     );
 }

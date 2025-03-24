@@ -4,12 +4,12 @@ import { Box, InputBase } from "@mui/material";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 import { useContext } from "react";
 
-type TitleEditorProps = {
-    title: string;
-    setTitle: (title: string) => void;
+type SourceEditorProps = {
+    source: string;
+    setSource: (source: string) => void;
 };
 
-export default function TitleEditor({ title, setTitle }: TitleEditorProps) {
+export default function SourceEditor({ source, setSource }: SourceEditorProps) {
     const deviceType = useContext(DeviceTypeContext);
     return (
         <Box
@@ -23,11 +23,11 @@ export default function TitleEditor({ title, setTitle }: TitleEditorProps) {
                 },
             }}
         >
-            <h3>タイトル</h3>
+            <h3>出典</h3>
             <InputBase
-                placeholder="タイトル"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                placeholder="出典"
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
                 required
                 sx={{
                     width: deviceType === "mobile" ? "100%" : "50%",

@@ -1,12 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prismaclient';
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prismaclient";
 
 /**
  * パズルIDに紐づくカテゴリーを取得
  * @param req リクエスト
  * @param params パラメータ
  */
-export async function GET(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
 
@@ -16,20 +19,28 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         }
 
         // パズルに紐づくカテゴリーを取得
-        const puzzleCategories = await prisma.puzzleCategory.findMany({
+        const puzzleCategories = await prisma.puzzle_categories.findMany({
             where: { puzzle_id: id },
             include: {
                 category: true,
-            }
+            },
         });
         // カテゴリーのみを取得
-        const categories = puzzleCategories.map((puzzleCategory) => puzzleCategory.category);
+        const categories = puzzleCategories.map(
+            (puzzleCategory) => puzzleCategory.category
+        );
         return NextResponse.json(categories);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }
@@ -40,7 +51,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
  * @param params パラメータ
  * @returns レスポンス
  */
-export async function POST(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
+export async function POST(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
 
@@ -48,21 +62,24 @@ export async function POST(req: NextRequest, { params }: {params: {id: string} }
         if (isNaN(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
-        
+
         // カテゴリーIDを取得
         const { categoryIds } = await req.json();
 
         // パズルが存在しない場合はエラー
-        const puzzle = await prisma.puzzle.findUnique({
+        const puzzle = await prisma.puzzles.findUnique({
             where: { id },
         });
         if (!puzzle) {
-            return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+            return NextResponse.json(
+                { error: "Puzzle not found" },
+                { status: 404 }
+            );
         }
 
         // カテゴリー・パズル中間テーブルに追加
         for (const categoryId of categoryIds) {
-            await prisma.puzzleCategory.create({
+            await prisma.puzzle_categories.create({
                 data: {
                     puzzle_id: id,
                     category_id: categoryId,
@@ -72,12 +89,18 @@ export async function POST(req: NextRequest, { params }: {params: {id: string} }
         return NextResponse.json({ message: "Success" });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
-};
+}
 
 /**
  * パズルのカテゴリーを更新
@@ -85,7 +108,10 @@ export async function POST(req: NextRequest, { params }: {params: {id: string} }
  * @param params パラメータ
  * @returns レスポンス
  */
-export async function PUT(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
 
@@ -93,37 +119,46 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         if (isNaN(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
-        
+
         // カテゴリーIDを取得
         const { categoryIds } = await req.json();
 
         // パズルが存在しない場合はエラー
-        const puzzle = await prisma.puzzle.findUnique({
+        const puzzle = await prisma.puzzles.findUnique({
             where: { id },
         });
         if (!puzzle) {
-            return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+            return NextResponse.json(
+                { error: "Puzzle not found" },
+                { status: 404 }
+            );
         }
 
         // カテゴリー・パズル中間テーブルを更新
-        await prisma.puzzleCategory.deleteMany({
+        await prisma.puzzle_categories.deleteMany({
             where: { puzzle_id: id },
         });
         for (const categoryId of categoryIds) {
-            await prisma.puzzleCategory.create({
+            await prisma.puzzle_categories.create({
                 data: {
                     puzzle_id: id,
                     category_id: categoryId,
                 },
             });
         }
-        
+
         return NextResponse.json({ message: "Success" });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
-};
+}

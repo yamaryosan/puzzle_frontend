@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 type DeviceType = "desktop" | "mobile";
 
-export default function DeviceTypeProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function DeviceTypeProvider({
+    children,
+}: Readonly<{ children: React.ReactNode }>) {
     const [deviceType, setDeviceType] = useState<DeviceType>("desktop");
     const [hasMounted, setHasMounted] = useState(false);
 

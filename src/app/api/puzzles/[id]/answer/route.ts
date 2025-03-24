@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Puzzle } from "@prisma/client";
 import prisma from "@/lib/prismaclient";
 
 /**
@@ -7,7 +6,10 @@ import prisma from "@/lib/prismaclient";
  * @param req リクエスト
  * @param params パラメータ
  */
-export async function PUT(req: NextRequest, { params }: {params: {id: string} }): Promise<NextResponse> {
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+): Promise<NextResponse> {
     try {
         const id = parseInt(params.id);
 
@@ -18,7 +20,7 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         const { answer } = await req.json();
 
         // パズルを更新
-        const puzzle = await prisma.puzzle.update({
+        const puzzle = await prisma.puzzles.update({
             where: { id: id },
             data: {
                 user_answer: answer,
@@ -28,9 +30,15 @@ export async function PUT(req: NextRequest, { params }: {params: {id: string} })
         return NextResponse.json(puzzle);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

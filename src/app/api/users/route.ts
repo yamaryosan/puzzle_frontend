@@ -15,12 +15,15 @@ export async function POST(req: NextRequest) {
         const firebaseUser: FirebaseUser = await req.json();
 
         if (!firebaseUser.firebaseUid || !firebaseUser.email) {
-            return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+            return NextResponse.json(
+                { error: "Invalid request body" },
+                { status: 400 }
+            );
         }
 
-        const user = await prisma.user.create({
+        const user = await prisma.users.create({
             data: {
-                firebaseUid: firebaseUser.firebaseUid,
+                firebase_uid: firebaseUser.firebaseUid,
                 email: firebaseUser.email,
                 name: firebaseUser.displayName,
             },
@@ -29,9 +32,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(user, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

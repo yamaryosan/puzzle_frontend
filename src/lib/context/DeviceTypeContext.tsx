@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
 // デバイスの種類を定義
 type DeviceType = "desktop" | "mobile";

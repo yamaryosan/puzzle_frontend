@@ -12,26 +12,38 @@ type approachRequest = {
  * @param params パラメータ
  * @returns レスポンス
  */
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
     try {
         const id = parseInt(params.id);
         if (isNaN(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
-        const approach = await prisma.approach.findUnique({
+        const approach = await prisma.approaches.findUnique({
             where: {
                 id: id,
             },
         });
         if (!approach) {
-            return NextResponse.json({ error: "Approach not found" }, { status: 404 });
+            return NextResponse.json(
+                { error: "Approach not found" },
+                { status: 404 }
+            );
         }
         return NextResponse.json(approach);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }
@@ -42,7 +54,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
  * @param params パラメータ
  * @returns レスポンス
  */
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
     try {
         const id = parseInt(params.id);
         if (isNaN(id) || id <= 0) {
@@ -51,10 +66,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const puzzleContent: approachRequest = await req.json();
         const { title, contentHtml } = puzzleContent;
         if (!title || !contentHtml) {
-            return NextResponse.json({ error: "Title and contentHtml are required" }, { status: 400 });
+            return NextResponse.json(
+                { error: "Title and contentHtml are required" },
+                { status: 400 }
+            );
         }
         // 定石を更新
-        const approach = await prisma.approach.update({
+        const approach = await prisma.approaches.update({
             where: {
                 id: id,
             },
@@ -66,9 +84,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         return NextResponse.json(approach);
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }
@@ -77,14 +101,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
  * 定石を削除
  * @param req リクエスト
  */
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
     try {
         const id = parseInt(params.id);
         if (isNaN(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
         }
         // 定石を削除
-        await prisma.approach.delete({
+        await prisma.approaches.delete({
             where: {
                 id: id,
             },
@@ -92,9 +119,15 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         return NextResponse.json({ message: "Approach deleted" });
     } catch (error) {
         if (error instanceof Error) {
-            return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
+            return NextResponse.json(
+                { error: error.message, stack: error.stack },
+                { status: 500 }
+            );
         } else {
-            return NextResponse.json({ error: "Unknown error" }, { status: 500 });
+            return NextResponse.json(
+                { error: "Unknown error" },
+                { status: 500 }
+            );
         }
     }
 }

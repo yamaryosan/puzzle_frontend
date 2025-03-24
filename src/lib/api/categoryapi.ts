@@ -1,4 +1,4 @@
-import { Category, Puzzle } from "@prisma/client";
+import { categories, puzzles } from "@prisma/client";
 
 /**
  * カテゴリー一覧を取得
@@ -11,7 +11,7 @@ export async function getCategories(userId: string) {
         const error = await response.json();
         console.error("カテゴリーの取得に失敗: ", error);
     }
-    const categories = await response.json() as Category[];
+    const categories = (await response.json()) as categories[];
     console.log("カテゴリーの取得に成功: ", categories);
     return categories;
 }
@@ -36,7 +36,7 @@ export async function createCategory(name: string, userId: string) {
         return;
     }
     console.log(`カテゴリー「${name}」の作成に成功`);
-    return response.json() as Promise<Category>;
+    return response.json() as Promise<categories>;
 }
 
 /**
@@ -61,7 +61,7 @@ export async function getCategoryById(id: string, userId: string) {
     }
     const category = await response.json();
     console.log("カテゴリーの取得に成功: ", category);
-    return category as Category;
+    return category as categories;
 }
 
 /**
@@ -80,13 +80,15 @@ export async function fetchPuzzlesByCategoryId(id: string, userId: string) {
             console.error("ユーザIDが取得できません");
             return;
         }
-        const response = await fetch(`/api/categories/${id}/puzzles?userId=${userId}`);
+        const response = await fetch(
+            `/api/categories/${id}/puzzles?userId=${userId}`
+        );
         if (!response.ok) {
             const error = await response.json();
             console.error("パズルの取得に失敗: ", error);
         }
         const puzzles = await response.json();
-        return puzzles as Puzzle[];
+        return puzzles as puzzles[];
     } catch (error) {
         console.error("パズルの取得に失敗: ", error);
     }
@@ -97,7 +99,10 @@ export async function fetchPuzzlesByCategoryId(id: string, userId: string) {
  * @param id カテゴリーID
  * @param name カテゴリー名
  */
-export async function updateCategory(id: string, name: string): Promise<Category> {
+export async function updateCategory(
+    id: string,
+    name: string
+): Promise<categories> {
     const response = await fetch(`/api/categories/${id}`, {
         method: "PUT",
         headers: {
@@ -111,7 +116,7 @@ export async function updateCategory(id: string, name: string): Promise<Category
         return error;
     }
     console.log(`カテゴリー「${name}」の更新に成功`);
-    return response.json() as Promise<Category>;
+    return response.json() as Promise<categories>;
 }
 
 /**
@@ -153,7 +158,7 @@ export async function getCategoriesByPuzzleId(id: string, userId: string) {
         }
         const categories = await response.json();
         console.log("カテゴリーの取得に成功: ", categories);
-        return categories as Category[];
+        return categories as categories[];
     } catch (error) {
         console.error("カテゴリーの取得に失敗: ", error);
     }

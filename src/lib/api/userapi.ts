@@ -1,10 +1,10 @@
-import { User } from "@prisma/client";
+import { users } from "@prisma/client";
 
 type FirebaseUser = {
     firebaseUid: string;
     email: string | null;
     displayName: string | null;
-}
+};
 
 /**
  * Prismaにユーザを登録(API)
@@ -26,7 +26,7 @@ export async function createUserInPrisma(firebaseUser: FirebaseUser) {
         }
         const user = await response.json();
         console.log("Prismaでのユーザ更新に成功: ", user);
-        return user as Promise<User>;
+        return user as Promise<users>;
     } catch (error) {
         console.error("Prismaでのユーザ作成に失敗: ", error);
         throw error;
@@ -53,7 +53,7 @@ export async function updateUserInPrisma(firebaseUser: FirebaseUser) {
         }
         const updatedUser = await response.json();
         console.log("Prismaでのユーザ更新に成功: ", updatedUser);
-        return updatedUser as Promise<User>;
+        return updatedUser as Promise<users>;
     } catch (error) {
         console.error("Prismaでのユーザ更新に失敗: ", error);
         throw error;
@@ -79,7 +79,7 @@ export async function deleteUserInPrisma(firebaseUid: string) {
         }
         const deletedUser = await response.json();
         console.log("Prismaでのユーザ削除に成功: ", deletedUser);
-        return deletedUser as Promise<User>;
+        return deletedUser as Promise<users>;
     } catch (error) {
         console.error("Prismaでのユーザ削除に失敗: ", error);
         throw error;
@@ -107,20 +107,21 @@ export async function syncUserWithFirebase(firebaseUid: string) {
         }
         const syncedUser = await response.json();
         console.log("Firebaseとのユーザ同期に成功: ", syncedUser);
-        return syncedUser as Promise<User>;
+        return syncedUser as Promise<users>;
     } catch (error) {
         console.error("Firebaseとのユーザ同期に失敗: ", error);
         throw error;
     }
 }
 
-
 /**
  * パスワードの強度をチェック
  * @param password パスワード
  * @returns エラーメッセージの配列, 真偽値
  */
-export async function checkPasswordStrength(password: string): Promise<{ messages: string[], isVerified: boolean }> {
+export async function checkPasswordStrength(
+    password: string
+): Promise<{ messages: string[]; isVerified: boolean }> {
     const minLength = 10;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
@@ -128,7 +129,7 @@ export async function checkPasswordStrength(password: string): Promise<{ message
     const hasNonalphas = /\W/.test(password);
 
     let messages: string[] = [];
-  
+
     if (password.length < minLength) {
         messages.push("10文字以上 ");
     }

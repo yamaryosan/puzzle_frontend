@@ -1,10 +1,10 @@
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import PuzzleCard from "@/lib/components/PuzzleCard";
 import { FavoriteOutlined } from "@mui/icons-material";
 import RandomPuzzles from "@/lib/components/RandomPuzzles";
 
 type props = {
-    puzzles: Puzzle[];
+    puzzles: puzzles[];
     activeCardId: number | null;
     handleCardClick: (id: number) => void;
 };

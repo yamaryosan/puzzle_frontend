@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import firebaseApp from '@/app/firebase';
+import { useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import firebaseApp from "@/app/firebase";
 
 /**
  * ユーザーの認証情報を取得するカスタムフック
@@ -15,7 +15,7 @@ export default function useAuth() {
             setUser(user);
         });
         return () => unsubscribe();
-  }, []);
+    }, []);
 
-  return user as User | null;
+    return user as User | null;
 }

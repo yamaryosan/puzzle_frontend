@@ -1,6 +1,6 @@
-import React from 'react';
-import { SvgIcon } from '@mui/material';
-import { Extension, AddCircleOutline } from '@mui/icons-material';
+import React from "react";
+import { SvgIcon } from "@mui/material";
+import { Extension, AddCircleOutline } from "@mui/icons-material";
 
 type Props = {
     color?: string;
@@ -11,9 +11,16 @@ type Props = {
  */
 export default function AddPuzzleIcon(props: Props) {
     return (
-      <SvgIcon style={{ position: 'relative' }}>
-        <AddCircleOutline />
-        <Extension style={{ position: 'absolute', top: 0, left: 0, color: props.color }} />
-      </SvgIcon>
+        <SvgIcon style={{ position: "relative" }}>
+            <AddCircleOutline />
+            <Extension
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    color: props.color,
+                }}
+            />
+        </SvgIcon>
     );
-  }
+}

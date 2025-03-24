@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Puzzle } from "@prisma/client";
+import { puzzles } from "@prisma/client";
 import { getPuzzles } from "@/lib/api/puzzleapi";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 import Puzzles from "@/lib/components/Puzzles";
 
-type Puzzles = Puzzle[];
+type Puzzles = puzzles[];
 
 function SearchParamsWrapper() {
     const searchParams = useSearchParams();

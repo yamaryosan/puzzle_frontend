@@ -1,11 +1,9 @@
-import PuzzleShowPaper from '@/lib/components/PuzzleShowPaper';
+import PuzzleShowPaper from "@/lib/components/PuzzleShowPaper";
 
 type PageParams = {
     id: string;
 };
 
 export default function Page({ params }: { params: PageParams }) {
-    return (
-        <PuzzleShowPaper id={params.id} />
-    );
+    return <PuzzleShowPaper id={params.id} />;
 }

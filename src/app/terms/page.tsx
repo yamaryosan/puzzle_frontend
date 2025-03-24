@@ -1,18 +1,21 @@
-import ReactMarkdown from 'react-markdown';
-import Box from '@mui/material/Box';
+import ReactMarkdown from "react-markdown";
+import Box from "@mui/material/Box";
 
 export default function Page() {
     return (
         <div>
-            <Box sx={{ fontSize: "1rem", lineHeight: 1.6, '& h3': {marginTop: "1rem"} }}>
-                <ReactMarkdown>
-                    {markdownText}
-                </ReactMarkdown>
+            <Box
+                sx={{
+                    fontSize: "1rem",
+                    lineHeight: 1.6,
+                    "& h3": { marginTop: "1rem" },
+                }}
+            >
+                <ReactMarkdown>{markdownText}</ReactMarkdown>
             </Box>
         </div>
     );
 }
-
 
 const markdownText = `
 
@@ -101,4 +104,4 @@ const markdownText = `
 11.2. 本サービスに関して紛争が生じた場合には、運営者の居住地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とします。
 
 以上
-`
+`;

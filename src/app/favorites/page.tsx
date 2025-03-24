@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Puzzle } from '@prisma/client';
-import { getFavoritePuzzles } from '@/lib/api/puzzleapi';
-import FirebaseUserContext from '@/lib/context/FirebaseUserContext';
-import { useContext } from 'react';
-import FavoritePuzzles from '@/lib/components/FavoritePuzzles';
+import { useEffect, useState } from "react";
+import { puzzles } from "@prisma/client";
+import { getFavoritePuzzles } from "@/lib/api/puzzleapi";
+import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
+import { useContext } from "react";
+import FavoritePuzzles from "@/lib/components/FavoritePuzzles";
 
 export default function Page() {
-    const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
+    const [puzzles, setPuzzles] = useState<puzzles[]>([]);
     // アクティブなカードのID
     const [activeCardId, setActiveCardId] = useState<number | null>(null);
     const user = useContext(FirebaseUserContext);
@@ -18,7 +18,9 @@ export default function Page() {
         async function fetchPuzzles() {
             try {
                 if (!user) return;
-                const puzzles = await getFavoritePuzzles(user.uid ?? '') as Puzzle[];
+                const puzzles = (await getFavoritePuzzles(
+                    user.uid ?? ""
+                )) as puzzles[];
                 setPuzzles(puzzles);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
@@ -31,6 +33,12 @@ export default function Page() {
     const handleCardClick = (id: number) => {
         setActiveCardId(id === activeCardId ? null : id);
     };
-        
-    return (<FavoritePuzzles puzzles={puzzles} activeCardId={activeCardId} handleCardClick={handleCardClick} />);
+
+    return (
+        <FavoritePuzzles
+            puzzles={puzzles}
+            activeCardId={activeCardId}
+            handleCardClick={handleCardClick}
+        />
+    );
 }

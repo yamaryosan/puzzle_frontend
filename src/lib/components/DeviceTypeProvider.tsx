@@ -28,10 +28,6 @@ export default function DeviceTypeProvider({
         };
     }, []);
 
-    useEffect(() => {
-        console.log(`deviceType: ${deviceType}`);
-    }, [deviceType]);
-
     if (!hasMounted) {
         return (
             <DeviceTypeContext.Provider value="desktop">

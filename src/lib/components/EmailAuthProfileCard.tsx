@@ -118,10 +118,6 @@ export default function EmailAuthProfileCard({
             return;
         }
 
-        console.log(user.email);
-        console.log(process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL1);
-        console.log(process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL2);
-
         // ポートフォリオチェック用アカウントの場合は更新できない
         if (
             user.email === process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL1 ||

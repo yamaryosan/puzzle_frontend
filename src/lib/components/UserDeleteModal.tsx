@@ -67,7 +67,10 @@ const deleteAccount = async (user: User, password?: string) => {
                 throw new Error("パスワードが見つかりません");
             }
             // ポートフォリオチェック用アカウントの削除を許可しない
-            if (password !== process.env.PORTFOLIO_CHECK_EMAIL) {
+            if (
+                user.email === process.env.PORTFOLIO_CHECK_EMAIL1 ||
+                user.email === process.env.PORTFOLIO_CHECK_EMAIL2
+            ) {
                 throw new Error("このアカウントは削除できません");
             }
             const credential = EmailAuthProvider.credential(

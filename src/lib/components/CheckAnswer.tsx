@@ -126,11 +126,11 @@ export default function CheckAnswer({ id }: { id: string }) {
 
                 <Box sx={{ paddingY: "0.5rem" }}>
                     <h4>あなたの解答</h4>
-                    <Viewer defaultHtml={puzzle?.user_answer ?? ""} />
+                    <Viewer html={puzzle?.user_answer ?? ""} />
                 </Box>
                 <Box sx={{ paddingY: "0.5rem" }}>
                     <h4>正答</h4>
-                    <Viewer defaultHtml={puzzle?.solution ?? ""} />
+                    <Viewer html={puzzle?.solution ?? ""} />
                 </Box>
 
                 {deviceType === "mobile" && (

@@ -9,7 +9,7 @@ export default function DescriptionViewer({
     return (
         <Box sx={{ paddingY: "0.5rem" }}>
             <h4>本文</h4>
-            <Viewer defaultHtml={descriptionHtml} />
+            <Viewer html={descriptionHtml} />
         </Box>
     );
 }

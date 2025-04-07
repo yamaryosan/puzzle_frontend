@@ -110,7 +110,7 @@ export default function ApproachesViewer({ puzzleId }: ApproachesViewerProps) {
                         </Tabs>
                         {approaches?.map((approach, index) => (
                             <TabPanel value={value} index={index} key={index}>
-                                <Viewer defaultHtml={approach.content} />
+                                <Viewer html={approach.content} />
                             </TabPanel>
                         ))}
                     </Box>

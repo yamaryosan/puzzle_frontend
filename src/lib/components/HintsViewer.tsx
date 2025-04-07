@@ -104,7 +104,7 @@ export default function HintsViewer({ puzzleId }: HintsViewerProps) {
                         </Tabs>
                         {hints?.map((hint, index) => (
                             <TabPanel value={value} index={index} key={index}>
-                                <Viewer defaultHtml={hint.content} />
+                                <Viewer html={hint.content} />
                             </TabPanel>
                         ))}
                     </Box>

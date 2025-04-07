@@ -66,10 +66,15 @@ const deleteAccount = async (user: User, password?: string) => {
             if (!password) {
                 throw new Error("パスワードが見つかりません");
             }
+
+            console.log(user.email);
+            console.log(process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL1);
+            console.log(process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL2);
+
             // ポートフォリオチェック用アカウントの削除を許可しない
             if (
-                user.email === process.env.PORTFOLIO_CHECK_EMAIL1 ||
-                user.email === process.env.PORTFOLIO_CHECK_EMAIL2
+                user.email === process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL1 ||
+                user.email === process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL2
             ) {
                 throw new Error("このアカウントは削除できません");
             }

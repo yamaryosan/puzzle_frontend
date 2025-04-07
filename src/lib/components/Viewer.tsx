@@ -34,13 +34,11 @@ export const Viewer = ({ html }: ViewerProps) => {
                 "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
             mathjaxScript.async = true;
             mathjaxScript.onload = () => {
-                // @ts-ignore
-                window.MathJax.typesetPromise?.([el]);
+                window.MathJax?.typesetPromise?.([el]);
             };
             document.head.appendChild(mathjaxScript);
         } else {
-            // @ts-ignore
-            window.MathJax.typesetPromise?.([el]);
+            window.MathJax?.typesetPromise?.([el]);
         }
     }, [html]);
 

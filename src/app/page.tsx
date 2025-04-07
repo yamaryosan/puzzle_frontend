@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { puzzles } from "@prisma/client";
-import { getPuzzles } from "@/lib/api/puzzleapi";
-import { useEffect, Suspense } from "react";
+
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import MessageModal from "@/lib/components/MessageModal";
-import { FirebaseUserContext } from "@/lib/context/FirebaseUserContext";
-import { useContext } from "react";
 import Puzzles from "@/lib/components/Puzzles";
 
 type Puzzles = puzzles[];

@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Box, Button, Input } from "@mui/material";
-import { GoogleAuthProvider, User, sendEmailVerification } from "firebase/auth";
+import { GoogleAuthProvider, User } from "firebase/auth";
 import { reauthenticateWithPopup } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { useState } from "react";
@@ -65,6 +65,10 @@ const deleteAccount = async (user: User, password?: string) => {
             }
             if (!password) {
                 throw new Error("パスワードが見つかりません");
+            }
+            // ポートフォリオチェック用アカウントの削除を許可しない
+            if (password !== process.env.PORTFOLIO_CHECK_EMAIL) {
+                throw new Error("このアカウントは削除できません");
             }
             const credential = EmailAuthProvider.credential(
                 user.email,

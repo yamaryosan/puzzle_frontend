@@ -3,6 +3,16 @@ import prisma from "@/lib/prismaclient";
 
 const defaultPuzzles = [
     {
+        title: "1から100までの和",
+        description: `<p>$1$から$100$までの和を求めよ。</p>`,
+        user_answer: "",
+        solution: `<p>$5050$になる。$(1 + 100) + (2 + 99) + \\cdots$というように、和が$101$になるセットが$50$セットあるから、$101 \\times 50 = 5050$となる。</p>`,
+        difficulty: 2,
+        is_favorite: true,
+        is_solved: false,
+        source: "有名問題",
+    },
+    {
         title: "謎解き1",
         description: `<p>答えは？</p><p><br></p><p><img src="/images/sample-puzzle-1.png"></p>`,
         user_answer: "",
@@ -75,43 +85,60 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 {
                     user_id: userId,
                     puzzle_id: puzzleIds[0].id,
-                    content: "それぞれの熟語の読みを考えてみよう",
+                    content:
+                        "$1 + 2 + 3 + \\cdots + 100$としていっても時間がかかる。",
                 },
                 {
                     user_id: userId,
                     puzzle_id: puzzleIds[0].id,
-                    content: "それぞれの熟語の文字数を考えてみよう",
+                    content: "うまく並べ変えて、きりがよいものを足すとよい。",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[0].id,
+                    content:
+                        "$(1, 100), (2, 99), (3, 98), \\cdots$とセットにして、これが何セットある？",
                 },
                 {
                     user_id: userId,
                     puzzle_id: puzzleIds[1].id,
+                    content: "それぞれの熟語の読みを考えてみよう",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[1].id,
+                    content: "それぞれの熟語の文字数を考えてみよう",
+                },
+                {
+                    user_id: userId,
+                    puzzle_id: puzzleIds[2].id,
                     content:
                         "正方形しかないが、これに似たものをどこかで見たことがあるはずだ",
                 },
                 {
                     user_id: userId,
-                    puzzle_id: puzzleIds[1].id,
+                    puzzle_id: puzzleIds[2].id,
                     content: "身の回りにある、7つで1セットのものといえば…？",
                 },
                 {
                     user_id: userId,
-                    puzzle_id: puzzleIds[1].id,
+                    puzzle_id: puzzleIds[2].id,
                     content: "カレンダーを見てみよう",
                 },
                 {
                     user_id: userId,
-                    puzzle_id: puzzleIds[2].id,
+                    puzzle_id: puzzleIds[3].id,
                     content: "地球は球体である。地球儀を見ながら考えよう",
                 },
                 {
                     user_id: userId,
-                    puzzle_id: puzzleIds[2].id,
+                    puzzle_id: puzzleIds[3].id,
                     content:
                         "小屋の場所が特殊である。ただし日本には存在しない。",
                 },
                 {
                     user_id: userId,
-                    puzzle_id: puzzleIds[2].id,
+                    puzzle_id: puzzleIds[3].id,
                     content: "小屋は南の、とても寒い場所にある。",
                 },
             ],
@@ -119,6 +146,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         // カテゴリーの登録
         await prisma.categories.createMany({
             data: [
+                { user_id: userId, name: "数学" },
                 { user_id: userId, name: "謎解き" },
                 { user_id: userId, name: "頭の体操" },
             ],
@@ -136,14 +164,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         await prisma.puzzle_categories.createMany({
             data: [
                 { puzzle_id: puzzleIds[0].id, category_id: categoryIds[0].id },
-                { puzzle_id: puzzleIds[1].id, category_id: categoryIds[0].id },
+                { puzzle_id: puzzleIds[1].id, category_id: categoryIds[1].id },
                 { puzzle_id: puzzleIds[2].id, category_id: categoryIds[1].id },
+                { puzzle_id: puzzleIds[3].id, category_id: categoryIds[2].id },
             ],
         });
 
         // 定石の登録
         await prisma.approaches.createMany({
             data: [
+                {
+                    user_id: userId,
+                    title: "数の和に関する問題のコツ",
+                    content: `<p>きりがよいものどうしで足し合わせることを意識する。</p>`,
+                },
                 {
                     user_id: userId,
                     title: "文字のない謎解き問題の考え方",
@@ -168,8 +202,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         });
         await prisma.puzzle_approaches.createMany({
             data: [
-                { puzzle_id: puzzleIds[1].id, approach_id: approachIds[0].id },
+                { puzzle_id: puzzleIds[0].id, approach_id: approachIds[0].id },
                 { puzzle_id: puzzleIds[2].id, approach_id: approachIds[1].id },
+                { puzzle_id: puzzleIds[3].id, approach_id: approachIds[2].id },
             ],
         });
 

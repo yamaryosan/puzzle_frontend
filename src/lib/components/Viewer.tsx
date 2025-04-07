@@ -1,83 +1,50 @@
 "use client";
 
-import React, { forwardRef, useEffect, useRef } from "react";
-import Quill from "quill";
-import Delta from "quill-delta";
-import "quill/dist/quill.snow.css";
+import React, { useEffect, useRef } from "react";
 
 type ViewerProps = {
-    defaultHtml: string;
+    html: string;
 };
 
-const options = {
-    // ツールバーを非表示
-    modules: {
-        toolbar: false,
-    },
-    theme: "snow",
-};
-
-/** 閲覧用ビューワーのコンポーネント
- * @param {string} defaultHtml 初期値のHTML文字列
- * @param {Ref} ref エディタのRefオブジェクト
- */
-export const Viewer = forwardRef<Quill, ViewerProps>(({ defaultHtml }, ref) => {
+export const Viewer = ({ html }: ViewerProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const defaultValueRef = useRef<Delta>();
 
     useEffect(() => {
-        let container: HTMLDivElement | null = null;
-        async function initializeQuillEditor() {
-            container = containerRef.current;
-            if (!container) {
-                return;
-            }
+        const el = containerRef.current;
+        if (!el) return;
 
-            const editorContainer = container.appendChild(
-                container.ownerDocument.createElement("div")
-            );
-            try {
-                const quillModule = await import("quill");
-                const Quill = quillModule.default;
-                const quillInstance = new Quill(editorContainer, options);
-                // デフォルトのHTMLをDeltaに変換
-                const Delta = quillModule.default.import("delta");
-                const quill = new quillModule.default(
-                    document.createElement("div")
-                );
-                const delta = quill.clipboard.convert({ html: defaultHtml });
-                defaultValueRef.current = new Delta(delta.ops);
+        el.innerHTML = html;
 
-                // 読み取り専用に設定
-                quillInstance.enable(false);
+        if (!window.MathJax) {
+            const configScript = document.createElement("script");
+            configScript.type = "text/javascript";
+            configScript.text = `
+                window.MathJax = {
+                    tex: {
+                        inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                        displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
+                    },
+                    svg: { fontCache: 'global' }
+                };
+            `;
+            document.head.appendChild(configScript);
 
-                if (ref) {
-                    (ref as React.MutableRefObject<Quill>).current =
-                        quillInstance;
-                }
-
-                if (defaultValueRef.current) {
-                    console.log(
-                        "初期値を設定します: ",
-                        defaultValueRef.current
-                    );
-                    quillInstance.setContents(defaultValueRef.current);
-                }
-            } catch (error) {
-                console.error("エディタの初期化に失敗しました: ", error);
-            }
+            const mathjaxScript = document.createElement("script");
+            mathjaxScript.src =
+                "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+            mathjaxScript.async = true;
+            mathjaxScript.onload = () => {
+                // @ts-ignore
+                window.MathJax.typesetPromise?.([el]);
+            };
+            document.head.appendChild(mathjaxScript);
+        } else {
+            // @ts-ignore
+            window.MathJax.typesetPromise?.([el]);
         }
-        initializeQuillEditor();
-        // クリーンアップ
-        return () => {
-            if (!container) {
-                return;
-            }
-            container.innerHTML = "";
-        };
-    }, [defaultHtml, ref]);
+    }, [html]);
 
-    return <div ref={containerRef}></div>;
-});
-Viewer.displayName = "Viewer";
+    return <div className="viewer-content" ref={containerRef} />;
+};
+
 export default Viewer;

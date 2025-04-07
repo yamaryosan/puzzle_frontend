@@ -7,13 +7,11 @@ import { useContext } from "react";
 
 type FavoriteButtonProps = {
     initialChecked: boolean;
-    onChange: (checked: boolean) => void;
     puzzleId: string;
 };
 
 export default function FavoriteButton({
     initialChecked,
-    onChange,
     puzzleId,
 }: FavoriteButtonProps) {
     const [checked, setChecked] = useState(initialChecked);
@@ -25,7 +23,6 @@ export default function FavoriteButton({
         const newChecked = !checked;
         setChecked(newChecked);
         await toggleFavoritePuzzle(puzzleId, user.uid);
-        onChange(checked);
     };
 
     return (

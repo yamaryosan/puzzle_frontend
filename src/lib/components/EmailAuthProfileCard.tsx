@@ -118,10 +118,14 @@ export default function EmailAuthProfileCard({
             return;
         }
 
+        console.log(user.email);
+        console.log(process.env.PORTFOLIO_CHECK_EMAIL1);
+        console.log(process.env.PORTFOLIO_CHECK_EMAIL2);
+
         // ポートフォリオチェック用アカウントの場合は更新できない
         if (
-            user.email === process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL1 ||
-            user.email === process.env.NEXT_PUBLIC_PORTFOLIO_CHECK_EMAIL2
+            user.email === process.env.PORTFOLIO_CHECK_EMAIL1 ||
+            user.email === process.env.PORTFOLIO_CHECK_EMAIL2
         ) {
             setGeneralError("このアカウントは更新できません");
             return;

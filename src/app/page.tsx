@@ -46,23 +46,6 @@ function SearchParamsWrapper() {
 }
 
 export default function Page() {
-    const user = useContext(FirebaseUserContext);
-    const [puzzles, setPuzzles] = useState<Puzzles | null>(null);
-
-    // パズル一覧を取得
-    useEffect(() => {
-        async function fetchPuzzles() {
-            if (!user) return;
-            try {
-                const puzzles = await getPuzzles(user.uid);
-                setPuzzles(puzzles);
-            } catch (error) {
-                console.error("パズルの取得に失敗: ", error);
-            }
-        }
-        fetchPuzzles();
-    }, [user]);
-
     return (
         <div>
             <Suspense fallback={null}>

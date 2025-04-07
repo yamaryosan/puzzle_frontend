@@ -117,6 +117,16 @@ export default function EmailAuthProfileCard({
             setGeneralError("ユーザーが見つかりません");
             return;
         }
+
+        // ポートフォリオチェック用アカウントの場合は更新できない
+        if (
+            user.email === process.env.PORTFOLIO_CHECK_EMAIL1 ||
+            user.email === process.env.PORTFOLIO_CHECK_EMAIL2
+        ) {
+            setGeneralError("このアカウントは更新できません");
+            return;
+        }
+
         if (form.email === "") {
             setGeneralError("メールアドレスを入力してください");
             return;

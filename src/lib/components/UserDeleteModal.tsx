@@ -10,6 +10,8 @@ import DeviceTypeContext from "@/lib/context/DeviceTypeContext";
 import FirebaseUserContext from "@/lib/context/FirebaseUserContext";
 import { useContext } from "react";
 import { CancelOutlined } from "@mui/icons-material";
+import { reauthenticateWithCredential } from "firebase/auth";
+import { EmailAuthProvider } from "firebase/auth";
 
 const isEmulator = process.env.NODE_ENV === "development";
 
@@ -39,25 +41,42 @@ function checkAuthProvider(user: User) {
 /** ユーザーアカウントを削除
  * @param user ユーザー
  */
-const deleteAccount = async (user: User) => {
+const deleteAccount = async (user: User, password?: string) => {
     // Firebase Authからユーザーを削除
     const provider = checkAuthProvider(user);
     if (provider === "email") {
         if (!user.email) {
             throw new Error("メールアドレスが見つかりません");
         }
-        // const credential = EmailAuthProvider.credential(user.email, 'password');
-        // await reauthenticateWithCredential(user, credential);
         // ローカル環境の場合はユーザーを削除、本番環境の場合はメールアドレス認証を送信
         if (isEmulator) {
-            await user.delete();
-            await deleteUserInPrisma(user.uid);
+            try {
+                if (!password) {
+                    throw new Error("パスワードが見つかりません");
+                }
+                await user.delete();
+                await deleteUserInPrisma(user.uid);
+            } catch (error) {
+                throw new Error("ユーザー削除に失敗しました");
+            }
         } else {
-            const actionCodeSettings = {
-                url: `${process.env.NEXT_PUBLIC_URL}/reauthenticate-for-delete`,
-                handleCodeInApp: true,
-            };
-            await sendEmailVerification(user, actionCodeSettings);
+            if (!user.email) {
+                throw new Error("メールアドレスが見つかりません");
+            }
+            if (!password) {
+                throw new Error("パスワードが見つかりません");
+            }
+            const credential = EmailAuthProvider.credential(
+                user.email,
+                password
+            );
+            try {
+                await reauthenticateWithCredential(user, credential);
+                await user.delete();
+                await deleteUserInPrisma(user.uid);
+            } catch (error) {
+                throw new Error("パスワードが間違っています");
+            }
         }
     } else if (provider === "google") {
         const googleProvider = new GoogleAuthProvider();
@@ -82,6 +101,9 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
     const user = useContext(FirebaseUserContext);
 
     const [inputName, setInputName] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [error, setError] = useState<string | null>(null);
 
     const deviceType = useContext(DeviceTypeContext);
 
@@ -113,19 +135,19 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
     }, []);
 
     // 退会処理(1段階目)
-    const handleDelete = async () => {
+    const handleDelete = async (password: string) => {
         if (deletionConfirmStep === 0) {
             setDeletionConfirmStep(1);
             return;
         }
         if (deletionConfirmStep === 1) {
-            await deleteUser();
+            await deleteUser(password);
             return;
         }
     };
 
     // 退会処理(最終段階)
-    const deleteUser = async () => {
+    const deleteUser = async (password: string) => {
         const auth = getAuth();
         const user = auth.currentUser;
         if (!user) {
@@ -133,10 +155,12 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
             return;
         }
         try {
-            await deleteAccount(user);
+            await deleteAccount(user, password);
             router.push("/signin?deleted=true");
-        } catch (error) {
-            console.error("退会処理に失敗: ", error);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            }
         }
     };
 
@@ -201,7 +225,7 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
                                                 backgroundColor: "error.main",
                                             },
                                         }}
-                                        onClick={() => handleDelete()}
+                                        onClick={() => handleDelete(password)}
                                     >
                                         はい
                                     </Button>
@@ -236,13 +260,15 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
                                         marginBottom: "1rem",
                                     }}
                                 >
-                                    退会するには、ユーザ名を入力してください
+                                    退会するには、ユーザ名とパスワードを入力してください
                                 </p>
                                 <Box
                                     sx={{
                                         display: "flex",
+                                        flexDirection: "column",
                                         gap: "1rem",
                                         marginBottom: "1rem",
+                                        width: "100%",
                                     }}
                                 >
                                     <Input
@@ -251,6 +277,14 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
                                         value={inputName}
                                         onChange={(e) =>
                                             setInputName(e.target.value)
+                                        }
+                                    />
+                                    <Input
+                                        type="password"
+                                        placeholder="パスワード"
+                                        value={password}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
                                         }
                                     />
                                     <Button
@@ -262,12 +296,14 @@ export default function UserDeleteModal({ onButtonClick }: DeleteModalProps) {
                                             },
                                         }}
                                         disabled={
-                                            inputName !== user?.displayName
+                                            inputName !== user?.displayName ||
+                                            password === ""
                                         }
-                                        onClick={() => handleDelete()}
+                                        onClick={() => handleDelete(password)}
                                     >
                                         退会
                                     </Button>
+                                    {error && <p>{error}</p>}
                                 </Box>
                             </Box>
                         </>

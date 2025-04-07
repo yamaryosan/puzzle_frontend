@@ -21,10 +21,6 @@ export default function PuzzleCard({
 }: PuzzleCardProps) {
     const deviceType = useContext(DeviceTypeContext);
 
-    const handleFavoriteChange = (checked: boolean) => {
-        puzzle.is_favorite = checked;
-    };
-
     return (
         <Card
             variant="outlined"
@@ -56,7 +52,6 @@ export default function PuzzleCard({
                         <FavoriteButton
                             initialChecked={puzzle.is_favorite}
                             puzzleId={puzzle.id.toString()}
-                            onChange={handleFavoriteChange}
                         />
                     </Box>
                 </Box>
@@ -76,7 +71,6 @@ export default function PuzzleCard({
                         <FavoriteButton
                             initialChecked={puzzle.is_favorite}
                             puzzleId={puzzle.id.toString()}
-                            onChange={handleFavoriteChange}
                         />
                     </Box>
                 </Box>

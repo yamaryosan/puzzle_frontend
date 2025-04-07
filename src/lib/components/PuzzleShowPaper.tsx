@@ -43,39 +43,25 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
-    // パズルを取得
+    // パズルとカテゴリーを取得
     useEffect(() => {
-        async function fetchPuzzle() {
+        async function fetchPuzzleAndCategories() {
+            if (!user) return;
+
             try {
-                if (!user) return;
-                const puzzle = (await getPuzzleById(
-                    id,
-                    user.uid ?? ""
-                )) as puzzles;
-                setPuzzle(puzzle);
+                const [puzzleData, categoriesData] = await Promise.all([
+                    getPuzzleById(id, user.uid ?? ""),
+                    getCategoriesByPuzzleId(id, user.uid ?? ""),
+                ]);
+                setPuzzle(puzzleData as puzzles);
+                setCategories(categoriesData as categories[]);
                 setIsLoading(false);
             } catch (error) {
                 console.error("パズルの取得に失敗: ", error);
             }
         }
-        fetchPuzzle();
-    }, [id, isLoading, user]);
 
-    // パズルのカテゴリーを取得
-    useEffect(() => {
-        async function fetchCategories() {
-            try {
-                if (!user) return;
-                const categories = (await getCategoriesByPuzzleId(
-                    id,
-                    user.uid ?? ""
-                )) as categories[];
-                setCategories(categories ?? []);
-            } catch (error) {
-                console.error("カテゴリーの取得に失敗: ", error);
-            }
-        }
-        fetchCategories();
+        fetchPuzzleAndCategories();
     }, [id, user]);
 
     if (isLoading) {
@@ -117,12 +103,6 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                             <FavoriteButton
                                 initialChecked={puzzle?.is_favorite ?? false}
                                 puzzleId={id}
-                                onChange={(checked) => {
-                                    setPuzzle({
-                                        ...puzzle!,
-                                        is_favorite: checked,
-                                    });
-                                }}
                             />
                         </Box>
                     </Box>
@@ -150,12 +130,6 @@ export default function PuzzleShowPaper({ id }: { id: string }) {
                             <FavoriteButton
                                 initialChecked={puzzle?.is_favorite ?? false}
                                 puzzleId={id}
-                                onChange={(checked) => {
-                                    setPuzzle({
-                                        ...puzzle!,
-                                        is_favorite: checked,
-                                    });
-                                }}
                             />
                         </Box>
                     </Box>
